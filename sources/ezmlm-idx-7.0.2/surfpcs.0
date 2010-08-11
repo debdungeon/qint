@@ -1,0 +1,46 @@
+surfpcs(3)                                                          surfpcs(3)
+
+
+
+NNAAMMEE
+       surfpcs - SURF protected counter sums
+
+SSYYNNTTAAXX
+       ##iinncclluuddee <<ssuurrffppccss..hh>>
+
+       void ssuurrffppccss__iinniitt(&_s,_s_e_e_d);
+
+       void ssuurrffppccss__aadddd(&_s,_b_u_f,_l_e_n);
+
+       void ssuurrffppccss__oouutt(&_s,_h);
+
+       surfpcs _s;
+       uint32 _s_e_e_d[32];
+       unsigned char *_b_u_f;
+       unsigned int _l_e_n;
+       unsigned char _h[SURFPCS_LEN];
+
+DDEESSCCRRIIPPTTIIOONN
+       ssuurrffppccss  converts a character string to a 256-bit output, under control
+       of a 1024-bit seed.  When the seed is secret,  ssuurrffppccss  appears  to  be
+       indistinguishable  from  a completely random variable-length-to-256-bit
+       function.
+
+       Applying ssuurrffppccss takes three steps.  First, initialize a ssuurrffppccss  vari‐
+       able, _s, with ssuurrffppccss__iinniitt.  The seed will be recorded inside _s.
+
+       Second, feed the input to ssuurrffppccss__aadddd.  _b_u_f is a pointer to _l_e_n charac‐
+       ters of input.  You can split the input  across  any  number  of  ssuurrff‐‐
+       ppccss__aadddd calls.
+
+       Third, call ssuurrffppccss__oouutt.  The output will be placed into _h, an array of
+       SSUURRFFPPCCSS__LLEENN bytes.  SSUURRFFPPCCSS__LLEENN is 32.
+
+       To apply ssuurrffppccss to another input you must call ssuurrffppccss__iinniitt again.
+
+SSEEEE AALLSSOO
+       surf(3)
+
+
+
+                                                                    surfpcs(3)

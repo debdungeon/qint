@@ -1,0 +1,61 @@
+case(3)                                                                case(3)
+
+
+
+NNAAMMEE
+       case - convert ASCII uppercase bytes to lowercase
+
+SSYYNNTTAAXX
+       ##iinncclluuddee <<ccaassee..hh>>
+
+       void ccaassee__lloowweerrss(_s);
+       void ccaassee__lloowweerrbb(_s,_l_e_n);
+
+       int ccaassee__ddiiffffss(_s,_t);
+       int ccaassee__eeqquuaallss(_s,_t);
+       int ccaassee__ssttaarrttss(_s,_t);
+
+       int ccaassee__ddiiffffbb(_s,_l_e_n,_t);
+       int ccaassee__ssttaarrttbb(_s,_l_e_n,_t);
+
+       char *_s;
+       char *_t;
+       unsigned int _l_e_n;
+
+DDEESSCCRRIIPPTTIIOONN
+       ccaassee__lloowweerrss  converts each uppercase byte in the string _s to lowercase.
+       _s must be 0-terminated.
+
+       ccaassee__lloowweerrbb converts each uppercase byte in the  buffer  _s,  of  length
+       _l_e_n, to lowercase.
+
+       ccaassee__ddiiffffss lexicographically compares lowercase versions of the strings
+       _s and _t.  It returns something positive, negative,  or  zero  when  the
+       first  is  larger  than, smaller than, or equal to the second.  _s and _t
+       must be 0-terminated.
+
+       ccaassee__eeqquuaallss means !!ccaassee__ddiiffffss.
+
+       ccaassee__ssttaarrttss returns 1 if a lowercase version of _s starts with a  lower‐
+       case version of _t.  _s and _t must be 0-terminated.
+
+       ccaassee__ddiiffffbb lexicographically compares lowercase versions of the buffers
+       _s and _t, each of length _l_e_n.  It returns something positive,  negative,
+       or  zero  when  the first is larger than, smaller than, or equal to the
+       second.
+
+       ccaassee__ssttaarrttbb returns 1 if a lowercase version of the buffer _s, of length
+       _l_e_n, starts with a lowercase version of the string _t.  _t must be 0-ter‐
+       minated.
+
+       The ccaassee routines are ASCII-specific.  They are suitable  for  programs
+       that handle case-independent networking protocols.
+
+       All comparisons are performed on unsigned bytes.
+
+SSEEEE AALLSSOO
+       byte_diff(3), byte_equal(3), str_diff(3), str_equal(3), str_start(3)
+
+
+
+                                                                       case(3)

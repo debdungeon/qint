@@ -1,0 +1,187 @@
+ezmlm-send(1)                                                    ezmlm-send(1)
+
+
+
+NNAAMMEE
+       ezmlm-send - distribute a message to a mailing list
+
+SSYYNNOOPPSSIISS
+       eezzmmllmm--sseenndd [ --ccCCrrRRvvVV ] [ --hh _h_e_a_d_e_r ] _d_i_r
+
+DDEESSCCRRIIPPTTIIOONN
+       eezzmmllmm--sseenndd reads a mail message and sends it to the mailing list stored
+       in _d_i_r.  If _d_i_r//aarrcchhiivveedd exists, eezzmmllmm--sseenndd records a copy of the  mes‐
+       sage in the _d_i_r//aarrcchhiivvee// directory.
+
+       If  _d_i_r//iinnddeexxeedd  exists,  eezzmmllmm--sseenndd  adds the subject, author and time
+       stamp of the message to the index, kept with the message in a subdirec‐
+       tory  of  _d_i_r//aarrcchhiivvee//.  The subject is processed to make reply-subject
+       entries identical to original message  subject  entries.   The  subject
+       index is used for the archive retrieval functions of eezzmmllmm--ggeett((11)).  Use
+       eezzmmllmm--iiddxx((11)) to create a subject index from a preexisting archive.
+
+       Subject and author lines are decoded if they are encoded  per  rfc2047.
+       When  split  lines  are  unfolded,  the  number of escape sequences for
+       iso-2022-* character sets is minimized. For instance,  two  consequtive
+       toascii sequences are reduced.  This processing is done for the charac‐
+       ter set specified in _d_i_r//cchhaarrsseett.  The result of this  process  is  the
+       same for a given subject, irrespective of encoding.
+
+       At  the  beginning of the message, eezzmmllmm--sseenndd prints a new MMaaiilliinngg--LLiisstt
+       field with the contents of the _T_X_T___M_A_I_L_I_N_G___L_I_S_T  message.   It  rejects
+       the message if there is already a MMaaiilliinngg--LLiisstt field.
+
+       If _d_i_r//lliissttiidd exists, eezzmmllmm--sseenndd will assume that the format is correct
+       and create a ‘‘List-ID:’’ header by placing the contents after the text
+       ‘‘List-ID: ’’.
+
+       Next,  eezzmmllmm--sseenndd  prints  all  the new fields listed in _d_i_r//hheeaaddeerraadddd.
+       Any tags, ‘‘<#h#>’’, ‘‘<#l#>’’, or ‘‘<#n#>’’ found in these headers are
+       replaced  by  the  list host name, list local name, and message number,
+       respectively.
+
+       eezzmmllmm--sseenndd then prints an appropriate DDeelliivveerreedd--TToo line.
+
+       If it is present, eezzmmllmm--sseenndd deletes any incoming fields with names not
+       listed  in  _d_i_r//hheeaaddeerrkkeeeepp.   If  not,  eezzmmllmm--sseenndd deletes any incoming
+       fields with names listed in _d_i_r//hheeaaddeerrrreemmoovvee.
+
+       If  present,  eezzmmllmm--sseenndd  removes  all  MIME  parts  not  specified  in
+       _d_i_r//mmiimmeekkeeeepp.   Otherwise  eezzmmllmm--sseenndd  removes  MIME parts specified in
+       _d_i_r//mmiimmeerreemmoovvee before archiving and distribution of the message.
+
+       If _d_i_r//tteexxtt//ttrraaiilleerr exists,  eezzmmllmm--sseenndd  adds  the  trailer  to  simple
+       text/plain  messages  in the same encoding as used for the the message.
+       However, if the encoding is ‘‘base64’’ it is not safe to  do  this  and
+       the  header is suppressed.  For composite MIME messages, the trailer is
+       added as a separate part, with the character set and encoding specified
+       in _d_i_r//cchhaarrsseett.  The trailer is not added to multipart/alternative mes‐
+       sages.   Any  tags,  ‘‘<#h#>’’,  ‘‘<#l#>’’,  or  ‘‘<#n#>’’   found   in
+       _d_i_r//tteexxtt//ttrraaiilleerr  are  replaced by the list host name, list local name,
+       and message number, respectively.
+
+       If _d_i_r//pprreeffiixx exists, eezzmmllmm--sseenndd will prefix the subject line with  the
+       first  line of this file. A space will be added to separate pprreeffiixx from
+       the subject text.  pprreeffiixx is ignored for sublists. If  _d_i_r//pprreeffiixx  con‐
+       tains  a  ‘‘#’’, the last ‘‘#’’ will be replaced by the message number.
+       Any  prefix  starting  with  text  of  a  reply   indicator   (‘‘Re:’’,
+       ‘‘Re[n]:’’,  etc)  will  cause  problems.   The  prefix  may be rfc2047
+       encoded. Rfc2047 Iso-2022-* encoded prefixes _m_u_s_t end in ascii.
+
+       The prefix feature and especially the message number feature modify the
+       message  in  violation  with Internet mail standards. The features have
+       been implemented by popular demand. Use at your own peril.
+
+       _d_i_r//sseeqquueennccee is ignored as of ezmlm-idx-0.32.  Use  _d_i_r//hheeaaddeerraadddd  with
+       substitution to achieve the same goal.
+
+       If  _d_i_r//qqmmqqppsseerrvveerrss  exists,  eezzmmllmm--sseenndd wwiillll uussee qqmmaaiill--qqmmqqpp((11)) to send
+       messages.
+
+       eezzmmllmm--sseenndd does not distribute  bounce  messages:  if  the  environment
+       variable SSEENNDDEERR is set, and is either empty or ##@@[[]], eezzmmllmm--sseenndd rejects
+       the message.
+
+OOPPTTIIOONNSS
+       --cc     No longer supported. Ignored for backwards compatibility.
+
+       --CC     No  longer  supported.  Ignored  for  backwards   compatibility.
+              eezzmmllmm--sseenndd has to parse the subscriber database.
+
+       --hh _h_e_a_d_e_r
+              If  the  list  is a sublist, i.e.  _d_i_r//ssuubblliisstt exists, _h_e_a_d_e_r is
+              required in all messages to the list. This option is  used  when
+              ezmlm  is  used  to  run a sublist of a lists run by a different
+              mailing list manager that uses  _h_e_a_d_e_r  rather  than  ‘‘Mailing-
+              List’’  to  identify messages from the list.  Anything after the
+              first colon (if present) in _h_e_a_d_e_r is ignored.
+
+       --rr     Copy incoming ‘‘Received:’’ headers to the outgoing message.
+
+       --RR     (Default.)  Do not copy incoming ‘‘Received:’’  headers,  except
+              the  one  added by the (last) listhost, to the outgoing message.
+              In some cases, especially for sublists, the messages can have  a
+              large  number of ‘‘Received:’’ headers. This may lead to bounces
+              for some users due to sendmail ‘‘hopcounts’’ set too  low  some‐
+              where  in  the  mail path. These users can subscribe and receive
+              warning and probe messages, but no  list  messages,  unless  the
+              number of ‘‘Received:’’ headers is reduced.
+
+              Pre-list  ‘‘Received:’’ headers are of little interest to normal
+              list subscribers. ‘‘Received:’’ headers are still copied to  the
+              archive  and available to anyone from there for message tracking
+              purposes.
+
+       --vv     Display eezzmmllmm--sseenndd version information.
+
+       --VV     Display eezzmmllmm--sseenndd version information.
+
+SSUUBBLLIISSTTSS
+       If _d_i_r//ssuubblliisstt exists, eezzmmllmm--sseenndd changes its behavior in several ways.
+
+       First, if SSEENNDDEERR is set, and the first line of _d_i_r//ssuubblliisstt has the form
+       _p_a_r_e_n_t@@_p_a_r_e_n_t_h_o_s_t, eezzmmllmm--sseenndd insists that SSEENNDDEERR have  the  form  _p_a_r_‐
+       _e_n_t......@@_p_a_r_e_n_t_h_o_s_t.
+
+       Second, eezzmmllmm--sseenndd demands that the message already have a MMaaiilliinngg--LLiisstt
+       field.
+
+       Third, eezzmmllmm--sseenndd does not add its own MMaaiilliinngg--LLiisstt field.
+
+       Fourth, eezzmmllmm--sseenndd uses the incoming message number  for  the  outgoing
+       message,  if  the  list is not archived and the incoming SENDER has the
+       correct format.  This allows you to refer bounce warning recipients  to
+       the main list for archive retrieval of the missed messages. If the sub‐
+       list archives message, it is  assumed  that  missed  messages  will  be
+       retrieved from the sublist archive.
+
+       The  list  still increments _d_i_r//nnuumm for each message. If the sublist is
+       archived, use of incoming message number for archive storage would be a
+       security  risk. In this case, the local sublist message number is used.
+
+OOPPTTIIOONN UUSSAAGGEE
+       In general, the use of a prefix is discouraged. It wastes subject  line
+       space,  creates  trouble  when  MUAs add non-standard reply indicators.
+       However, many users expect it not because it  is  useful,  but  because
+       they are used to it.
+
+       The --CC switch prevents posts from being set to SENDER. Rather than just
+       copying out subscriber address files, eezzmmllmm--sseenndd has to parse  them  to
+       look  for  SENDER. This makes it less efficient. Also, it is useful for
+       the SENDER to see the post to know that it has made it to the list, and
+       it’s  context to other subscribers, i.e. where it came within the traf‐
+       fic of messages on the list.
+
+       Avoiding SENDER as a recipient is useful in small lists, such as  small
+       teams  with  varying members, where ezmlm serves mainly as an efficient
+       tool to keep the team  connected  without  administrator  intervention.
+       Here the overhead of subscriber list parsing is negligible.
+
+CCHHAARRAACCTTEERR SSEETTSS
+       If  the  list  is  indexed,  eezzmmllmm--sseenndd  will  keep  a  message  index.
+       rfc2047-encoded subject and from lines will be decoded.  If _d_i_r//cchhaarrsseett
+       exists,  eezzmmllmm--sseenndd  will eliminate redundant escape sequences from the
+       headers according to the character set specified in  this  file.   Only
+       character  sets  using  escape  sequences need this support. Currently,
+       supported  are  iso-2022-jp*,  iso-2022-kr,  and   iso-2022-cn*.   Only
+       iso-2022-jp has been tested extensively.
+
+       The  character  set can be suffixed by ‘‘:’’ followed by a code. Recog‐
+       nized  codes  are  ‘‘Q’’  for  ‘‘Quoted-Printable’’,  and   ‘‘B’’   for
+       ‘‘base64’’.
+
+       For eezzmmllmm--sseenndd, this affects the format of the trailer, if a trailer is
+       specified and if the message is a multipart mime message
+
+BBUUGGSS
+       Since the MIME parser doesn’t decode inner MIME layers of a _m_u_l_t_i_p_a_r_t_/_*
+       message,  _m_i_m_e_k_e_e_p,  _m_i_m_e_r_e_m_o_v_e,  and _m_i_m_e_r_e_j_e_c_t will be applied to the
+       outer MIME layer only.
+
+SSEEEE AALLSSOO
+       ezmlm-get(1),  ezmlm-idx(1),  ezmlm-manage(1),  ezmlm-make(1),   ezmlm-
+       sub(1), ezmlm-unsub(1), ezmlm-reject(1), ezmlm(5), qmail-qmqp(1)
+
+
+
+                                                                 ezmlm-send(1)

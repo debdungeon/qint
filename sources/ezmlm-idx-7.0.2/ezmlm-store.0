@@ -1,0 +1,174 @@
+ezmlm-store(1)                                                  ezmlm-store(1)
+
+
+
+NNAAMMEE
+       ezmlm-store  - store messages posted to a moderated lists and send mod‐
+       eration requests to the moderator(s).
+
+SSYYNNOOPPSSIISS
+       eezzmmllmm--ssttoorree [[--bbBBccCCmmMMppPPrrRRssSSvvVVyyYY]] _d_i_r
+
+DDEESSCCRRIIPPTTIIOONN
+       eezzmmllmm--ssttoorree stores a main message sent to a ezmlm mailing list awaiting
+       message moderation or user confirmation.
+
+       If  _d_i_r//ccoonnffiirrmmppoosstt  exists  and  the --YY option is not set, it works in
+       user confirmation mode.  Otherwise if the --yy  option  is  not  set  and
+       _d_i_r//mmooddppoosstt exists, it works in message moderation mode.  Otherwise the
+       message is passed on to eezzmmllmm--sseenndd((11)).
+
+       If either _d_i_r//mmooddppoossttoonnllyy exists or the --PP option is set, only  modera‐
+       tors  will be allowed to post.  Posts from other addresses are bounced.
+
+UUSSEERR CCOONNFFIIRRMMAATTIIOONN
+       eezzmmllmm--ssttoorree reads a mail message and stores it in _d_i_r//mmoodd//uunnccoonnffiirrmmeedd//.
+       eezzmmllmm--ssttoorree  also  sends a user confirmation request with a copy of the
+       message to the envelope sender of the  message.   The  confirm  request
+       includes cookies for message rejection and acceptance.
+
+       The  sender  can  take  either  action  by  replying to the appropriate
+       address.  For user convenience, the _c_o_n_f_i_r_m address  is  given  in  the
+       ‘‘Reply-To:’’ header.
+
+       Once  the  confirmation request has been successfully sent, eezzmmllmm--ssttoorree
+       sets the owner-execute bit  of  the  message  in  _d_i_r//mmoodd//uunnccoonnffiirrmmeedd//.
+       Messages  without  this bit set are the result of incomplete executions
+       of eezzmmllmm--ssttoorree and are ignored.
+
+
+MMOODDEERRAATTIIOONN
+       eezzmmllmm--ssttoorree reads a mail message and  stores  it  in  _d_i_r//mmoodd//ppeennddiinngg//..
+       eezzmmllmm--ssttoorree  also sends a moderation request with a copy of the message
+       to the list of moderators stored in _d_i_r//mmoodd//ssuubbssccrriibbeerrss//..  If  _d_i_r//mmoodd‐‐
+       ppoosstt  contains  a directory name, _m_o_d_d_i_r, with a leading forward slash,
+       the moderator list in _/_m_o_d_d_i_r_/_s_u_b_s_c_r_i_b_e_r_s_/ is used instead. This allows
+       separate sets of moderators for subscription and message moderation, as
+       well as the use of the same moderator list for  several  eezzmmllmm  mailing
+       lists, owned by the same user. If the --ss switch is used, the moderators
+       are divided into two sets. Those pointed to by _d_i_r//mmooddppoosstt  which  will
+       receive  confirmation requests for posts with their SENDER address, and
+       those stored with the base directory _d_i_r//mmoodd// which will receive moder‐
+       ation  requests  for messages posted from SENDERs not part of the first
+       group. This can be used to have a set of trusted users  (‘‘moderating’’
+       themselves to thwart SENDER faking), and a set of more traditional mod‐
+       erators, which receive approval requests for other posts.
+
+       NNoottee:: The contents of _d_i_r//mmooddppoosstt do not affect  the  location  of  the
+       message moderation queue.
+
+       If SENDER is a moderator, the request is sent to that moderator only.
+
+       The  moderation  request  includes  cookies  for  message rejection and
+       acceptance.  The moderator can take either action by  replying  to  the
+       appropriate  address.  For moderator convenience, the _a_c_c_e_p_t address is
+       given in the ‘‘Reply-To:’’  header,  and  the  _r_e_j_e_c_t  address  in  the
+       ‘‘From:’’ header.
+
+       If  the list is set up with remote administration and the sender is not
+       a moderator, the ‘‘Cc:’’ header will contain a confirmation address  to
+       add  the sender to the ‘‘allow’’ database. This allows the moderator to
+       both approve the post and add  the  sender  to  the  list  of  accepted
+       posters by replying to ‘‘all’’.
+
+       The  default subject of all message moderation requests is MMOODDEERRAATTEE ffoorr
+       _l_i_s_t_n_a_m_e_@_h_o_s_t.   The  default  subject  of  all  message   confirmation
+       requests is CCoonnffiirrmm ppoosstt ttoo _l_i_s_t_n_a_m_e_@_h_o_s_t.
+
+       Once  the  request has been successfully sent to the moderators, eezzmmllmm--
+       ssttoorree sets the owner-execute bit of the  message  in  _d_i_r//mmoodd//ppeennddiinngg//..
+       Messages  without  this bit set are the result of incomplete executions
+       of eezzmmllmm--ssttoorree and are ignored.
+
+
+CCOONNFFIIRRMMAATTIIOONN AANNDD MMOODDEERRAATTIIOONN MMEESSSSAAGGEESS
+       At the beginning of the message, eezzmmllmm--ssttoorree prints a new  MMaaiilliinngg--LLiisstt
+       field  with  the  contents of the _T_X_T___M_A_I_L_I_N_G___L_I_S_T message.  It rejects
+       the message if there is already a MMaaiilliinngg--LLiisstt field.
+
+       eezzmmllmm--ssttoorree does not distribute bounce  messages:  if  the  environment
+       variable  SSEENNDDEERR  is  set,  and  is  either  empty or ##@@[[]], eezzmmllmm--ssttoorree
+       rejects the message.
+
+OOPPTTIIOONNSS
+       --bb     (Default.)  With the moderation request, send both  headers  and
+              body of the message to be moderated.
+
+       --BB     With  the  moderation  request, send header, but not body of the
+              message to be moderated.  This may be useful  if  moderation  is
+              used  to  allow one or a few poorly connected addresses to post,
+              and posts are very large (e.g. when the list is used as  a  dis‐
+              tribution channel of e.g. catalogs).
+
+       --ccCCrrRR  Passed  on  to  eezzmmllmm--sseenndd((11))  in case this program is executed.
+              This happens only if _d_i_r//mmooddppoosstt and  _d_i_r//ccoonnffiirrmmppoosstt  does  not
+              exist.
+
+       --mm     (Default.)  The post is sent as a MIME enclosure.
+
+       --MM     The post is appended to the message.
+
+       --ss     The  contents  of _d_i_r//mmooddppoosstt with the default _d_i_r//mmoodd// are used
+              as the base directory for self-approving users, whereas _d_i_r//mmoodd//
+              is  used  as  the  base  directory  for  the  moderators to whom
+              approval requests for other posts are sent.
+
+       --SS     (Default.)   The  contents  of  _d_i_r//mmooddppoosstt  with  the   default
+              _d_i_r//mmoodd//  are  used as the base directory for the moderators for
+              all moderator functions.
+
+       --pp     (Default.)  Anyone can post. Posts that are not from a moderator
+              are sent out to all moderators for approval. Posts that are from
+              a moderator are sent only to that moderator. This is the default
+              unless the _d_i_r//mmooddppoossttoonnllyy file exists.
+
+       --PP     Only  moderators  can  post. Those posts are sent to the posting
+              moderator for approval. Posts from other addresses are  bounced.
+              This  can  be used to relatively securely restrict posts to mes‐
+              sages originating from a given set of addresses.
+
+       --yy     Run in post confirmation mode even if _d_i_r//ccoonnffiirrmmppoosstt  does  not
+              exists.
+
+       --YY     Ignore  _d_i_r//ccoonnffiirrmmppoosstt..   (This option is useful if eezzmmllmm--ssttoorree
+              is called after post confirmation, to allow message moderation.)
+
+       --vv     Display eezzmmllmm--ssttoorree version information.
+
+       --VV     Display eezzmmllmm--ssttoorree version information.
+
+UUSSAAGGEE
+       First  of  all,  remember  that  eezzmmllmm--ssttoorree will simply execute eezzmmllmm--
+       sseenndd((11)) unless _d_i_r//mmooddppoosstt exists, _d_i_r//ccoonnffiirrmmppoosstt exists, or --yy option
+       is specified.  For the switches, use --PP for lists where only moderators
+       can post securely, i.e. they are asked to approve their own posts after
+       posting, whereas other SENDERs are rejected. For low-security more con‐
+       venient versions of this type of restriction, see eezzmmllmm--ggaattee((11)).
+
+       Normally (no switches), posts from moderators  are  sent  for  approval
+       only  to  the sending moderator, whereas posts from other addresses are
+       sent to all moderators.  Thus, you can set up an announcement  list  by
+       adding  all potential posters as moderators. However, you may also want
+       to allow others to post, as long as the posts are approved. This  would
+       be default eezzmmllmm--ssttoorree function.
+
+       To  make  the  set of ‘‘approved posters’’ who approve their own posts,
+       different from the set of  addresses  that  approve  posts  from  other
+       users,  use  the  --ss switch. Add a directory name to _d_i_r//mmooddppoosstt.  This
+       directory is the base directory of the ‘‘approved  posters’’  database.
+       Add the moderators for other posts to _d_i_r//mmoodd// using eezzmmllmm--ssuubb((11)).
+
+CCHHAARRAACCTTEERR SSEETTSS
+       If  _d_i_r//cchhaarrsseett  exists,  eezzmmllmm--ssttoorree will use the character set listed
+       for all messages. Otherwise, the default ‘‘us-ascii’’ will be used. The
+       character  set can be suffixed by ‘‘:’’ followed by a code. If the code
+       is ‘‘Q’’, outgoing messages are sent as ‘‘Quoted-Printable’’, if it  is
+       ’‘B’’ they are sent ‘‘base64’’ encoded.  Otherwise, text is sent as is.
+
+SSEEEE AALLSSOO
+       ezmlm-clean(1),   ezmlm-confirm(1),   ezmlm-manage(1),   ezmlm-make(1),
+       ezmlm-moderate(1), ezmlm(5)
+
+
+
+                                                                ezmlm-store(1)

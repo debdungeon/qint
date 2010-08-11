@@ -1,0 +1,68 @@
+
+How to use qmailmrtg7
+
+1) Install mrtg
+
+2) Make qmailmrtg7 as root. It needs to be able to read 
+   your /var/qmail/queue directories
+
+	# make
+
+3) Install it
+    # make install
+    all this does is copy qmailmrg7 to /usr/local/bin
+    
+4) Create an mrtg working directory under your web servers
+   document root.
+
+   On default apache installations I do:
+	mkdir /usr/local/apache/htdocs/qmailmrtg
+
+5) setup qmail.mrtg.cfg and index.html
+
+   copy qmail.mrtg.cfg and index.html to the 
+   directory you made in step 4.
+   
+   edit qmail.mrtg.cfg and index.html
+
+   Change: FQDN to your hostname
+   	FQDN = fully qualified domain name
+   Change: WorkDir to point to your http mrtg directory
+
+   Change the log file locations to where you store your qmail logs.
+   I put my qmail-send logs in /var/log/qmail
+   my pop3 longs in /var/log/pop3 and my smtp logs in /var/log/smtp
+
+   If you are not logging pop or smtp comment out the pop3 and smtp
+   sections with a # character at the beging of each line.
+
+   You can update the pop3 and smtp lines and set the
+   MaxBytes variable to match your -cX line in tcpserver.
+
+   You can also update the concurrency to match your 
+   concurrencyremote or concurrencylocal values. The default
+   qmail values are 20 if those files do not exist in your
+   /var/qmail/control directory
+
+6) Add a crontab line 
+   On my machine I do the following:
+	crontab -e
+	<Then I add the follownig line>
+*/5 * * * * /usr/local/bin/mrtg /usr/local/apache/htdocs/qmailmrtg7/qmail.mrtg.cfg 2>&1 > /dev/null
+
+	<That will run mrtg every 5 minutes>
+	exit the crontab editor
+
+7) run mrtg 3 times to get it setup. You will get warning messages
+   the first 3 times you run it. After that, you should not get more warnings
+	/usr/local/bin/mrtg /usr/local/apache/htdocs/qmailmrtg7/qmail.mrtg.cfg
+
+8) wait 15 minutes for the logs to start showing things
+
+9) Check out the graphs
+	http://your host name/qmailmrtg/
+
+10) Read the FAQ file 
+
+Ken Jones
+inter7.com

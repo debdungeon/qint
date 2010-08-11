@@ -1,0 +1,110 @@
+ezmlm-moderate(1)                                            ezmlm-moderate(1)
+
+
+
+NNAAMMEE
+       ezmlm-moderate  -  process moderator actions for message acceptance and
+       rejection
+
+SSYYNNOOPPSSIISS
+       eezzmmllmm--mmooddeerraattee [[--ccCCmmMMrrRRvvVV]] [[--tt _r_e_p_l_y_-_t_o_@_h_o_s_t]] _d_i_r _[ _/_p_a_t_h_/_p_r_o_g_r_a_m  _a_r_g_s
+       _._._. _]
+
+
+DDEESSCCRRIIPPTTIIOONN
+       eezzmmllmm--mmooddeerraattee reads a mail message, expecting it to contain an _-_a_c_c_e_p_t
+       or _-_r_e_j_e_c_t action request for the mailing list stored in _d_i_r_.
+
+       eezzmmllmm--mmooddeerraattee verifies the cookie sent as part of the action  request,
+       and   if   correct  attempts  to  find  the  corresponding  message  in
+       _d_i_r//mmoodd//ppeennddiinngg//.  If the message is found, it is  either  rejected  or
+       posted to the list, depending on the action request.
+
+       Posts  to  the  list are handled by piping the message to eezzmmllmm--sseenndd((11))
+       located in the ezmlm binary directory, as set at compile time. This  is
+       usually the directory that ezmlm-moderate resides in.  eezzmmllmm--sseenndd((11)) is
+       provided with _d_i_r as the first argument.
+
+       If the optional second argument is given, eezzmmllmm--mmooddeerraattee pipes the mes‐
+       sage to that program.  No additional parameters are supplied.
+
+       _d_i_r  is  passed as an argument to eezzmmllmm--sseenndd((11)), but NOT to any program
+       specified as the optional eezzmmllmm--mmooddeerraattee command line argument.
+
+       eezzmmllmm--mmooddeerraattee does not bother to correctly set sender.   eezzmmllmm--sseenndd((11))
+       doesn’t  care,  and  any other program that might be used can parse the
+       sender from the first line of the message, which is always _R_e_t_u_r_n_-_P_a_t_h_:
+       _<_a_d_d_r_e_s_s_@_h_o_s_t_._d_o_m_a_i_n_>  as build from SENDER originally passed to eezzmmllmm--
+       ssttoorree((11)).
+
+       If the message is rejected, an optional  moderator  comment  is  copied
+       into  the  notification  to the message sender.  A moderator comment is
+       any text in the _-_r_e_j_e_c_t request found between two  lines  with  ‘‘%%%’’
+       starting in one of the first 5 positions of the line. The easiest is to
+       use lines consisting of ‘‘%%%’’ only. If the characters preceeding  the
+       ‘‘%%%’’ are found at the beginning of any lines within the comment, the
+       characters are removed. This is to  appropriately  ignore  any  ‘‘quote
+       marks’’  that you mail program might place at the beginning of lines in
+       a reply.
+
+       eezzmmllmm--mmooddeerraattee messages are sent ‘‘From:’’  _l_i_s_t_-_o_w_n_e_r_@_l_i_s_t_h_o_s_t.   This
+       allows  the poster to easily complain to the owner of the list, in case
+       s/he objects. An optional ‘‘Reply-To:’’ header can  be  added  via  the
+       --rr _r_e_p_l_y_-_t_o_@_h_o_s_t.
+
+       Once  the  message  has  been  successfully accepted or rejected, it is
+       removed   from   _d_i_r//mmoodd//ppeennddiinngg//   and   a   stub   is   created    in
+       _d_i_r//mmoodd//aacccceepptteedd//  or _d_i_r//mmoodd//rreejjeecctteedd//, respectively.  This is done in
+       order to be able to notify the senders  of  later  moderation  requests
+       about the fate of the message.
+
+       A  failure to find the message in _d_i_r//mmoodd//ppeennddiinngg// is most often caused
+       by the message already having been accepted or rejected by another mod‐
+       erator.   Therefore,  eezzmmllmm--mmooddeerraattee  looks  in  _d_i_r//mmoodd//aacccceepptteedd//  and
+       _d_i_r//mmoodd//rreejjeecctteedd// for a message stub. If found, eezzmmllmm--mmooddeerraattee notifies
+       the  sender in the form of a fatal error if the fate of the message was
+       different from that intended by the current action request.  Otherwise,
+       the fate of the message is silently logged.
+
+       If  the  message  is not found, it has timed out and the message or the
+       message stub has been removed by eezzmmllmm--cclleeaann((11)).  In this case,  eezzmmllmm--
+       mmooddeerraattee  notifies the moderator of the failure, but can no longer dis‐
+       cern the fate of the original message. Again, notification  is  in  the
+       form of a fatal error from qmail.
+
+       At  the  beginning of the message, eezzmmllmm--mmooddeerraattee prints a new MMaaiilliinngg--
+       LLiisstt field with the  contents  of  the  _T_X_T___M_A_I_L_I_N_G___L_I_S_T  message.   It
+       rejects the message if there is already a MMaaiilliinngg--LLiisstt field.
+
+       eezzmmllmm--mmooddeerraattee  does not distribute bounce messages: if the environment
+       variable SSEENNDDEERR is set, and is either  empty  or  ##@@[[]],  eezzmmllmm--mmooddeerraattee
+       rejects the message.
+
+OOPPTTIIOONNSS
+       --ccCCrrRR  Passed on to ezmlm-send(1).
+
+       --mm     (Default.)  The rejected post is sent as a MIME enclosure.
+
+       --MM     The rejected post is appended to the message.
+
+       --tt _r_e_p_l_y_-_t_o_@_h_o_s_t
+              A ‘‘Reply-To: _r_e_p_l_y_-_t_o_@_h_o_s_t’’ header will be added to the moder‐
+              ation request.
+
+       --vv     Display eezzmmllmm--mmooddeerraattee version information.
+
+       --VV     Display eezzmmllmm--mmooddeerraattee version information.
+
+CCHHAARRAACCTTEERR SSEETTSS
+       If _d_i_r//cchhaarrsseett exists, eezzmmllmm--mmooddeerraattee will use the character set listed
+       for all messages. Otherwise, the default ‘‘us-ascii’’ will be used. The
+       character set can be suffixed by ‘‘:’’ followed by a code. If the  code
+       is  ‘‘Q’’, outgoing messages are sent as ‘‘Quoted-Printable’’, if it is
+       ‘‘B’’ they are sent ‘‘base64’’ encoded.  Otherwise, text is sent as is.
+
+SSEEEE AALLSSOO
+       ezmlm-clean(1), ezmlm-make(1), ezmlm-send(1), ezmlm-store(1), ezmlm(5)
+
+
+
+                                                             ezmlm-moderate(1)

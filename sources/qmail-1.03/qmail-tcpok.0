@@ -1,0 +1,23 @@
+qmail-tcpok(8)                                                  qmail-tcpok(8)
+
+
+
+NNAAMMEE
+       qmail-tcpok - clear TCP timeout table
+
+SSYYNNOOPPSSIISS
+       qqmmaaiill--ttccppookk
+
+DDEESSCCRRIIPPTTIIOONN
+       qqmmaaiill--ttccppookk  erases  qqmmaaiill--rreemmoottee’s  current  list of timeouts, so that
+       qqmmaaiill--rreemmoottee does not make any assumptions about failing addresses.
+
+       qqmmaaiill--ttccppookk must be run either as rroooott or with user id qqmmaaiillrr and group
+       id qqmmaaiill.
+
+SSEEEE AALLSSOO
+       qmail-remote(8), qmail-tcpto(8)
+
+
+
+                                                                qmail-tcpok(8)

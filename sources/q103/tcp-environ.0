@@ -1,0 +1,49 @@
+tcp-environ(5)                                                  tcp-environ(5)
+
+
+
+NNAAMMEE
+       tcp-environ - TCP-related environment variables
+
+DDEESSCCRRIIPPTTIIOONN
+       The  following  environment  variables describe a TCP connection.  They
+       are set up by ttccpp--eennvv, ttccppcclliieenntt, and ttccppsseerrvveerr.  Note  that  TTCCPPLLOOCCAALL‐‐
+       HHOOSSTT,  TTCCPPRREEMMOOTTEEHHOOSSTT,  and  TTCCPPRREEMMOOTTEEIINNFFOO can contain arbitrary charac‐
+       ters.
+
+       PROTO
+            The string TTCCPP.
+
+       TCPLOCALHOST
+            The domain name of the local host,  with  uppercase  letters  con‐
+            verted  to  lowercase.   If there is no currently available domain
+            name for the local IP address, TTCCPPLLOOCCAALLHHOOSSTT is not set.
+
+       TCPLOCALIP
+            The IP address of the local host, in dotted-decimal form.
+
+       TCPLOCALPORT
+            The local TCP port number, in decimal.
+
+       TCPREMOTEHOST
+            The domain name of the remote host, with  uppercase  letters  con‐
+            verted  to  lowercase.   If there is no currently available domain
+            name for the remote IP address, TTCCPPRREEMMOOTTEEHHOOSSTT is not set.
+
+       TCPREMOTEINFO
+            A connection-specific string, perhaps a username, supplied by  the
+            remote  host  via  931/1413/IDENT/TAP.  If the remote host did not
+            supply connection information, TTCCPPRREEMMOOTTEEIINNFFOO is not set.
+
+       TCPREMOTEIP
+            The IP address of the remote host.
+
+       TCPREMOTEPORT
+            The remote TCP port number.
+
+SSEEEE AALLSSOO
+       tcpclient(1), tcpserver(1), tcp-env(1), tcp(4)
+
+
+
+                                                                tcp-environ(5)

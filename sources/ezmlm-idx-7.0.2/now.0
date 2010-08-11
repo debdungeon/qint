@@ -1,0 +1,22 @@
+now(3)                                                                  now(3)
+
+
+
+NNAAMMEE
+       now - get current time, in seconds
+
+SSYYNNTTAAXX
+       ##iinncclluuddee <<nnooww..hh>>
+
+       datetime_sec nnooww();
+
+DDEESSCCRRIIPPTTIIOONN
+       nnooww returns the number of real-time seconds that have elapsed since the
+       end of 1969 TAI.
+
+SSEEEE AALLSSOO
+       datetime(3), time(3)
+
+
+
+                                                                        now(3)

@@ -1,0 +1,27 @@
+surf(3)                                                                surf(3)
+
+
+
+NNAAMMEE
+       surf - Simple Unpredictable Random Function
+
+SSYYNNTTAAXX
+       ##iinncclluuddee <<ssuurrff..hh>>
+
+       void ssuurrff(_o_u_t,_i_n,_s_e_e_d);
+
+       uint32 _o_u_t[8];
+       uint32 _i_n[12];
+       uint32 _s_e_e_d[32];
+
+DDEESSCCRRIIPPTTIIOONN
+       ssuurrff  changes  a  384-bit input to a 256-bit output, under control of a
+       1024-bit seed.  When the seed is secret, ssuurrff appears to  be  indistin‐
+       guishable from a completely random 384-bit-to-256-bit function.
+
+SSEEEE AALLSSOO
+       surfpcs(3)
+
+
+
+                                                                       surf(3)

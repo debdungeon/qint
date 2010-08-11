@@ -1,0 +1,40 @@
+alloc(3)                                                              alloc(3)
+
+
+
+NNAAMMEE
+       alloc - allocate memory
+
+SSYYNNTTAAXX
+       ##iinncclluuddee <<aalllloocc..hh>>
+
+       char *aalllloocc(_n_e_w);
+
+       void aalllloocc__ffrreeee(_x);
+
+       void aalllloocc__rree(&_x,_o_l_d,_n_e_w);
+
+       char *_x;
+       unsigned int _o_l_d;
+       unsigned int _n_e_w;
+
+DDEESSCCRRIIPPTTIIOONN
+       aalllloocc  allocates enough space from the heap for _n_e_w bytes of data, ade‐
+       quately aligned for any data type.  _n_e_w may  be  0.   aalllloocc  returns  a
+       pointer to the space.  If space is not available, aalllloocc returns 0, set‐
+       ting eerrrrnnoo appropriately.
+
+       aalllloocc__ffrreeee returns space to the heap.
+
+       aalllloocc__rree expands the space allocated to _x from _o_l_d bytes to _n_e_w  bytes.
+       It  allocates new space, copies _o_l_d bytes from the old space to the new
+       space, returns the old space to the heap, and changes _x to point to the
+       new  space.   It  then  returns 1.  If space is not available, aalllloocc__rree
+       returns 0, leaving the old space alone.
+
+SSEEEE AALLSSOO
+       sbrk(2), malloc(3), error(3)
+
+
+
+                                                                      alloc(3)

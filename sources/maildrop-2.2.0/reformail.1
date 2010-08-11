@@ -1,0 +1,375 @@
+.\"  <!-- $Id: reformail.sgml,v 1.5 2008/07/26 12:01:56 mrsam Exp $ -->
+.\"  <!-- Copyright 1998 - 2007 Double Precision, Inc.  See COPYING for -->
+.\"  <!-- distribution information. -->
+.\"     Title: reformail
+.\"    Author: 
+.\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
+.\"      Date: 08/24/2008
+.\"    Manual: Double Precision, Inc.
+.\"    Source: Double Precision, Inc.
+.\"
+.TH "REFORMAIL" "1" "08/24/2008" "Double Precision, Inc." "Double Precision, Inc."
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.SH "NAME"
+reformail - E-mail reformatting tool
+.SH "SYNOPSIS"
+.HP 10
+\fBreformail\fR \-s command [option...]
+.HP 10
+\fBreformail\fR \-D len \fIfilename\fR
+.HP 10
+\fBreformail\fR \-x\ \fIheader:\fR...
+.HP 10
+\fBreformail\fR \-X\ \fIheader:\fR...
+.HP 10
+\fBreformail\fR [\fIoptions\fR...]
+
+See below for additional options
+.sp
+.SH "DESCRIPTION"
+.PP
+The
+\fBreformail\fR
+program reads a message on standard input, reformats it in some way, and writes the message to standard output:
+.SS "Splitting mailboxes into individual messages"
+.PP
+The
+\fB\-s\fR
+option splits the mbox\-formatted mailbox file on standard input into individual messages\. An external program is executed for each message\. The contents of each individual message will be provided to the external program on standard input\.
+.PP
+If the
+\fBFILENO\fR
+environment variable is set to a number,
+\fBreformail\fR
+will consecutively increment
+\fBFILENO\fR
+each time the program is executed for each individual message\.
+.PP
+If
+\fBFILENO\fR
+is not set, it\'s initial value will be "000"\. If
+\fBFILENO\fR
+is set to a non\-numeric value,
+\fBFILENO\fR
+will remain unchanged\.
+.SS "Detecting duplicate messages"
+.PP
+The
+\fB\-D\fR
+option implements a simple way to delete duplicate messages in incoming mail\.
+\fIfilename\fR
+is a file that will be approximately \'\fIlen\fR\' bytes long\. This file will be used by
+\fBreformail\fR
+to save message IDs seen in recent mail\.
+\fBreformail\fR
+reads the message on standard input\. If the message has a
+Message\-ID:
+header that\'s already in the cache file,
+\fBreformail\fR
+terminates with the exit code set to 0\. Otherwise,
+\fBreformail\fR
+terminates with the exit code set to 1\.
+.SS "Extracting headers"
+.PP
+The
+\fB\-x\fR
+and
+\fB\-X\fR
+options extract the indicated headers from the message, and print them to standard output\. Multiple
+\fB\-x\fR
+and
+\fB\-X\fR
+options can be specified at the same time, and may be intermixed\.
+.PP
+The
+\fB\-x\fR
+option extracts and prints the contents of the header\. The
+\fB\-X\fR
+option prints the name of the header as well\.
+.PP
+In all other situations,
+\fBreformail\fR
+copies the message on its standard input to its standard output, reformatting the message as follows:
+.SH "OPTIONS"
+.PP
+\-a\'header: value\'
+.RS 4
+Append a custom header to the message if this header does not already exist\. If the header is either
+Message\-ID:
+or
+Resent\-Message\-ID:
+and the value is empty,
+\fBreformail\fR
+generates a (hopefully) unique message ID for you\.
+.RE
+.PP
+\-A\'header: value\'
+.RS 4
+Append a custom header to the message even if this header already exists\. If the header is either
+Message\-ID:
+or
+Resent\-Message\-ID:
+and the value is empty,
+\fBreformail\fR
+generates a (hopefully) unique message ID for you\.
+.RE
+.PP
+\-c
+.RS 4
+Concatenate multi\-line headers\. Headers split on multiple lines are combined into a single line\.
+.RE
+.PP
+\-d\fIn\fR
+.RS 4
+If n is
+1, each line will be terminated with CRLF\. If n is
+0
+(default), each line will be terminated with LF\.
+\fBreformail\fR
+reads a message with either line terminator, and will force the message to have the specified line termination\.
+.RE
+.PP
+\-f0
+.RS 4
+Remove the "From_" line from the message, if it\'s there\.
+.RE
+.PP
+\-f1
+.RS 4
+Add the "From_" line to the message, if it\'s not there\.
+\fBreformail\fR
+will attempt to generate the "From_" line from any
+Errors\-To:,
+Return\-Path:, or
+From:
+headers in the message\. "root" will be used if
+\fBreformail\fR
+is unable to determine the return address\.
+.RE
+.PP
+\-i\'\fIheader: value\fR\'
+.RS 4
+Appends a custom header to the message\. If this header already exists it is renamed by prepending "Old\-" to the name of the header\.
+.RE
+.PP
+\-I\'\fIheader: value\fR\'
+.RS 4
+Append a custom header to the message\. If this header already exists in the message, the old header is completely removed\. If the value is empty, any existing header is completely removed, and nothing gets appended\.
+.RE
+.PP
+\-k
+.RS 4
+After generating an auto\-reply header using the
+\fB\-r\fR
+option, keep the contents of the message itself in the auto\-reply\.
+.RE
+.PP
+\-p\'prefix\'
+.RS 4
+When both
+\fB\-r\fR
+and
+\fB\-k\fR
+options are used, the
+\fB\-p\fR
+option can be used to change the quoting prefix for each line from its default value of ">"\.
+.RE
+.PP
+\-P\'salutation\'
+.RS 4
+When both
+\fB\-r\fR
+and
+\fB\-k\fR
+options are used, the
+\fB\-p\fR
+option is used to specify the salutation that begins the contents of the message\. See
+\fIAUTOREPLIES\fR\&[1]
+below\.
+.RE
+.PP
+\-r
+.RS 4
+Generates headers for an auto\-reply to this message\. This option can be used to create replies to both E\-mail and Usenet messages (reformail created both the
+In\-Reply\-To:
+and
+References:
+headers)\. When generating replies to Usenet messages, you\'ll probably have to always use the
+\fB\-t\fR
+option also\.
+.RE
+.PP
+\-t
+.RS 4
+Use user\-generated headers in order to determine the return address for the
+\fB\-r\fR
+option\. Otherwise,
+\fBreformail\fR
+uses machine generated headers\.
+.RE
+.PP
+\-R oldheader: newheader:
+.RS 4
+Rename the indicated header\.
+.RE
+.PP
+\-u\'header:\'
+.RS 4
+If this header occurs multiple times in the message, remove all occurrences except the first one\.
+.RE
+.PP
+\-U\'header:\'
+.RS 4
+If this header occurs multiple times in the message, remove all occurrences except the last one\.
+.RE
+.SH "AUTOREPLIES"
+.PP
+The
+\fB\-r\fR
+option generates a set of headers for an automatic reply to the message, instead of producing just a reformatted copy of the message\. As an enhancement, the
+\fB\-r\fR
+option is smart enough to be able to properly generate an auto\-reply to either an E\-mail message, or a Usenet message (
+\fBreformail\fR
+creates both a
+In\-Reply\-To:
+and
+References:
+header)\.
+.PP
+The
+To:
+header is set to the apparent sender of the message\. To determine the sender of the message,
+\fBreformail\fR
+prefers to look at machine\-generated headers, such a
+Errors\-To:and
+Return\-Path:, instead of user\-generated headers, such as
+From:
+or
+Reply\-To:\.
+.PP
+The
+\fB\-t\fR
+option makes
+\fBreformail\fR
+use user\-generated headers instead of machine\-generated headers\.
+.PP
+The
+\fB\-ra\fR
+option copies
+To:
+headers from the original message into the auto\-reply\. The
+\fB\-rA\fR
+option copies
+To:
+and
+Cc:
+headers\.
+.PP
+Normally, the contents of the original message are removed\. The
+\fB\-k\fR
+option copies the contents of the original message, which each line prefixed by ">"\. Use the
+\fB\-p\fR
+option to specify a different prefix\.
+.PP
+The contents of the message are preceded by a salutation specified by the
+\fB\-P\fR
+option\. If not specified, the salutation defaults to "%F writes:%n"\. Within the salutation, each occurrence of
+%
+followed by another character is replaced by some information from the original message, as follows:
+.PP
+%C
+.RS 4
+Replaced by the contents of the
+X\-Newsgroup:
+header in the original message\.
+.RE
+.PP
+%d
+.RS 4
+Replaced by the contents of the
+Date:
+header in the original message\.
+.RE
+.PP
+%f
+.RS 4
+Replaced by the E\-mail address of the sender of the original message\.
+.RE
+.PP
+%F
+.RS 4
+Replaced by the name of the sender of the original message\. If no name was given, the E\-mail address is used\.
+.RE
+.PP
+%i
+.RS 4
+Replaced by the contents of the
+Message\-ID:
+header in the original message\.
+.RE
+.PP
+%n
+.RS 4
+%n will cause
+\fBreformail\fR
+to insert a line break here\.
+.RE
+.PP
+%N
+.RS 4
+Replaced by the contents of the
+Newsgroups:
+header in the original message\.
+.RE
+.PP
+%s
+.RS 4
+Replaced by the contents of any
+Subject:
+header in the original message\.
+.RE
+.SH "BUGS"
+.PP
+For the
+\fB\-a\fR,
+\fB\-A\fR, and
+\fB\-I\fR
+options, a space after the header name and the colon is considered to be a non\-empty field\.
+.PP
+Do not provide the same header to more than one family of header\-modifying options, such as
+\fB\-u\fR/\fB\-U\fR
+and
+\fB\-a\fR/\fB\-A\fR\. Doing so yields unpredictable results\. It\'s better to run
+\fBreformail\fR
+several times (use a pipe, perhaps)\.
+.SH "SEE ALSO"
+.PP
+
+\fI\fBcourier\fR(8)\fR\&[2],
+\fBsendmail\fR(8),
+\fI\fBmailbot\fR(1)\fR\&[3],
+\fI\fBmaildrop\fR(1)\fR\&[4]\.
+.SH "NOTES"
+.IP " 1." 4
+AUTOREPLIES
+.RS 4
+\%#autoreplies
+.RE
+.IP " 2." 4
+\fBcourier\fR(8)
+.RS 4
+\%courier.html
+.RE
+.IP " 3." 4
+\fBmailbot\fR(1)
+.RS 4
+\%mailbot.html
+.RE
+.IP " 4." 4
+\fBmaildrop\fR(1)
+.RS 4
+\%maildrop.html
+.RE

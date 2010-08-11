@@ -1,0 +1,193 @@
+Content-type: text/html
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML><HEAD><TITLE>Man page of qmail-qfilter</TITLE>
+</HEAD><BODY>
+<H1>qmail-qfilter</H1>
+Section: User Commands  (1)<BR><A HREF="#index">Index</A>
+<A HREF="/cgi-bin/man/man2html">Return to Main Contents</A><HR>
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>NAME</H2>
+
+qmail-qfilter - front end for qmail-queue that does filtering
+<A NAME="lbAC">&nbsp;</A>
+<H2>SYNOPSIS</H2>
+
+<B>qmail-qfilter</B>
+
+<I>filter</I>
+
+[
+<I>-- filter ...</I>
+
+]
+<A NAME="lbAD">&nbsp;</A>
+<H2>DESCRIPTION</H2>
+
+<B>qmail-qfilter</B>
+
+sends the message text through each of the filter commands named on
+the command line. 
+Each filter is run seperately, with standard input opened to the input
+email, and standard output opened to a new temporary file that will
+become the input to either the next filter, or
+<B>qmail-queue</B>.
+
+If the filter does not modify the message it passes unchanged to the
+next step.
+It also makes the envelope avaliable to each filter as
+file descriptor 3.  File descriptor 4 is opened to a new temporary file for the
+modified envelope, allowing the filter to modify the envelope or the
+message.  If the filter does not modify the envelope, the envelope
+remains unchanged for either the next filter or 
+<B>qmail-queue</B>.
+
+This provides compatibility for existing filters that do not know about
+the envelope.
+<B>qmail-qfilter</B>
+
+also opens up file descriptor 5 to a temporary file.  If this file is
+empty after all the filters have executed, its contents are read and
+used to specify a program to execute in place of
+<B>qmail-queue</B>.
+
+Each filter on the command line in seperated with
+<B>--</B>.
+
+<A NAME="lbAE">&nbsp;</A>
+<H2>RETURN VALUES</H2>
+
+Returns 51 (out of memory), 53 (write error), or 81 (internal error)
+if it can't create the temporary files or has problems executing the
+filters.
+Returns 91 (bad envelope data) if it can't read or parse the envelope
+data.
+If a filter returns anything other than 0 or 99,
+<B>qmail-qfilter</B>
+
+returns its exit code.
+If a filter returns 99,
+<B>qmail-qfilter</B>
+
+returns 0 immediately without running any other filters.
+Otherwise returns the exit code of
+<B>qmail-queue</B>.
+
+<A NAME="lbAF">&nbsp;</A>
+<H2>ENVIRONMENT</H2>
+
+For cmpatibility with previous versions,
+<B>qmail-qfilter</B>
+
+sets
+<B>QMAILUSER</B>
+
+and
+<B>QMAILHOST</B>
+
+to the user and host portions of the envelope sender address, and
+unsets
+<B>QMAILNAME</B>.
+
+It also sets
+<B>QMAILRCPTS</B>
+
+to the list of envelope recipients, each followed by a newline.
+<P>
+
+It also sets
+<B>ENVSIZE</B>
+
+to the size of the envelope,
+<B>MSGSIZE</B>
+
+to the length of the message, and
+<B>NUMRCPTS</B>
+
+to the number of recipients. These values are updated before each
+filter is run.
+<P>
+
+If
+<B>QQF_QMAILQUEUE</B>
+
+is set, its value is used in place of
+<B>qmail-queue</B>.
+
+<A NAME="lbAG">&nbsp;</A>
+<H2>SEE ALSO</H2>
+
+<A HREF="/cgi-bin/man/man2html?8+qmail-queue">qmail-queue</A>(8)
+<A NAME="lbAH">&nbsp;</A>
+<H2>NOTES</H2>
+
+<B>$QMAILQUEUE</B>
+
+is deliberately not used to override
+<B>qmail-queue</B>
+
+in order to avoid recursive loops with configurations that set
+<B>$QMAILQUEUE</B>
+
+to invoke
+<B>qmail-qfilter</B>
+
+itself.
+<A NAME="lbAI">&nbsp;</A>
+<H2>WARNINGS</H2>
+
+If you are using
+<B>qmail-inject -n</B>
+
+as one of the filters, you may want to unset
+<B>MAILUSER</B>,
+
+<B>USER</B>,
+
+and
+<B>LOGNAME</B>
+
+by using
+<B>env -u QMAILNAME -u MAILNAME -u NAME qmail-inject -n</B>
+
+as the command to invoke qmail-inject.
+Note that some the
+<B>env</B>
+
+command with some OS's doesn't support the
+<B>-u</B>
+
+option.
+<P>
+
+A message with an excessive number of recipients (more than 64K bytes of
+recipient data on Linux) will cause execution of the filter programs to
+fail, and for the message to be rejected.
+<P>
+
+The same temporary file is reused for file descriptor 5 for each filter.
+Make sure each filter writes a trailing ASCII NUL byte following the
+program name, as multiple filters could otherwise overwrite the value in
+undesireable ways.
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">NAME</A><DD>
+<DT><A HREF="#lbAC">SYNOPSIS</A><DD>
+<DT><A HREF="#lbAD">DESCRIPTION</A><DD>
+<DT><A HREF="#lbAE">RETURN VALUES</A><DD>
+<DT><A HREF="#lbAF">ENVIRONMENT</A><DD>
+<DT><A HREF="#lbAG">SEE ALSO</A><DD>
+<DT><A HREF="#lbAH">NOTES</A><DD>
+<DT><A HREF="#lbAI">WARNINGS</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/cgi-bin/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 15:21:14 GMT, December 26, 2009
+</BODY>
+</HTML>

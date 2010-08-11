@@ -1,0 +1,80 @@
+ezmlm-receipt(1)                                              ezmlm-receipt(1)
+
+
+
+NNAAMMEE
+       ezmlm-receipt - handle sublist replies at the main list
+
+SSYYNNOOPPSSIISS
+       eezzmmllmm--rreecceeiipptt [ --ddDD ] _d_i_r
+
+DDEESSCCRRIIPPTTIIOONN
+       eezzmmllmm--rreecceeiipptt handles mail from sublists of the main list stored in _d_i_r
+       and, if it exists, the associated main digest list.   eezzmmllmm--rreecceeiipptt  is
+       used  for main list with only sublists as subscribers. It is not useful
+       for normal mailing lists.
+
+       eezzmmllmm--rreecceeiipptt is normally invoked from a ..qqmmaaiill file.  It reads a  mail
+       message  from  its standard input, and a mail envelope from the SSEENNDDEERR,
+       LLOOCCAALL, and HHOOSSTT environment variables.
+
+       eezzmmllmm--rreecceeiipptt has two functions. It takes the place of eezzmmllmm--rreecceeiipptt((11))
+       for  main lists that have only sublists as subscribers.  Bounces do not
+       lead to removal of  the  bouncing  address.   eemmzzllmm--rreecceeiipptt  saves  the
+       bounce,  and  logs the event to the mail log.  eezzmmllmm--rreecceeiipptt also saves
+       the bounce to _d_i_r//bboouunnccee//ddnnnnnn..pppppp where nnnnnn is a time stamp and pppppp the
+       PID  of the process. A maximum of 50 bounces are saved. Further bounces
+       are discarded until room is made in the bounce  directory  by  manually
+       removing  files.  If the list uses and SQL database, the even is logged
+       to the _mlog  table  instead,  and  only  if  the  distribution  cookie
+       matches. The bounce is still saved, but only if it contained a matching
+       distribution cookie.
+
+       eezzmmllmm--rreecceeiipptt also handles feedback messages from  the  sublist.  These
+       are  used  to  monitor  that  the sublist is able to send out messages.
+       Receipt of feedback messages is logged to the mail log.   If  the  list
+       uses  and  SQL database, the even is logged to the _mlog table instead,
+       and only if the distribution cookie matches.
+
+OOPPTTIIOONNSS
+       --dd     eezzmmllmm--rreecceeiipptt will assume the message  is  for  a  digest  list.
+              Normally,  eezzmmllmm--rreecceeiipptt  will  autodetect  this from the bounce
+              address. Autodetection makes  eezzmmllmm--rreecceeiipptt  less  flexible  and
+              will be removed in future versions.
+
+       --DD     eezzmmllmm--rreecceeiipptt  will assume that the bounce is for a normal (non-
+              digest) list.  Normally, eezzmmllmm--rreecceeiipptt will autodetect this from
+              the bounce address. Autodetection makes eezzmmllmm--rreecceeiipptt less flex‐
+              ible and will be removed in future versions.  --DD will become the
+              default.
+
+AADDDDRREESSSSEESS
+       eezzmmllmm--rreecceeiipptt handles mail sent to any of the following addresses:
+
+       _l_o_c_a_l--rreettuurrnn--
+              Trash.  A help message or subscription acknowledgment bounced.
+
+       _l_o_c_a_l--rreettuurrnn--_m_s_g--_b_o_x==_d_o_m_a_i_n
+              Distribution  bounce.  Message number _m_s_g was lost on the way to
+              the sublist _b_o_x@@_d_o_m_a_i_n.
+
+       _l_o_c_a_l--rreettuurrnn--_m_s_g--
+              Pre-VERP distribution bounce, in QSBMF format.   Message  number
+              _m_s_g  was  lost on the way to one or more sublists; eezzmmllmm--rreecceeiipptt
+              will parse the bounce to figure out the addresses.
+
+       _l_o_c_a_l--rreettuurrnn--rreecceeiipptt
+              Feedback message from a sublist.  eezzmmllmm--rreecceeiipptt will figure  out
+              message number and sublist address from the envelope sender.
+
+              For  all  the  above addresses if, _l_o_c_a_l is followed by _-_d_i_g_e_s_t,
+              messages are assumed to relate  to  the  digest  list,  and  are
+              stored in _d_i_r//ddiiggeesstt//bboouunnccee rather than in _d_i_r //bboouunnccee ..
+
+SSEEEE AALLSSOO
+       ezmlm-manage(1),  ezmlm-make(1), ezmlm-return(1), ezmlm-send(1), ezmlm-
+       sub(1), ezmlm-unsub(1), ezmlm-weed(1), ezmlm(5), qmail-command(8)
+
+
+
+                                                              ezmlm-receipt(1)

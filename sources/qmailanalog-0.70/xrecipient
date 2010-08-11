@@ -1,0 +1,8 @@
+#!/bin/sh
+# WARNING: This file was auto-generated. Do not edit!
+
+awk '
+  /^d/ {
+    if ($8 == x) print
+  }
+' x="$1"

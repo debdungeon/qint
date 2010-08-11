@@ -1,0 +1,143 @@
+if ${ECHO} -n | grep n > /dev/null 2>&1; then
+	prompt() {
+		${ECHO} "$*\c"
+	}
+else
+	prompt() {
+		${ECHO} -n "$*"
+	}
+fi
+
+if ps auxw > /dev/null 2>&1; then
+	PS='ps auxw'
+else
+	PS='ps -ef'
+fi
+
+if (whoami) > /dev/null 2>&1; then
+	USER=`whoami`
+elif (id) > /dev/null 2>&1; then
+	USER=`id | cut -d'(' -f2 | cut -d')' -f1`
+# the remaining two tests work only if "su -" was used
+# perhaps delete them
+elif (logname) > /dev/null 2>&1; then
+	USER=`logname`
+elif (who am i) > /dev/null 2>&1; then
+	USER=`who am i | cut -d' ' -f1 | cut -d'!' -f2`
+else
+	${ECHO} "Could not determine current user name, using 'nobody'"
+	USER='nobody'
+fi
+
+SQLUSER=''	# must be empty
+# Set if we've found bug from old version
+BUG=''
+# Use subdb plugin
+SUBDB=''
+# process arguments
+
+while [ ! -z "$1" ]; do		# not everyone has getopt :-(
+	case "$1" in
+		-s)
+			SUBDB="$2"; shift; shift;;
+		-d)
+			DB="$2"; shift; shift;;
+		-h)
+			SQLHOST="$2"; shift; shift;;
+		-p)
+			PW="$2"; shift; shift;;
+		-u)
+			SQLUSER="$2"; shift; shift;;
+		-t)
+			TABLE="$2"; shift; shift;;
+		--)
+			shift; break;;
+		*)
+			${ECHO} "$i"
+			${ECHO} "Usage: ezmlm-test [-/]" \
+				"[-s plugin [-p sqlpassword] [-u sqluser] [-d sqldb]" \
+				"[-t sqltable] [-h sqlhost]]"
+			${ECHO}
+			${ECHO} "args have to be separated from switches!"
+			${ECHO}
+			${ECHO} "defaults: -s [empty - use standard subdb]"
+			${ECHO} "          -d ezmlm"
+			${ECHO} "          -h [empty => plugin default]"
+			${ECHO} "          -p [empty]"
+			${ECHO} "          -s 1 [run test from beginning]"
+			${ECHO} "          -t list"
+			${ECHO} "          -u eztest"
+			${ECHO}
+			exit 99;;
+	esac
+done
+
+LOC="xyzzy-$LIST"
+# calculate position in LOCAL where [normally] default starts
+LOCLEN=`${ECHO} "$LOC-" | ${WC} -c | ${SED} 's/ //g'`
+REJLEN=`${ECHO} "$LOC-reject-" | ${WC} -c | ${SED} 's/ //g'`
+ACCLEN=`${ECHO} "$LOC-accept-" | ${WC} -c | ${SED} 's/ //g'`
+
+DOT="$DIR/dot.qmail-$LIST"
+
+HOST="example.com"
+
+# test addresses.
+SND="sender"
+MOD="moderator"
+DIG="digest"
+MAN="manager"
+BNC="bouncer"
+
+if [ ! -x "${EZBIN}/ezmlm-make" ]; then
+	${ECHO} "can't execute ${EZBIN}/ezmlm-make. Most likely, you"
+	${ECHO} "doen't have execute permission to files in directory"
+	${ECHO} "``${EZBIN}''. Adjust permissions or execute the script"
+	${ECHO} "as a user with the appropriate permissions."
+	exit 99
+fi
+
+########################
+# remove old test list #
+########################
+if [ -n "$SUBDB" ]; then
+	${EZBIN}/ezmlm-unsub "$DIR" digest "${MAN}@$HOST" "${DIG}@$HOST" \
+		>"$ERR" 2>&1
+	${EZBIN}/ezmlm-unsub "$DIR" mod "${MOD}@$HOST" \
+		>"$ERR" 2>&1
+	${EZBIN}/ezmlm-unsub "$DIR" allow "aaa@bbb" "ccc@ddd" "eee@fff" \
+		>"$ERR" 2>&1
+fi
+${RM} -rf "$DIR" "$ERR" >/dev/null 2>&1
+test -e "$DIR" \
+&& fatal "Could not remove old list"
+
+#################
+# check version #
+#################
+
+THIS_VER=`${EZBIN}/ezmlm-make -V 2>&1` || \
+	fatal "This program only works with ezmlm-idx"
+THIS_VER=`${ECHO} "$THIS_VER" | cut -d' ' -f3`
+if [ "$THIS_VER" != "$VER" ]; then
+  ${ECHO} "Warning: These tests were built for $VER but the programs being"
+  ${ECHO} "         tested are version $THIS_VER.  Some errors may result from"
+  ${ECHO} "         this version mis-match."
+fi
+
+# Set BADUNSET if unset doesn't do the job
+
+A='a'
+export A
+${UNSET} A
+[ -z "$A" ] || BADUNSET='y'
+
+${UNSET} DEFAULT
+
+QMAILHOME="$DIR"
+QMAILQUEUE="$QQTEST"
+EZMLM_BIN="$EZBIN"
+EZMLM_ETC="$EZBIN"/lang
+EZMLM_LIB="$EZBIN"
+
+export DEFAULT LOCAL QMAILHOME QMAILQUEUE SENDER EZMLM_BIN EZMLM_ETC EZMLM_LIB

@@ -1,0 +1,9 @@
+#!/bin/sh
+# WARNING: This file was auto-generated. Do not edit!
+echo 'Distribution of ddelays for successful deliveries
+
+Meaning of each line: The first pct% of successful deliveries
+all happened within doneby seconds. The average ddelay was avg.
+'
+( echo doneby avg pct
+/usr/local/qmailanalog/bin/ddist ) | /usr/local/qmailanalog/bin/columnt

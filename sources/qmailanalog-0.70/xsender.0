@@ -1,0 +1,20 @@
+xsender(1)                                                          xsender(1)
+
+
+
+NNAAMMEE
+       xsender - locate all messages from one sender
+
+SSYYNNTTAAXX
+       xxsseennddeerr _s_e_n_d_e_r
+
+DDEESSCCRRIIPPTTIIOONN
+       xxsseennddeerr  reads message lines and delivery lines printed by mmaattcchhuupp.  It
+       prints the lines that involve messages with return path _s_e_n_d_e_r.
+
+SSEEEE AALLSSOO
+       matchup(1)
+
+
+
+                                                                    xsender(1)

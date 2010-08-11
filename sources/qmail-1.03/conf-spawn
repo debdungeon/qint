@@ -1,0 +1,7 @@
+120
+
+This is a silent concurrency limit. You can't set it above 65000. Many
+systems have a "hidden limit" of 509, because a single process cannot
+have more than 1023 handles open at once, and each concurrent delivery
+uses two handles. If you set it any higher than your system's "hidden
+limit", qmail will refuse to compile.

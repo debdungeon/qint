@@ -1,0 +1,72 @@
+ezmlm-dispatch(1)                                            ezmlm-dispatch(1)
+
+
+
+NNAAMMEE
+       ezmlm-dispatch - Dispatch an email to other ezmlm programs
+
+SSYYNNOOPPSSIISS
+       eezzmmllmm--ddiissppaattcchh [ --vvVV ] _d_i_r [ _l_i_s_t ]
+
+DDEESSCCRRIIPPTTIIOONN
+       eezzmmllmm--ddiissppaattcchh  is  used in a _._q_m_a_i_l_-_d_e_f_a_u_l_t file to handle delivery to
+       multiple mailing lists in a directory.  It assumes each list  has  been
+       created  in  a directory of the same name as the list’s local name.  It
+       examines the value of _$_D_E_F_A_U_L_T set by qqmmaaiill--llooccaall  to  determine  which
+       list  the  message is destined to, and what file within the list direc‐
+       tory is to control the message delivery.
+
+              If the address matches:     Delivery is handled by:
+              LIST                        LLIISSTT//eeddiittoorr
+              LIST-owner                  LLIISSTT//oowwnneerr
+              LIST-digest-owner           LLIISSTT//oowwnneerr
+              LIST-digest-return-*        LLIISSTT//bboouunncceerr
+              LIST-return-*               LLIISSTT//bboouunncceerr
+              LIST-confirm-*              LLIISSTT//ccoonnffiirrmmeerr
+              LIST-discard-*              LLIISSTT//ccoonnffiirrmmeerr
+              LIST-accept-*               LLIISSTT//mmooddeerraattoorr
+              LIST-reject-*               LLIISSTT//mmooddeerraattoorr
+              LIST-*                      LLIISSTT//mmaannaaggeerr
+
+       If the optional _l_i_s_t argument  is  present,  it  names  the  list,  and
+       _$_D_E_F_A_U_L_T  is  only  examined  for what file is to control the delivery.
+       This can be used to have eezzmmllmm--ddiissppaattcchh control  the  operations  of  a
+       single list.
+
+OOPPTTIIOONNSS
+       --vv     Display eezzmmllmm--ddiissppaattcchh version information.
+
+       --VV     Display eezzmmllmm--ddiissppaattcchh version information.
+
+RREETTUURRNN VVAALLUUEE
+       eezzmmllmm--ddiissppaattcchh  exits with the first non-zero exit code from any of the
+       programs it executes, or zero otherwise.
+
+SSEEEE AALLSSOO
+       ezmlm-make(1), ezmlm-manage(1), ezmlm-send(1)
+
+CCAAVVEEAATTSS
+       Unlike qqmmaaiill--llooccaall, eezzmmllmm--ddiissppaattcchh  changes  directory  into  the  list
+       directory  before  executing any commands.  Programs which expect to be
+       executed from the starting directory will fail.  No ezmlm-idx  programs
+       are impacted by this.
+
+       For  security  reasons,  eezzmmllmm--ddiissppaattcchh  does not allow delivery to any
+       address with a "/" in it.  This will break subscribe (and similar) con‐
+       firmations for senders that use email addresses with a "/" in them.
+
+       In  the case of eezzmmllmm--ddiissppaattcchh handling a single list, it is not possi‐
+       ble to use the _._q_m_a_i_l_-_L_I_S_T_-_d_e_f_a_u_l_t file hand off control to the  eeddiittoorr
+       file  for  actual list delivery rather than administrative messages.  A
+       second _._q_m_a_i_l_-_L_I_S_T file will still be necessary in this case.
+
+RREESSTTRRIICCTTIIOONNSS
+       eezzmmllmm--ddiissppaattcchh does not support delivery to mbox files or maildirs.
+
+       eezzmmllmm--ddiissppaattcchh does not set _$_E_X_T, _$_E_X_T_2, _$_E_X_T_3, or _$_E_X_T_4 as qqmmaaiill--llooccaall
+       does when doing local deliveries.  None of the ezmlm programs use these
+       environment variables.
+
+
+
+                                                             ezmlm-dispatch(1)

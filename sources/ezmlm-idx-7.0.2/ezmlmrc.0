@@ -1,0 +1,312 @@
+ezmlmrc(5)                                                          ezmlmrc(5)
+
+
+
+NNAAMMEE
+       ezmlmrc - ezmlm-make configuration file
+
+SSYYNNOOPPSSIISS
+       ezmlmrc
+
+DDEESSCCRRIIPPTTIIOONN
+       eezzmmllmmrrcc  is  a  file  that  configures eezzmmllmm--mmaakkee((11)) for setting up new
+       lists.  eezzmmllmmrrcc if a plain text with four types of tags. All  start  in
+       the  first  position of the line.  No other text is allowed on the same
+       line. For security reasons, no periods are allowed anywhere in  a  tag.
+       Any  line with a ‘‘#’’ in position 1 is ignored, as is any text preced‐
+       ing the first tag.
+
+       The first line in eezzmmllmmrrcc is unique. It should start in position 1 with
+       ‘‘x.yz’’,  where  ‘‘x’’ is the major version number, ‘‘y’’ a minor ver‐
+       sion number, and ‘‘z’’ a bugfix  version  number.   eezzmmllmm--mmaakkee((11))  will
+       print  a  warning message if it is used with an eezzmmllmmrrcc file that lacks
+       the version identifier, or with an eezzmmllmmrrcc  file  that  has  a  version
+       identifier  that  differs in either major or minor version numbers from
+       the eezzmmllmm--mmaakkee version.
+
+       The eezzmmllmmrrcc file is processed top down. Text preceding the first tag is
+       ignored.   Subsequently, one and only one file is open for writing. Any
+       text encountered in eezzmmllmmrrcc is copied to that file as  is  with  a  few
+       substitutions  (see  below).  Text following conditional tags is copied
+       only if the condition is met. A file is automatically closed when a new
+       file  is  opened.  Opening  a file overwrites any preexisting file with
+       that name.  Tags are:
+
+
+       <<//ffiilleennaammee##aaII//>>
+              The following text will be copied to _d_i_r//ffiilleennaammee if the options
+              specified  after the ‘‘#’’ are active, in this case _a_r_c_h_i_v_e_d and
+              not _i_n_d_e_x_e_d.  Any number of flags can be specified. This is used
+              to  adapt the files and messages to the type of list created. If
+              no flags are used, the ‘‘#’’ can be omitted. If the file name is
+              the same as the previous tag, or if it is omitted, the text will
+              be added to the previous file.  When a new file  is  opened  the
+              previous  file is closed. Attempts to add more text to a already
+              closed file overwrites its contents.  For  all  letter  switches
+              (except --ccCCvvVV), upper and lower case tags are opposite and mutu‐
+              ally exclusive. Thus, if --gg is specified, --GG is not set  and  if
+              --GG is set, --gg is not.
+
+              The tag ##EE has special meaning. It is false if the list is being
+              edited, e.g.  eezzmmllmm--mmaakkee --ee or ++, but true if  switches  --eeee  or
+              --++++  are  used,  or  if eezzmmllmm--mmaakkee _l_o_c_a_l is specified. Thus, for
+              normal edits with unchanged list name, the files tagged with  ##EE
+              are  not  overwritten (preserving manual customizations), but if
+              the list name changes or if explicitly specified by --eeee  or  --++++
+              the ##EE switch is ignored.
+
+
+       <<//ffiilleennaammee##55^^ii//>>
+              This is an alternative way of specifying ‘‘if switch -5 is spec‐
+              ified and the -i switch is not specified’’.  ‘‘^’’  is  used  as
+              ‘‘not’’.
+
+       <<//--ffiilleennaammee##eeAA//>>
+              _d_i_r//ffiilleennaammee  will be erased, if the options after the ‘‘#’’ are
+              active, in this case _n_o_t _a_r_c_h_i_v_e_d and _e_d_i_t.  An  alternative  to
+              specify  that  a flag, e.g. ‘‘4’’ should not be active is to use
+              ‘‘^4’’.
+
+       <<//++ddiirreeccttoorryy##aaII//>>
+              The directory ‘‘directory’’ is created if  the  flags  specified
+              are  active, in this case _a_r_c_h_i_v_e_d and not _i_n_d_e_x_e_d.  If no flags
+              are specified, the ‘‘#’’ can be omitted.
+
+       <<//::lliinnkk//ddiirreeccttoorryy##aaII//>>
+              ddoott_-_l_i_n_k is symlinked to _d_i_r_/_d_i_r_e_c_t_o_r_y if  the  flags  specified
+              are  active, in this case _a_r_c_h_i_v_e_d and not _i_n_d_e_x_e_d.  If no flags
+              are specified, the ‘‘#’’ can be omitted.
+
+       _e_z_m_l_m_-_m_a_k_e substitutes the following tags anywhere  within  files  when
+       they  are  (re)created.   Other  tags  of this format are copied to the
+       files as is.
+
+       <<##BB##>>  The path to the eezzmmllmm--iiddxx binaries.
+
+       <<##CC##>>  _d_i_g_e_s_t_c_o_d_e
+
+       <<##DD##>>  _d_i_r
+
+       <<##FF##>>  The  alphanumeric  flags  given   to   _e_z_m_l_m_-_m_a_k_e   concatenated
+              together.
+
+       <<##HH##>>  _h_o_s_t
+
+       <<##LL##>>  _l_o_c_a_l
+
+       <<##TT##>>  _d_o_t
+
+       <<##00##>>  The argument for _-_0.
+
+       <<##11##>>  The part of _d_o_t between the first two hyphens (if any).
+
+       <<##22##>>  The part of _d_o_t between the second and third hyphen (if any).
+
+       <<##33##>>..<<##99##>>
+              The argument to _-_3.._-_9.
+
+       Before  the template file is processed, eezzmmllmm--mmaakkee will create the list
+       directory.  eezzmmllmm--mmaakkee will also create _d_i_r//kkeeyy.
+
+DDEESSCCRRIIPPTTIIOONN OOFF EEZZMMLLMMRRCC
+       The ezmlmrc file is preconfigured to act upon eezzmmllmm--mmaakkee((11)) switches to
+       produce the results as described in the eezzmmllmm--mmaakkee((11)) man page.  A num‐
+       ber of files are created via eezzmmllmmrrcc  independently  of  any  switches.
+       These are _d_i_r//hheeaaddeerraadddd adding ‘‘Precedence: bulk’’ and ‘‘X-No-Archive:
+       yes’’ to outgoing messages,  and  _d_i_r//hheeaaddeerrrreemmoovvee  removing  ‘‘Return-
+       Path’’,  ‘‘Return-Receipt-To’’,  ‘‘Content-length’’, and ‘‘Precedence’’
+       from list messages.  These files are not  overwritten  when  lists  are
+       edited.
+
+       _d_i_r//bboouunncceerr  and  _d_i_r//ddiiggeesstt//bboouunncceerr are set up to invoke eezzmmllmm--wweeeedd((11))
+       and eezzmmllmm--rreettuurrnn((11)) to handle bounces.  In addition to switch-dependent
+       lines,  an invocation of eezzmmllmm--wwaarrnn((11)) is placed at the end of _d_i_r//eeddii‐‐
+       ttoorr, _d_i_r//mmaannaaggeerr, and _d_i_r//oowwnneerr to process the contents of  the  bounce
+       directory.   eezzmmllmm--rreejjeecctt((11))  is placed first in _d_i_r//eeddiittoorr (unless the
+       --00 mmaaiinnlliisstt@@mmaaiinnhhoosstt switch is used) to reject undesirable messages.
+
+       Below is a description of the switches and the  consequences  the  have
+       for  list  creation  with  the  standard eezzllmmrrcc file.  eemmzzllmm--mmaakkee((11)) by
+       default sets the --aa, and --pp switches.
+
+       --aa     _d_i_r//aarrcchhiivveedd and _d_i_r//iinnddeexxeedd are  created.   _d_i_r//tteexxtt//bboottttoomm  is
+              adjusted   to  mention  archive  access.   --AA  _d_i_r//aarrcchhiivveedd  and
+              _d_i_r//iinnddeexxeedd are removed.
+
+       --bb     Block archive.  _d_i_r//mmooddggeettoonnllyy is created to allow only  modera‐
+              tors archive access.
+
+       --BB     _d_i_r//mmooddggeettoonnllyy is removed.
+
+       --dd     _d_i_r//ddiiggeesstteedd is created, signalling to programs to send digests.
+
+       --DD     _d_i_r//ddiiggeesstteedd is removed, signalling to not send digests.
+
+       --ff     The text ‘‘[_l_o_c_a_l]’’ is placed in _d_i_r//pprreeffiixx  resulting  in  the
+              text being used as the list’s subject index.
+
+       --FF     _d_i_r//pprreeffiixx is removed.
+
+       --gg     _d_i_r//ssuubbggeettoonnllyy is created, signalling eezzmmllmm--ggeett((11)) to only allow
+              subscribers to access the archive.
+
+       --GG     _d_i_r//ssuubbggeettoonnllyy is removed, signalling eezzmmllmm--ggeett((11))  That  anyone
+              can access the archive if archive (access) in general is enabled
+              (see  --pp  for  ‘‘public’’,  --aa  for  ‘‘archived’’,  and  --ii  for
+              ‘‘indexed’’.
+
+       --ii     _d_i_r//tthhrreeaaddeedd  is  created  to  signal eezzmmllmm--aarrcchhiivvee((11)) to run as
+              appropriate after messages are posted.  This sets up the  cross-
+              reference for eezzmmllmm--ccggii((11)) WWW access.
+
+       --II     _d_i_r//tthhrreeaaddeedd is removed.
+
+       --jj     _d_i_r//nnoouunnssuubbccoonnffiirrmm  is  created to signal eezzmmllmm--mmaannaaggee((11)) to not
+              require confirmation after unsubscription requests.
+
+       --JJ     _d_i_r//nnoouunnssuubbccoonnffiirrmm is removed.
+
+       --ll     _d_i_r//mmooddccaannlliisstt is created to  signal  eezzmmllmm--mmaannaaggee((11))  to  allow
+              retrieval  of subscriber list and list log by remote administra‐
+              tors.  NNOOTTEE: This is pointless, unless the list is also  set  up
+              for remote administration with the --rr switch.
+
+       --LL     _d_i_r//mmooddccaannlliisstt  is removed, disallowing access to the subscriber
+              list under any circumstances.
+
+       --mm     Message  moderation.   _d_i_r//mmooddppoosstt  is  created,  which  signals
+              eezzmmllmm--ssttoorree((11))   to  store  messages  and  forward  confirmation
+              requests to the moderators.  Special action is taken when the --mm
+              switch  is  combined  with --uu.  In this case, the handling is as
+              for the --mm switch alone, but _d_i_r//eeddiittoorr is set  up  with  eezzmmllmm--
+              ggaattee((11)) which will fork eezzmmllmm--sseenndd((11)) for posts with an envelope
+              sender that is a subscriber  or  a  moderator,  and  for  eezzmmllmm--
+              ssttoorree((11))  for posts with other envelope senders. The consequence
+              is that posts from  subscribers  (with  the  usual  caveats  for
+              SENDER checks) are posted directly, whereas other posts are sent
+              for moderation.
+
+       --MM     _d_i_r//mmooddppoosstt is removed, undoing the changes above.
+
+       --nn     Allow text file editing.  _d_i_r//mmooddccaanneeddiitt is created to signal to
+              allow  remote  admins to via E-mail edit the files in _d_i_r//tteexxtt//.
+              NNOOTTEE: This is pointless, unless the list  is  also  set  up  for
+              remote administration with the --rr switch.
+
+       --NN     _d_i_r//mmooddccaanneeddiitt  is  removed  to  disallow  editing  of  files in
+              _d_i_r//tteexxtt.
+
+       --oo     _d_i_r//mmooddppoossttoonnllyy is created to signal  eezzmmllmm--ssttoorree((11))  ro  reject
+              posts from non-moderators on moderated lists rather than sending
+              them for moderation. This is for some announcement lists.
+
+       --OO     _d_i_r//mmooddppoossttoonnllyy is removed.
+
+       --pp     Public.  _d_i_r//ppuubblliicc is created, signaling eezzmmllmm--ggeett((11)) to  allow
+              archive  retrieval  attempts,  and eezzmmllmm--mmaannaaggee((11)) to allow sub‐
+              scription and unsubscription attempts.
+
+       --PP     Not public.  _d_i_r//ppuubblliicc is removed.
+
+       --rr     Remote admin.  _d_i_r//rreemmoottee is created to  signal  eezzmmllmm--mmaannaaggee((11))
+              to allow remote administration of mailing lists.
+
+       --RR     _d_i_r//rreemmoottee is removed.
+
+       --ss     Subscription moderation.  _d_i_r//mmooddssuubb is created to signal eezzmmllmm--
+              mmaannaaggee((11)) to forward confirmed subscription requests to the mod‐
+              erators  for approval.  The unsubscription process is unchanged.
+
+       --SS     _d_i_r//mmooddssuubb is removed.
+
+       --tt     _d_i_r//aaddddttrraaiilleerr is created to signal eezzmmllmm--sseenndd((11)) to include the
+              trailer  portions  in _d_i_r//tteexxtt//ttrraaiilleerr in messages posted to the
+              list.
+
+       --TT     _d_i_r//aaddddttrraaiilleerr is removed.
+
+       --uu     Subscriber-only posts.   _d_i_r//ssuubbppoossttoonnllyy  is  created  to  allow
+              posts  only  from  subscribers.  eezzmmllmm--cchheecckkssuubb((11)) is checks the
+              envelope sender against the subscriber  address  databases.   If
+              the  sender  is not found, the post is rejected. This results in
+              subscriber-only posts, with the usual caveats for SENDER checks.
+              Special  action is taken when the --uu switch is combined with --mm.
+              In this case, the setup is as  for  the  --mm  switch  alone,  but
+              eezzmmllmm--ggaattee((11)) will execute eezzmmllmm--sseenndd((11)) for posts with an enve‐
+              lope sender that is a subscriber or a moderator, and will other‐
+              wise  moderate  the message.  The consequence is that posts from
+              subscribers (with the  usual  caveats  for  SENDER  checks)  are
+              posted  directly,  whereas  other posts are sent for moderation.
+              Also, _d_i_r//nnoorreettuurrnnppoossttss is  created  to  silently  drop  ignored
+              posts rather than returning them to their senders.
+
+       --UU     _d_i_r//ssuubbppoossttoonnllyy iiss rreemmoovveedd..
+
+       --ww     _d_i_r//nnoowwaarrnn is created to signal eezzmmllmm--wwaarrnn((11)) to do no work.
+
+       --WW     _d_i_r//nnoowwaarrnn is removed.
+
+       --xx     _d_i_r//mmiimmeerreemmoovvee  is  created  containing many MIME types not rou‐
+              tinely supported.  MIME types  in  _d_i_r//mmiimmeerreemmoovvee  aarree  ssttrriippppeedd
+              ffrroomm mmuullttiippaarrtt ppoossttss bbeeffoorree aarrcchhiivviinngg and distribution.  To view
+              the list of MIME types, see eezzmmllmmrrcc or create a  list  and  view
+              _d_i_r//mmiimmeerreemmoovvee.   In  addition _d_i_r//mmssggssiizzee is created containing
+              ‘‘30000:2’’ causing eezzmmllmm--rreejjeecctt((11)) to  reject  all  posts  that
+              have  a  body  of  less  than 2 bytes (empty) or more than 30000
+              bytes (too large).
+
+       --yy     Confirm postings.  _d_i_r//ccoonnffiirrmmppoosstt is created to  signal  eezzmmllmm--
+              ssttoorree((11))  to  send  a  confirmation  probe to the sender of each
+              post.
+
+       --YY     _d_i_r//ccoonnffiirrmmppoosstt is removed.
+
+       --00 _m_a_i_n_l_i_s_t_@_m_a_i_n_h_o_s_t
+              _d_i_r//ssuubblliisstt is created with  ‘‘mainlist@mainhost’’.   ddiirr//eezzmmllmm--
+              rreejjeecctt  is  not  used  in _d_i_r//eeddiittoorr to avoid rejecting messages
+              that the main list has accepted.
+
+       --33 _f_r_o_m_a_r_g
+              The list is set up to add ‘‘from’’  to  _d_i_r_/_f_B_/_h_e_a_d_e_r_r_e_m_o_v_e  and
+              FFrroomm::  _f_r_o_m_a_r_g  to  _d_i_r//hheeaaddeerraadddd.   This  replaces the incoming
+              ‘‘From:’’ header as desirable for some announcement lists.
+
+       --44 _t_s_t_d_i_g_o_p_t_s
+              _t_s_t_d_i_g_o_p_t_s will be used as  the  arguments  for  in  _d_i_r//eeddiittoorr.
+              This  must  be  both switches and their arguments for eezzmmllmm--ttsstt‐‐
+              ddiigg((11)).  NNOOTTEE: This is pointless, unless the list is also set up
+              for digests with the --dd switch.
+
+       --55 _o_w_n_e_r_@_o_w_n_e_r_h_o_s_t
+              _o_w_n_e_r_@_o_w_n_e_r_h_o_s_t  _i_s  _p_l_a_c_e_d _i_n _d_i_r//oowwnneerr so that mail to ‘‘list-
+              owner’’ is forwarded to that address, rather than  being  stored
+              in  _d_i_r//MMaaiillbbooxx.   If  the address does not start with an under‐
+              score or alphanumeric character, the argument must start with an
+              ampersand.
+
+       --66 _p_l_u_g_i_n_:_h_o_s_t_:_p_o_r_t_:_u_s_e_r_:_p_a_s_s_w_o_r_d_:_d_a_t_a_b_:_t_a_b_l_e
+              The  string,  followed  by the list name is placed in _d_i_r//ssuubbddbb,
+              indicating what subscriber database  plugin  and  parameters  to
+              use.
+
+       --77 _/_m_s_g_m_o_d_P_a_t_h
+              _m_s_g_m_o_d_P_a_t_h  is  placed  in _d_i_r//mmooddppoosstt is the list is set up for
+              message moderation with the --mm switch.
+
+       --88 _/_s_u_b_m_o_d_P_a_t_h
+              _s_u_b_m_o_d_P_a_t_h is placed in _d_i_r//mmooddssuubb is the list  is  set  up  for
+              subscription moderation with the --ss switch.
+
+       --99 _/_r_e_m_o_t_e_A_d_m_i_n_P_a_t_h
+              _r_e_m_o_t_e_A_d_m_i_n_P_a_t_h  is  placed  in _d_i_r//rreemmoottee is the list is set up
+              for remote administration with the --rr switch.
+
+SSEEEE AALLSSOO
+       ezmlm(5),  ezmlm-checksub(1),  ezmlm-clean(1),  ezmlm-gate(1),   ezmlm-
+       get(1),  ezmlm-issubn(1),  ezmlm-make(1), ezmlm-manage(1), ezmlm-moder‐
+       ate(1),  ezmlm-request(1),   ezmlm-return(1),   ezmlm-send(1),   ezmlm-
+       store(1), ezmlm-tstdig(1), ezmlm-warn(1),
+
+
+
+4th Berkeley Distribution                                           ezmlmrc(5)

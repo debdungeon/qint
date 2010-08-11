@@ -1,0 +1,72 @@
+#!/bin/bash
+
+if [ ! -d sources ]; then
+     echo "No sources dir found!"
+     exit 1
+fi
+
+echo -n "Are you sure you want to uninstall? (y|n) "
+read ans
+if [ "$ans" != "y" ]; then
+   exit 1
+fi
+
+LOG=/var/log/qfd.log
+
+printf "%50s" "Shutting down svscan ..... "
+initctl stop svscan >> $LOG 2>&1
+ps aux | grep svsc | awk '{ printf $2 }' | xargs kill -9 >> $LOG 2>&1
+echo "OK"
+
+printf "%50s" "Shutting down qmail ..... "
+qmailctl stop >> $LOG 2>&1
+ps aux | grep qmail | awk '{ printf $2 }' | xargs kill -9  >> $LOG 2>&1
+echo "OK"
+
+printf "%50s" "Shutting down dovecot ..... "
+/etc/init.d/dovecot stop >> $LOG 2>&1
+echo "OK"
+
+
+printf "%50s" "Deleting users ..... "
+for i in  alias qmaild qmaill qmailp qmailq qmailr qmails vpopmail simscan
+do
+	deluser $i >> $LOG 2>&1
+done
+for i in nofiles qmail vchkpw
+do
+	delgroup $i >> $LOG 2>&1
+done
+echo "OK"
+
+printf "%50s" "Deleting qmail binaries ..... "
+for i in envdir envuidgid fghack multilog pgrphack readproctitle setlock setuidgid softlimit supervise svc svok svscan svscanboot svscanboot.bak svstat tai64n tai64nlocal
+do
+   rm /usr/bin/$i >> $LOG 2>&1
+done
+echo "OK"
+
+printf "%50s" "Performing make clean of sources ..... "
+for i in qmail qmailanalog ucspi daemontools maildrop vpopmail ripmime ezmlm autorespond altermime isoqlog qmailmrtg; do
+   cd sources/$i
+   make clean >> $LOG 2>&1
+   make distclean >> $LOG 2>&1
+   cd ../..
+done
+echo "OK"
+
+printf "%50s" "Deleting directories ..... "
+rm -fr /home/vpopmail/ >> $LOG 2>&1
+rm -fr /var/qmail/ >> $LOG 2>&1
+rm -fr /var/log/qmail/ >> $LOG 2>&1
+rm -fr /service/  >> $LOG 2>&1
+rm -fr /var/www/qmailadmin  >> $LOG 2>&1
+rm -fr /var/www/qmailmrtg  >> $LOG 2>&1
+rm -fr /var/www/isoqlog  >> $LOG 2>&1
+rm /usr/lib/sendmail /usr/sbin/sendmail >> $LOG 2>&1
+rm /usr/bin/qmailctl >> $LOG 2>&1
+echo "OK"
+echo 
+
+# kill svscan process
+# remove inittab entry  SV:123456:respawn:/command/svscanboot

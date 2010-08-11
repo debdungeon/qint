@@ -1,0 +1,26 @@
+qmail-qmtpd(8)                                                  qmail-qmtpd(8)
+
+
+
+NNAAMMEE
+       qmail-qmtpd - receive mail via QMTP
+
+SSYYNNOOPPSSIISS
+       qqmmaaiill--qqmmttppdd
+
+DDEESSCCRRIIPPTTIIOONN
+       qqmmaaiill--qqmmttppdd receives mail messages via the Quick Mail Transfer Protocol
+       (QMTP) and invokes qqmmaaiill--qquueeuuee to deposit them into the outgoing queue.
+       qqmmaaiill--qqmmttppdd  must  be  supplied several environment variables; see ttccpp--
+       eennvviirroonn((55)).
+
+       qqmmaaiill--qqmmttppdd  supports  the   _r_c_p_t_h_o_s_t_s,   _m_o_r_e_r_c_p_t_h_o_s_t_s,   RREELLAAYYCCLLIIEENNTT,
+       _d_a_t_a_b_y_t_e_s, and DDAATTAABBYYTTEESS mechanisms described in qqmmaaiill--ssmmttppdd((88)).
+
+SSEEEE AALLSSOO
+       tcp-env(1),  tcp-environ(5),  qmail-control(5),  qmail-queue(8), qmail-
+       smtpd(8)
+
+
+
+                                                                qmail-qmtpd(8)

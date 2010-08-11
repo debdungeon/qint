@@ -1,0 +1,35 @@
+qmail-pop3d(8)                                                  qmail-pop3d(8)
+
+
+
+NNAAMMEE
+       qmail-pop3d - distribute mail via POP
+
+SSYYNNOOPPSSIISS
+       qqmmaaiill--ppoopp33dd _m_a_i_l_d_i_r_n_a_m_e
+
+DDEESSCCRRIIPPTTIIOONN
+       qqmmaaiill--ppoopp33dd lets a user read and delete his mail through the network.
+
+       Mail  is  stored  in a mmaaiillddiirr called _m_a_i_l_d_i_r_n_a_m_e, normally MMaaiillddiirr, in
+       the user’s home directory.
+
+       qqmmaaiill--ppoopp33dd is normally invoked under qqmmaaiill--ppooppuupp, which reads a  user‐
+       name  and  password,  and //bbiinn//cchheecckkppaasssswwoorrdd, which checks the password
+       and sets up environment variables.
+
+       qqmmaaiill--ppoopp33dd has a 20-minute idle timeout.
+
+       qqmmaaiill--ppoopp33dd supports UIDL, TOP, and LAST.
+
+       qqmmaaiill--ppoopp33dd appends an extra blank line to every message to work around
+       serious bugs in certain clients.
+
+       qqmmaaiill--ppoopp33dd is based on a program contributed by Russ Nelson.
+
+SSEEEE AALLSSOO
+       maildir(5), qmail-local(8), qmail-popup(8)
+
+
+
+                                                                qmail-pop3d(8)

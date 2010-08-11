@@ -1,0 +1,43 @@
+ezmlmglrc(5)                                                      ezmlmglrc(5)
+
+
+
+NNAAMMEE
+       ezmlmglrc - set up the global ezmlm interface
+
+SSYYNNOOPPSSIISS
+       eezzmmllmm--mmaakkee --CC eezzmmllmmggllrrcc [ --55 _o_w_n_e_r ] _d_i_r _d_o_t _l_o_c_a_l _h_o_s_t
+
+DDEESSCCRRIIPPTTIIOONN
+       eezzmmllmmggllrrcc  instructs eezzmmllmm--mmaakkee((11)) to create _d_i_r and files within it to
+       support the _l_o_c_a_l@@_h_o_s_t address as a global ezmlm  interface.   _d_o_t  and
+       _d_o_t--ddeeffaauulltt  are  linked  to  _d_i_r//eezzddoommoo which uses eezzmmllmm--rreeqquueesstt((11)) to
+       handle requests as well as bounces and  ezmlm-style  command  addresses
+       for  the global interface.  The configuration file _d_i_r//ccoonnffiigg..ccff should
+       be created separately with eezzmmllmm--ggllccoonnff((11)).
+
+OOPPTTIIOONNSS
+       --55 _o_w_n_e_r
+              Forward mail addressed to _l_o_c_a_l--oowwnneerr@@_h_o_s_t to _o_w_n_e_r rather  than
+              storing it in a local mailbox.
+
+UUSSAAGGEE
+       Typical use by ‘‘joe’’ to set up jjooee--_m_a_j_o_r_d_o_m_o@@_t_h_i_s_._c_o_m_:
+
+       ezmlm-make -Cezmlmglrc ~/domo ~/.qmail-majordomo joe-majordomo this.com
+
+       Typical use by ‘‘alias’’ to set up _m_a_j_o_r_d_o_m_o@@_t_h_i_s_._c_o_m_:
+
+       ezmlm-make -Cezmlmglrc ~/domo ~/.qmail-majordomo majordomo this.com
+
+       Typical use by ‘‘virt’’ controlling the virtual domain _l_i_s_t_s_._c_o_m to set
+       up _m_a_j_o_r_d_o_m_o@@_l_i_s_t_._c_o_m_:
+
+       ezmlm-make -Cezmlmglrc ~/domo ~/.qmail-majordomo majordomo list.com
+
+SSEEEE AALLSSOO
+       ezmlm-glconf(1), ezmlm-make(1), ezmlm-request(1), ezmlm(5)
+
+
+
+                                                                  ezmlmglrc(5)

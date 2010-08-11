@@ -1,0 +1,10 @@
+#!/bin/sh
+# WARNING: This file was auto-generated. Do not edit!
+echo 'Reasons for success
+
+One line per reason for successful delivery. Information on each line:
+* del is the number of deliveries that ended for this reason.
+* xdelay is the total xdelay on those deliveries.
+'
+( echo del xdelay reason
+/usr/local/qmailanalog/bin/successes | sort +2 ) | /usr/local/qmailanalog/bin/columnt | tr _ ' '

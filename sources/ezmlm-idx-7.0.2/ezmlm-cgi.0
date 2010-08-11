@@ -1,0 +1,244 @@
+ezmlm-cgi(1)                                                      ezmlm-cgi(1)
+
+
+
+NNAAMMEE
+       ezmlm-cgi - provide WWW access to the list archive
+
+SSYYNNOOPPSSIISS
+       eezzmmllmm--ccggii
+
+DDEESSCCRRIIPPTTIIOONN
+       eezzmmllmm--ccggii  is  executed by the httpd daemon and generates HTTP/CGI/html
+       4.0-compliant self-referencing output of index pages for threads  in  a
+       given month, messages in a thread, messages by a given author, messages
+       by date, and messages themselves with full navigation controls. It uses
+       the archive directly, aided by index files created by eezzmmllmm--iiddxx((11)), and
+       eezzmmllmm--sseenndd((11)) as part of normal archive access and digest indexing, and
+       by eezzmmllmm--aarrcchhiivvee((11)).
+
+       eezzmmllmm--ccggii  uses  the  httpd-supplied  variables PPAATTHH__IINNFFOO to obtain the
+       list  number,  QQUUEERRYY__SSTTRRIINNGG  to  obtain  the  command,   as   well   as
+       SSEERRVVEERR__NNAAMMEE,  SSEERRVVEERR__PPOORRTT, and SSCCRRIIPPTT__NNAAMMEE to create a self-referencing
+       URL.
+
+       When eezzmmllmm--ccggii is invoked without a command, it shows the  threads  for
+       the  current month.  If no list number is supplied, the default list is
+       shown (see below).
+
+CCOONNFFIIGGUURRAATTIIOONN
+       eezzmmllmm--ccggii expects to find configuration info in //eettcc//eezzmmllmm//eezzccggiirrcc when
+       run SUID root, or ..eezzccggiirrcc otherwise. The entries in this file describe
+       one list per line. Blank lines and comments starting with  a  ‘‘#’’  in
+       position  1  are  allowed  and  ignored. No extra blanks, tab, etc, are
+       allowed. Entries must be of the following format:
+
+       _l_i_s_t_n_o_;_u_i_d_;_l_i_s_t_d_i_r_;_l_i_s_t_a_d_d_r_;_b_u_t_t_o_n_b_a_r_;_c_h_a_r_s_e_t_;_s_t_y_l_e_;_b_a_n_n_e_r_p_r_o_g
+
+       wwhheerree::
+
+       _l_i_s_t_n_o
+            is the list number using ‘‘0’’ for the default list if desired;
+
+       _u_i_d  the user id to switch to if installed SUID root (default  invoking
+            user  id) and if preceded by ‘‘-’’ chroot() is suppressed for SUID
+            root installations;
+
+       _l_i_s_t_d_i_r
+             the absolute path to the list base directory (required);
+
+       _l_i_s_t_a_d_d_r
+            the list address as local@host (required) and if preceded by ‘‘-’’
+            the  ‘‘From:’’ E-mail address is replaced by the posters name/han‐
+            dle as a further precaution against address harvesting;
+
+       _b_u_t_t_o_n_b_a_r
+            a set of comma-separated fields of the type  _‘_‘_[_H_o_m_e_]_=_h_t_t_p_:_/_/_e_x_a_m_‐
+            _p_l_e_._c_o_m_/_l_i_s_t_._h_t_m_l_’_’_.   The text before the ‘‘=’’ is the exact text
+            displayed and the subsequent text should be the URL linked to that
+            button. Use the braces to make the buttons be consistent with pre‐
+            existing navigation buttons. It is desirable to add  a  ‘‘[Help]’’
+            button  with a link to an explanation of the various displays gen‐
+            erated by eezzmmllmm--ccggii.
+
+       _c_h_a_r_s_e_t
+            the   character   set   used   for   the   main   pages   (default
+            ‘‘iso-8859-1’’);
+
+       _s_t_y_l_e
+            the style sheet used (default none, which doesn’t look pretty);
+
+       _b_a_n_n_e_r_p_r_o_g
+            the path to a banner program which is given the name of the script
+            and the list as arguments (default none). The path is relative  to
+            ‘‘listdir’’  and  can  point anywhere in the file system. However,
+            for SUID root installations  access  is  normally  restricted  via
+            cchhrroooott((33)).  (See SECURITY.)  If _‘_‘_b_a_n_n_e_r_p_r_o_g_’_’ starts with a less-
+            than character (’’<’’) it is assumed to be a URL which is inserted
+            as is, rather than executed.
+
+       _‘_‘_;_’_’
+            the  separator can be any non-numeric character and can be differ‐
+            ent for different _e_z_c_g_i_r_c  lines.  There  is  no  quoting/escaping
+            mechanism.  Thus,  choose  a  character  not present in any of the
+            arguments. ‘‘bannerprog’’ as the last argument  is  an  exception,
+            and may contain any characters except LF and NUL.
+
+OOPPTTIIOONNSS
+       If ‘‘uid’’ is preceded by a minus sign (‘‘-’’),
+            eezzmmllmm--ccggii  will  not  call cchhrroooott((33)) ..  This potentially decreases
+            security, but may be needed to execute ‘‘bannerprog’’.
+
+       If ‘‘listaddr’’ is preceded by a minus sign (‘‘-’’),
+            eezzmmllmm--ccggii will, as a precaution against address harvesting robots,
+            remove  the sender’s E-mail address also in the message view. This
+            is already done in all other views. The  archive  user  can  still
+            obtain the address by requesting the message by E-mail.
+
+OOUUTTPPUUTT
+       eezzmmllmm--ccggii outputs 5 different views.
+
+       _t_h_r_e_a_d _i_n_d_e_x
+              shows the threads which have messages in a given month. The sub‐
+              ject is prefixed with the number of messages in the  thread  for
+              the  given  month. When eezzmmllmm--aarrcchhiivvee((11)) is first run against an
+              existing archive, the number is the total number of messages  in
+              the  thread.  The subject and author are links to the respective
+              thread or author index. The threads are ordered in reverse order
+              of  latest message, i.e. the thread that last received a message
+              is listed last. When eezzmmllmm--aarrcchhiivvee((11)) is run against an existing
+              archive,  the  initial  sort is in order of the first message in
+              the thread.
+
+              The subject in the _t_h_r_e_a_d _i_n_d_e_x is a link to the last message in
+              the thread.
+
+       _t_h_r_e_a_d shows  the  messages in the respective thread in date order. For
+              each message the author is shown linked to the message.
+
+       _a_u_t_h_o_r _i_n_d_e_x
+              shows the subject of all messages posted from a given address in
+              order of arrival at the list. Links are to the messages.
+
+       _m_e_s_s_a_g_e _b_y _d_a_t_e
+              shows entries in order of arrival of sets of 100 messages. Links
+              are to the message and to the author.
+
+       _m_e_s_s_a_g_e
+              shows the message itself. The message has links to the  previous
+              and  next message by time, in the thread, or by the same author.
+              There are also links to the other views, as  well  as  links  to
+              subscribe,  or request FAQ, the message or the thread by E-mail.
+              The navigation bar is very concise  to  optimize  appearance  in
+              llyynnxx.   It  is  self-explanatory to anyone daring to experiment.
+              For others, you may wish to supply a ‘‘help’’ button.  The  mes‐
+              sage subject is a _m_a_i_l_t_o_: link for a follow-up post to the list.
+
+OOUUTTPPUUTT FFOORRMMAATTTTIINNGG
+       eezzmmllmm--ccggii outputs html 4.0 in a format  suitable  for  _L_y_n_x  and  other
+       text-mode  browsers.  The format is designed for easy optional enhance‐
+       ment via CSS1/2 type style sheets in the format  ‘‘text/css’’.   eezzmmllmm--
+       ccggii  is  self-documenting  in this respect. Simply review the output in
+       the different views and the sample style sheet to see the class  struc‐
+       ture.
+
+EEXXTTEERRNNAALL LLIINNKKSS TTOO MMEESSSSAAGGEESS
+       eezzmmllmm--ccggii will accept a PATH_INFO of the following format:
+
+       _/_l_i_s_t_n_o_/_m_e_s_s_a_g_e
+
+       wwhheerree::
+
+       _l_i_s_t_n_o
+            is the list number per config file;
+
+       _m_e_s_s_a_g_e
+            is the message number.
+
+            Thus, eezzmmllmm--ccggii_/_2_/_2_0_0_0_0 will return message 20000 from list 2.
+
+            eezzmmllmm--ccggii  uses a second syntax based on QUERY_STRING for internal
+            links. This command set is implemented only as far as required for
+            normal eezzmmllmm--ccggii function. Useful are:
+
+       eezzmmllmm--ccggii??lliissttnnoo??aammss::mmeessssaaggee
+            which  will  return  in  order  the list of messages posted by the
+            author of message _m_e_s_s_a_g_e on list _l_i_s_t_n_o, and
+
+       eezzmmllmm--ccggii??lliissttnnoo??ssmmss::mmeessssaaggee
+            which will return in order the list of messages with the same sub‐
+            ject as message _m_e_s_s_a_g_e on list _l_i_s_t_n_o, i.e. the ‘‘thread’’.
+
+RROOBBOOTTSS
+       There  are  many  possible  URLs  for the same message.  To still allow
+       external indexing, eezzmmllmm--ccggii supports the command _e_z_m_l_m_-_c_g_i_/_i_n_d_e_x which
+       returns  a page with links to all lists, except the default list. These
+       links indirectly lead exactly once to each message.  None of the  links
+       used  contain  a  ‘‘?’’.  Thus,  to index the archives, allow access to
+       scripts in the (separate) _d_i_r_e_c_t_o_r_y where eezzmmllmm--ccggii is  installed,  but
+       deny  access to _d_i_r_e_c_t_o_r_y//eezzmmllmm--ccggii_?.  Any message will have a ‘‘nofol‐
+       low’’ robot  META  tag,  and  any  view  reached  by  a  URL  based  on
+       QUERY_STRING  will  in  addition  have  a ‘‘noindex’’ robot META tag to
+       avoid trapping robots in the archive.
+
+EEXXEECCUUTTIIOONN
+       eezzmmllmm--ccggii can operate in two modes, _S_U_I_D _r_o_o_t  and  _n_o_r_m_a_l.   eezzmmllmm--ccggii
+       should  not  be  installed  SUID  _u_s_e_r other than root.  Please see the
+       SSEECCUURRIITTYY section before installing SUID _r_o_o_t.
+
+       In _n_o_r_m_a_l mode, eezzmmllmm--ccggii will read  the  configuration  file  ..eezzccggiirrcc
+       from  the working directory set by the httpd daemon (per ccggii definition
+       this should be the same directory as  eezzmmllmm--ccggii  is  in),  then  change
+       directory  to the list directory. ‘‘uid’’ is ignored.  For user instal‐
+       lations or systems where the httpd user has access to  all  the  lists,
+       _n_o_r_m_a_l mode usually gives sufficient access.
+
+       In  _S_U_I_D _r_o_o_t  mode,  eezzmmllmm--ccggii  will  read the configuration info from
+       //eettcc//eezzmmllmm//eezzccggiirrcc then change directory to that directory, then change
+       root  to  that  directory, then change userid to ‘‘uid’’. If ‘‘uid’’ is
+       not specified, it will change to the uid of the process invoking eezzmmllmm--
+       ccggii (normally the httpd user). If the archive files are world-readable,
+       but the list directory is not, it is safest to leave ‘‘uid’’ blank. The
+       httpd user will still be able to read the files.
+
+EEXXEECCUUTTIIOONN OOFF BBAANNNNEERR PPRROOGGRRAAMMSS
+       eezzmmllmm--ccggii supports display of banners, but not execution of banner pro‐
+       grams. To obtain dynamic banners, use a URL that  points  to  a  banner
+       program elsewhere.
+
+
+SSEECCUURRIITTYY
+       eezzmmllmm--ccggii will refuse to run as root.
+
+       eezzmmllmm--ccggii does not write or lock any files.
+
+       eezzmmllmm--ccggii  has  a short well commented segment of code that potentially
+       runs SUID root.  Read the source to  convince  yourself  that  this  is
+       safe.  If  possible,  install it SUID user, or not SUID at all, if that
+       meets your needs (single list user, httpd user is list user,  or  httpd
+       user has sufficient access to all list directories and archives).
+
+       eezzmmllmm--ccggii will not allow execution of banner programs.
+
+
+BBUUGGSS
+       eezzmmllmm--sseenndd((11)) updates the list message counter once a message is safely
+       archived, but before it is accepted by qqmmaaiill((77)).  Also, the _i_n_d_e_x  file
+       is  updated  before  the  message is accepted by qqmmaaiill((77)).  If qqmmaaiill((77))
+       fails, eezzmmllmm--sseenndd((11)) resets the counter before terminating. It is  pos‐
+       sible  that in such a situation the message would be replaced by a dif‐
+       ferent one.  If eezzmmllmm--ccggii accesses a message that ultimately fails  and
+       in  that  time  interval,  it  may  expose a message that ultimately is
+       replaced, especially when doing it via the ‘‘Messages  by  date’’  view
+       which is based on the _i_n_d_e_x file. In practice, this is relatively harm‐
+       less. Avoiding it would  require  locking  the  list  with  significant
+       implications for security and performance.
+
+SSEEEE AALLSSOO
+       ezmlm-archive(1),  ezmlm-get(1), ezmlm-idx(1), ezmlm-send(1), ezmlm(5),
+       qmail(7)
+
+
+
+
+                                                                  ezmlm-cgi(1)

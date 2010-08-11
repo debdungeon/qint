@@ -1,0 +1,151 @@
+subgetopt(3)                                                      subgetopt(3)
+
+
+
+NNAAMMEE
+       subgetopt - get option character from command line
+
+SSYYNNTTAAXX
+       ##iinncclluuddee <<ssuubbggeettoopptt..hh>>
+
+       char *ssggooppttaarrgg;
+       int ssggooppttiinndd;
+       int ssggooppttppooss;
+       int ssggooppttddoonnee;
+       int ssggooppttpprroobblleemm;
+
+       int ssggoopptt((_a_r_g_c_,_a_r_g_v_,_o_p_t_s));
+
+       int _a_r_g_c;
+       char **_a_r_g_v;
+       char *_o_p_t_s;
+
+DDEESSCCRRIIPPTTIIOONN
+       ssggoopptt returns the next valid command-line option character from _a_r_g_v.
+
+       Valid  option  characters  are  listed in the _o_p_t_s string.  _o_p_t_s may be
+       empty.  A character in _o_p_t_s may be followed by a colon, in  which  case
+       it takes an _o_p_t_i_o_n _a_r_g_u_m_e_n_t.  Avoid using the characters ?, :, and - as
+       option characters.
+
+       Below _o_p_t_i_o_n _a_r_g_u_m_e_n_t is abbreviated as _o_p_t_a_r_g and  _c_o_m_m_a_n_d_-_l_i_n_e  _a_r_g_u_‐
+       _m_e_n_t is abbreviated as _c_m_d_a_r_g.
+
+       Options  are  listed in cmdargs which begin with a minus sign.  Several
+       options which do not take optargs may be combined into one cmdarg.
+
+       An option which takes an optarg may be handled  in  two  ways.   If  it
+       appears at the very end of a cmdarg, then the entire next cmdarg is the
+       optarg.  But if there are any characters in the cmdarg after the option
+       character,  then  those  characters  form  the  optarg.   The optarg is
+       returned in ssggooppttaarrgg.  Next time ssggoopptt looks at the cmdarg  which  fol‐
+       lows the optarg.
+
+       If a cmdarg does not begin with a hyphen, or if it is a lone hyphen not
+       followed by any characters, or if it begins with two hyphens,  then  it
+       terminates  option  processing,  and ssggoopptt returns an appropriate code.
+       If there are two hyphens, ssggoopptt will  advance  attention  to  the  next
+       cmdarg, so it can be called again to read further options.
+
+PPRROOPPEERR UUSSAAGGEE
+       ssggooppttpprroobblleemm  should  be  used only when ssggoopptt returns ?.  ssggooppttiinndd and
+       ssggooppttppooss are defined all the time.  ssggooppttaarrgg is defined all  the  time;
+       it is null unless ssggoopptt has just returned an option with optarg.
+
+       ssggoopptt is typically used as follows.
+
+       #include <subgetopt.h>
+
+       main(argc,argv) int argc; char **argv; { int opt;
+
+       while ((opt = sgopt(argc,argv,"a:s")) != sgoptdone)
+         switch(opt) {
+           case ’a’:
+             printf("opt a with optarg %s\n",sgoptarg); break;
+           case ’s’:
+             printf("opt s with no optarg\n"); break;
+           case ’?’:
+             if (argv[sgoptind] && (sgoptind < argc))
+               printf("illegal opt %c\n",sgoptproblem);
+             else
+               printf("missing arg, opt %c\n",sgoptproblem);
+             exit(1);
+         }
+
+       argv += sgoptind;
+       while (*argv) printf("argument %s\n",*argv++);
+       exit(0);
+       }
+
+       The end of the command line is marked by either _a_r_g_c, or a null pointer
+       in _a_r_g_v, whichever comes first.  Normally these two  markers  coincide,
+       so it is redundant to test for both _a_r_g_v[[ssggooppttiinndd]] and ssggooppttiinndd << _a_r_g_c.
+       The above code shows both tests as an illustration.
+
+       MMuullttiippllee ooppttiioonn sseettss:: One useful technique is to call ssggoopptt with a pri‐
+       mary  _o_p_t_s  until it returns EOF, then call ssggoopptt with a secondary _o_p_t_s
+       until it returns EOF.  The user can provide  primary  options,  then  a
+       double  hyphen,  and  then  secondary  options.  No special handling is
+       needed if some or all of the options are omitted.  The  same  technique
+       can be used for any number of option sets in series.
+
+       MMuullttiippllee  ccoommmmaanndd  lliinneess::  Before  parsing a new aarrggvv, make sure to set
+       ssggooppttiinndd and ssggooppttppooss back to 1 and 0.
+
+PPAARRSSIINNGG SSTTAAGGEESS
+       ssggoopptt keeps track of its position in _a_r_g_v with ssggooppttiinndd  and  ssggooppttppooss,
+       which are initialized to 1 and 0.  It looks at _a_r_g_v[[ssggooppttiinndd]][[ssggooppttppooss]]
+       and following characters.
+
+       ssggoopptt indicates that no more options are available by returning  ssggoopptt‐‐
+       ddoonnee, which is initialized to SSUUBBGGEETTOOPPTTDDOONNEE, which is defined as -1.
+
+       ssggoopptt begins by setting ooppttaarrgg to null.
+
+       EEnnddiinngg ccoonnddiittiioonnss:: If _a_r_g_v is null, or ssggooppttiinndd is larger than _a_r_g_c, or
+       the current cmdarg _a_r_g_v[[ssggooppttiinndd]] is null, then ssggoopptt returns  ooppttddoonnee.
+
+       SSttaaggee  oonnee:: If the current character is zero, ssggoopptt moves to the begin‐
+       ning of the next cmdarg.  It then checks the ending conditions again.
+
+       SSttaaggee ttwwoo:: If the current position is the begining of the cmdarg, ssggoopptt
+       checks  whether  the  current  character  is  a  minus sign.  If not it
+       returns ooppttddoonnee.  It then moves to the next character.  If that charac‐
+       ter  is  zero,  ssggoopptt  moves  back  to the beginning of the cmdarg, and
+       returns ssggooppttddoonnee.  If the character is a minus sign,  ssggoopptt  moves  to
+       the beginning of the next cmdarg, and returns ssggooppttddoonnee.
+
+       SSttaaggee  tthhrreeee::  ssggoopptt records the current character, _c, and moves to the
+       next character.  There are three possibilities:  (1)  _c  is  an  option
+       character  without optarg in _o_p_t_s, or (2) _c is an option character with
+       optarg in _o_p_t_s, or (3) _c does not appear in _o_p_t_s.
+
+       (1) If _c appears as an option character without optarg in  _o_p_t_s,  ssggoopptt
+       returns _c.
+
+       (2) If _c appears as an option character with optarg in _o_p_t_s, ssggoopptt sets
+       ssggooppttaarrgg to the current position, and moves to  the  next  cmdarg.   If
+       ssggooppttaarrgg is nonempty, ssggoopptt returns _c.
+
+       Then  ssggoopptt sets ssggooppttaarrgg to the current cmdarg.  If the current cmdarg
+       is null, or past _a_r_g_c, ssggoopptt sets ssggooppttpprroobblleemm  to  _c  and  returns  ?.
+       Otherwise ssggoopptt moves to the next argument and returns _c.
+
+       (2)  If  _c  does  not  appear in _o_p_t_s, ssggoopptt sets ssggooppttpprroobblleemm to _c and
+       returns ?.
+
+SSYYNNTTAAXX NNOOTTEE
+       ssggoopptt is actually a macro abbreviation for ssuubbggeettoopptt.  The external  ssgg
+       variables  are  also  macros  for  ssuubbggeett.  These macros are defined in
+       <<ssuubbggeettoopptt..hh>>, unless SSUUBBGGEETTOOPPTTNNOOSSHHOORRTT is defined when <<ssuubbggeettoopptt..hh>> is
+       included.
+
+VVEERRSSIIOONN
+       subgetopt version 0.9, 931129.
+
+AAUUTTHHOORR
+       Placed into the public domain by Daniel J. Bernstein.
+
+
+
+                                                                  subgetopt(3)

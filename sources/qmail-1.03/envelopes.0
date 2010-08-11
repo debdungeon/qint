@@ -1,0 +1,131 @@
+envelopes(5)                                                      envelopes(5)
+
+
+
+NNAAMMEE
+       envelopes - sender/recipient lists attached to messages
+
+IINNTTRROODDUUCCTTIIOONN
+       Electronic mail messages are delivered in _e_n_v_e_l_o_p_e_s.
+
+       An  envelope  lists a _s_e_n_d_e_r and one or more _r_e_c_i_p_i_e_n_t_s.  Usually these
+       envelope addresses are the same as the addresses listed in the  message
+       header:
+
+          (envelope) from djb to root
+          From: djb
+          To: root
+
+       In more complicated situations, though, the envelope addresses may dif‐
+       fer from the header addresses.
+
+EENNVVEELLOOPPEE EEXXAAMMPPLLEESS
+       When a message is delivered to several people at  different  locations,
+       it is first photocopied and placed into several envelopes:
+
+          (envelope) from djb to root
+          From: djb                          Copy #1 of message
+          To: root, god@brl.mil
+
+          (envelope) from djb to god@brl.mil
+          From: djb                          Copy #2 of message
+          To: root, god@brl.mil
+
+       When a message is delivered to several people at the same location, the
+       sender doesn’t have to photocopy it.  He can instead stuff it into  one
+       envelope  with  several  addresses; the recipients will make the photo‐
+       copy:
+
+          (envelope) from djb to god@brl.mil, angel@brl.mil
+          From: djb
+          To: god@brl.mil, angel@brl.mil, joe, frde
+
+       Bounced mail is sent back to the envelope sender address.  The  bounced
+       mail doesn’t list an envelope sender, so bounce loops are impossible:
+
+          (envelope) from <> to djb
+          From: MAILER-DAEMON
+          To: djb
+          Subject: unknown user frde
+
+       The  recipient  of  a message may make another copy and forward it in a
+       new envelope:
+
+          (envelope) from djb to joe
+          From: djb                          Original message
+          To: joe
+
+          (envelope) from joe to fred
+          From: djb                          Forwarded message
+          To: joe
+
+       A mailing list works almost the same way:
+
+          (envelope) from djb to sos-list
+          From: djb                          Original message
+          To: sos-list
+
+          (envelope) from sos-owner to god@brl.mil
+          From: djb                          Forwarded message
+          To: sos-list                       to recipient #1
+
+          (envelope) from sos-owner to frde
+          From: djb                          Forwarded message
+          To: sos-list                       to recipient #2
+
+       Notice that the mailing list is set up to replace the  envelope  sender
+       with something new, ssooss--oowwnneerr.  So bounces will come back to ssooss--oowwnneerr:
+
+          (envelope) from <> to sos-owner
+          From: MAILER-DAEMON
+          To: sos-owner
+          Subject: unknown user frde
+
+       It’s a good idea to set up an extra address, ssooss--oowwnneerr, like this:  the
+       original  envelope  sender  (ddjjbb)  has  no  way  to  fix  bad  ssooss--lliisstt
+       addresses, and of course bounces must not be sent to ssooss--lliisstt itself.
+
+HHOOWW EENNVVEELLOOPPEE AADDDDRREESSSSEESS AARREE SSTTOORREEDD
+       Envelope sender and envelope recipient addresses  are  transmitted  and
+       recorded in several ways.
+
+       When  a user injects mail through qqmmaaiill--iinnjjeecctt, he can supply a RReettuurrnn--
+       PPaatthh line or a --ff option for the envelope sender; by default the  enve‐
+       lope sender is his login name.  The envelope recipient addresses can be
+       taken from the command line or from various header fields, depending on
+       the options to qqmmaaiill--iinnjjeecctt.  Similar comments apply to sseennddmmaaiill.
+
+       When a message is transferred from one machine to another through SMTP,
+       the envelope sender is given in  a  MMAAIILL  FFRROOMM  command,  the  envelope
+       recipients  are  given in RRCCPPTT TTOO commands, and the message is supplied
+       separately by a DDAATTAA command.
+
+       When a message is delivered by  qqmmaaiill  to  a  single  local  recipient,
+       qqmmaaiill--llooccaall  records  the  recipient  in  DDeelliivveerreedd--TToo and the envelope
+       sender in RReettuurrnn--PPaatthh.  It uses DDeelliivveerreedd--TToo to detect mail  forwarding
+       loops.
+
+       sseennddmmaaiill  normally records the envelope sender in RReettuurrnn--PPaatthh.  It does
+       not record envelope recipient addresses, on the theory  that  they  are
+       redundant:  you  received  the  mail,  so you must have been one of the
+       envelope recipients.
+
+       Note that, if the header doesn’t have any recipient addresses, sseennddmmaaiill
+       will move envelope recipient addresses back into the header.  This sit‐
+       uation occurs if all addresses were originally listed as BBcccc, since BBcccc
+       is  automatically  removed.   When sseennddmmaaiill sees this, it creates a new
+       AAppppaarreennttllyy--TToo header field with the envelope recipient addresses.  This
+       has the strange effect that each blind-carbon-copy recipient will see a
+       list of all recipients on the same machine.
+
+       When a message is  stored  in  mmbbooxx  format,  the  envelope  sender  is
+       recorded  at  the  top  of  the message as a UUCP-style FFrroomm (no colon)
+       line.  Note that this line is less reliable than the  RReettuurrnn--PPaatthh  line
+       added by qqmmaaiill--llooccaall or sseennddmmaaiill.
+
+SSEEEE AALLSSOO
+       qmail-header(5), qmail-local(8), qmail-inject(8)
+
+
+
+                                                                  envelopes(5)

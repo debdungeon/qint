@@ -1,0 +1,39 @@
+ezmlm-rmtab(1)                                                  ezmlm-rmtab(1)
+
+
+
+NNAAMMEE
+       ezmlm-rmtab - remove the subscriber tables for a mailing list
+
+SSYYNNOOPPSSIISS
+       eezzmmllmm--rrmmttaabb [ --mmMMvvVV ] [ --SS ssuubbddbb ] [ _d_i_r ]
+
+DDEESSCCRRIIPPTTIIOONN
+       eezzmmllmm--rrmmttaabb removes all the subscriber tables associated with the mail‐
+       ing list stored in _d_i_r or in the database specified  by  the  --SS  ssuubbddbb
+       option.
+
+OOPPTTIIOONNSS
+       --mm     (Default.)  Use the normal subscriber database for the list.
+
+       --MM     Use  the  standard subscriber database even if the list was con‐
+              figured to use another plugin.  This is equivalent to specifying
+              --SS _s_t_d.
+
+       --SS _s_u_b_d_b
+              Connect  to  the  given subscriber database plugin.  This option
+              can be used to manipulate alternate subscriber  databases.   The
+              contents  of  the parameter should be the same as would be given
+              to eezzmmllmm--mmaakkee  --66.   This  parameter  overrides  the  subscriber
+              database configuration in _d_i_r.
+
+       --vv     Display eezzmmllmm--rrmmttaabb((11)) version information.
+
+       --VV     Display eezzmmllmm--rrmmttaabb((11)) version information.
+
+SSEEEE AALLSSOO
+       ezmlm-list(1), ezmlm-make(1), ezmlm-sub(1), ezmlm-unsub(1), ezmlm(5)
+
+
+
+                                                                ezmlm-rmtab(1)

@@ -1,0 +1,3 @@
+gcc -O -g -I/usr/include/mysql -I/usr/include/pgsql
+
+This will be used to compile .c files.

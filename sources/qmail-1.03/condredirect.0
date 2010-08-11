@@ -1,0 +1,35 @@
+condredirect(1)                                                condredirect(1)
+
+
+
+NNAAMMEE
+       condredirect - perhaps redirect mail to another address
+
+SSYYNNOOPPSSIISS
+       in ..qqmmaaiill: ||ccoonnddrreeddiirreecctt _n_e_w_a_d_d_r_e_s_s _p_r_o_g_r_a_m [ _a_r_g _._._.  ]
+
+DDEESSCCRRIIPPTTIIOONN
+       ccoonnddrreeddiirreecctt  feeds  each  new  mail  message to _p_r_o_g_r_a_m with the given
+       arguments.  If _p_r_o_g_r_a_m exits 0, ccoonnddrreeddiirreecctt forwards the mail  message
+       to  _n_e_w_a_d_d_r_e_s_s,  and  then  exits 99, so further commands in ..qqmmaaiill are
+       ignored.
+
+       If _p_r_o_g_r_a_m exits 111, ccoonnddrreeddiirreecctt  exits  111,  so  delivery  will  be
+       retried later.
+
+       If  _p_r_o_g_r_a_m exits anything else (or does not exist), ccoonnddrreeddiirreecctt exits
+       0, so the rest of ..qqmmaaiill will be processed as usual.
+
+       Note that it is not safe for _p_r_o_g_r_a_m to fork a  child  that  reads  the
+       message in the background.
+
+       WWAARRNNIINNGG::  If you create a ..qqmmaaiill file to enable ccoonnddrreeddiirreecctt, make sure
+       to also add a line specifying delivery to your normal mailbox.
+
+SSEEEE AALLSSOO
+       bouncesaying(1),  except(1),  dot-qmail(5),  qmail-command(8),   qmail-
+       queue(8)
+
+
+
+                                                               condredirect(1)

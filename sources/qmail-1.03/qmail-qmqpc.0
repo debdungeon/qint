@@ -1,0 +1,29 @@
+qmail-qmqpc(8)                                                  qmail-qmqpc(8)
+
+
+
+NNAAMMEE
+       qmail-qmqpc - queue a mail message via QMQP
+
+SSYYNNOOPPSSIISS
+       qqmmaaiill--qqmmqqppcc
+
+DDEESSCCRRIIPPTTIIOONN
+       qqmmaaiill--qqmmqqppcc  offers the same interface as qqmmaaiill--qquueeuuee, but it gives the
+       message to a QMQP server instead of storing it locally.
+
+       In a mmiinnii--qqmmaaiill installation, qqmmaaiill--qquueeuuee is replaced with  a  symbolic
+       link to qqmmaaiill--qqmmqqppcc.
+
+CCOONNTTRROOLL FFIILLEESS
+       _q_m_q_p_s_e_r_v_e_r_s
+            IP  addresses  of QMQP servers, one address per line.  qqmmaaiill--qqmmqqppcc
+            will try each address in turn until it establishes a QMQP  connec‐
+            tion or runs out of addresses.
+
+SSEEEE AALLSSOO
+       qmail-control(5), qmail-queue(8), qmail-qmqpd(8)
+
+
+
+                                                                qmail-qmqpc(8)

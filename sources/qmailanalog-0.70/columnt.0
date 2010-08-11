@@ -1,0 +1,30 @@
+columnt(1)                                                          columnt(1)
+
+
+
+NNAAMMEE
+       columnt - align columns in a table
+
+SSYYNNTTAAXX
+       ccoolluummnntt
+
+DDEESSCCRRIIPPTTIIOONN
+       ccoolluummnntt reads a table of whitespace-separated lines.
+
+       ccoolluummnntt  then  prints the table, changing the spacing so that the first
+       column takes the same amount of space in every line, the second  column
+       takes the same amount of space in every line, etc.
+
+       In the ccoolluummnntt output, all columns except the last are right-justified;
+       the last column is left-justified.  There are two spaces between  adja‐
+       cent columns.
+
+       ccoolluummnntt needs enough memory to read the entire input.  Other than this,
+       it has no limits on line length or on the number of columns.
+
+SSEEEE AALLSSOO
+       column(1)
+
+
+
+                                                                    columnt(1)

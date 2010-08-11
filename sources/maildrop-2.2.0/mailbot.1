@@ -1,0 +1,213 @@
+.\"  <!-- $Id: mailbot.sgml,v 1.6 2007/04/22 15:19:24 mrsam Exp $ -->
+.\"  <!-- Copyright 1998 - 2007 Double Precision, Inc.  See COPYING for -->
+.\"  <!-- distribution information. -->
+.\"     Title: mailbot
+.\"    Author: 
+.\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
+.\"      Date: 08/24/2008
+.\"    Manual: Double Precision, Inc.
+.\"    Source: Double Precision, Inc.
+.\"
+.TH "MAILBOT" "1" "08/24/2008" "Double Precision, Inc." "Double Precision, Inc."
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.SH "NAME"
+mailbot - A MIME-aware autoresponder utility
+.SH "SYNOPSIS"
+.HP 8
+\fBmailbot\fR [options] {\fIprogram\fR} [arg...]
+.PP
+In
+\fI\.mailfilter:\fR
+.sp
+.RS 4
+.nf
+if (/^Subject: *info/)
+{
+     cc "| mailbot \-t /usr/share/autoresponse/info \-d autoresponsedb \e
+            \-A \'From: info@domain\.com\' /usr/bin/sendmail \-f \'\'"
+}
+.fi
+.RE
+.SH "DESCRIPTION"
+.PP
+\fBmailbot\fR
+reads an E\-mail message on standard input and creates an E\-mail message replying to the original message\'s sender\. A
+\fBprogram\fR
+is specified as an argument to
+\fBmailbot\fR
+after all of
+\fBmailbot\fR
+options\.
+\fBprogram\fR
+is expected to read the created autoreply on its standard input, and mail it\. If
+\fBprogram\fR
+is not specified,
+\fBmailbot\fR
+runs \'sendmail \-f ""\'\.
+.PP
+
+\fBmailbot\fR
+has several options for suppressing duplicate autoresponse messages\. If
+\fBmailbot\fR
+chooses not to send an autoresponse, it quietly terminates without running
+\fBprogram\fR\. The autoresponse is optionally formatted as a MIME delivery status notification\.
+.PP
+The text of the autoresponse is specified by the
+\fB\-t\fR
+or the
+\fB\-m\fR
+argument\. Either one is required\. Everything else is optional\. The default behavior is to send an autoresponse unless the original message has the "Precedence: junk" or the "Precedence: bulk" header, or the "Precedence: list" header, or the "List\-ID:" header, or if its MIME content type is "multipart/report" (this is the MIME content type for delivery status notifications)\. The
+\fB\-M\fR
+option formats the the autoresponse itself as a MIME delivery status notification\.
+.SH "OPTIONS"
+.PP
+\-f\fIaddress\fR
+.RS 4
+Address the autoresponse to
+\fIaddress\fR, which must be an
+\fIRFC 2822\fR\&[1]
+address\. By default
+\fBmailbot\fR
+takes the autoresponse address from the
+From:
+(or the
+Reply\-To:) header in the original message\.
+\fB\-f\fR, if present, overrides and explicitly sets the autoresponse address\. "\fIaddress\fR" must immediately follow the
+\fB\-f\fR
+option without an intervening space (it\'s a single command line argument)\. An
+\fB\-f\fR
+option without an
+\fIaddress\fR
+takes the address from the
+\fBSENDER\fR
+environment variable\.
+.RE
+.PP
+\-t \fIfilename\fR
+.RS 4
+Read text autoresponse from
+\fIfilename\fR, which should contain a plain text message\.
+.RE
+.PP
+\-c \fIcharset\fR
+.RS 4
+Set the autoresponse\'s MIME character set to
+\fIcharset\fR\. Run
+\fBmailbot\fR
+without any arguments to see the default character set\.
+.RE
+.PP
+\-m \fIfilename\fR
+.RS 4
+Read a MIME autoresponse from
+\fIfilename\fR\. This is similar to the
+\fB\-t\fR
+option, except that
+\fIfilename\fR
+contains MIME headers, followed by a blank line, and the corresponding MIME content\. The contents of
+\fIfilename\fR
+are inserted in the autoresponse without further processing\.
+.RE
+.PP
+\-M \fIaddress\fR
+.RS 4
+Format the autoresponse as a delivery status notification (\fIRFC 1894\fR\&[2])\.
+\fIaddress\fR
+is an
+\fIRFC 2822\fR\&[1]
+E\-mail address that generates the DSN\. Note that the
+\fB\-A\fR
+option should be used in ddition to
+\fB\-M\fR
+in order to set the
+From:
+header on the autoresponse\.
+.RE
+.PP
+\-r \fIaddrlist\fR
+.RS 4
+
+\fIaddrlist\fR
+is a comma\-separated list of
+\fIRFC 2822\fR\&[1]
+E\-mail addresses\.
+\fBmailbot\fR
+sends an autoresponse only if the original message has at least one of the specified addresses in any
+To:
+or
+Cc:
+header\.
+.RE
+.PP
+\-d \fIfilename\fR
+.RS 4
+Create a small database,
+\fIfilename\fR, that keeps track of sender\'s E\-mail addresses, and prevent duplicate autoresponses going to the same address (suppress autoresponses going back to the same senders, for subsequent received messages)\. The
+\fB\-d\fR
+option is only available if
+\fBmaildrop\fR
+has GDBM/DB extensions enabled\.
+.RE
+.PP
+\-D \fIx\fR
+.RS 4
+Do not send duplicate autoresponses (see the
+\fB\-d\fR
+option) for at least
+\fIx\fR
+days (default: 1 day)\. The
+\fB\-d\fR
+option creates a database of E\-mail addresses and the times an autoresponse was last mailed to them\. Another autoresponse to the same address will not be mailed until at least the amount of time specified by the
+\fB\-D\fR
+option has elapsed\.
+.RE
+.PP
+\-s "\fIsubject\fR"
+.RS 4
+Set the
+Subject:
+header on the autoresponse to
+\fIsubject\fR\.
+.RE
+.PP
+\-A "\fIheader: value\fR"
+.RS 4
+Add an arbitrary header to the autoresponse\. Multiple
+\fB\-A\fR
+options are allowed\.
+.RE
+.SH "SEE ALSO"
+.PP
+
+\fI\fBmaildrop\fR(1)\fR\&[3],
+\fI\fBreformail\fR(1)\fR\&[4],
+\fI\fBreformime\fR(1)\fR\&[5]\.
+.SH "NOTES"
+.IP " 1." 4
+RFC 2822
+.RS 4
+\%http://www.rfc-editor.org/rfc/rfc2822.txt
+.RE
+.IP " 2." 4
+RFC 1894
+.RS 4
+\%http://www.rfc-editor.org/rfc/rfc1894.txt
+.RE
+.IP " 3." 4
+\fBmaildrop\fR(1)
+.RS 4
+\%maildrop.html
+.RE
+.IP " 4." 4
+\fBreformail\fR(1)
+.RS 4
+\%reformail.html
+.RE
+.IP " 5." 4
+\fBreformime\fR(1)
+.RS 4
+\%reformime.html
+.RE

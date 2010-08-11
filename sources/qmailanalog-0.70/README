@@ -1,0 +1,17 @@
+qmailanalog 0.70, beta.
+19980830
+Copyright 1998
+D. J. Bernstein, djb@pobox.com
+http://pobox.com/~djb/qmailanalog.html
+
+qmailanalog is a collection of tools to help you analyze qmail-send's
+activity record. See BLURB for a more detailed advertisement.
+
+INSTALL says how to set up and run qmailanalog.
+
+You may distribute unmodified copies of qmailanalog-0.70.tar.gz.
+
+The rest of this file is a list of systypes where various versions of
+qmailanalog have been reported to work.
+
+0.60: sunos-5.4-generic_101945-32-:sparc-:sun4-:sun4m-:sun4m- (tnx RM)

@@ -1,0 +1,19 @@
+qmail-showctl(8)                                              qmail-showctl(8)
+
+
+
+NNAAMMEE
+       qmail-showctl - analyze the qmail configuration files
+
+SSYYNNOOPPSSIISS
+       qqmmaaiill--sshhoowwccttll
+
+DDEESSCCRRIIPPTTIIOONN
+       qqmmaaiill--sshhoowwccttll explains the current qqmmaaiill configuration.
+
+SSEEEE AALLSSOO
+       qmail-control(8)
+
+
+
+                                                              qmail-showctl(8)

@@ -1,0 +1,20 @@
+qmail-clean(8)                                                  qmail-clean(8)
+
+
+
+NNAAMMEE
+       qmail-clean - clean up the queue directory
+
+SSYYNNOOPPSSIISS
+       qqmmaaiill--cclleeaann
+
+DDEESSCCRRIIPPTTIIOONN
+       qqmmaaiill--cclleeaann  reads  a  cleanup  command from descriptor 0, performs the
+       cleanup, prints the results to descriptor 1, and repeats.
+
+SSEEEE AALLSSOO
+       qmail-send(8)
+
+
+
+                                                                qmail-clean(8)

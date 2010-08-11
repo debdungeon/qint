@@ -1,0 +1,94 @@
+4.2      - Ken Jones / Tobias Orlamuende 
+11/05/04 - get_tai code change to support 64 bit processing
+           missing one line from Dan Bernsteins code.
+
+09/07/04 - Ken Jones
+         - support for dnscache and tinydns 
+
+4.1
+5/13/04  - Ken Jones
+         - as per a code review by Markus Stumpf maex-qmail at Space dot Net
+           the strn* functions are switched to snprintf for buffer overrun
+           bullet proofing. Thanks Markus!
+
+4.0
+2/29/04  - Ken Jones (happy leap year day)
+         - modified support for pop3/smtp ssl
+         - added support for clamav virus 
+         - added support for spamassassin
+         - increased Absolute max in pop3 total graphs for
+           site that have more than 10,000 pop3 connections
+           per hour.
+         - updated authorship lines in this file
+         - update GPL copyright in .c files
+         - updated WorkDir in qmail.mrtg.cfg to fit default
+           redhat document root 
+         - change sprintf to snprintf
+
+3.8
+08/31/03 - Ken Jones
+         - added support for pop ssl and smtp ssl
+
+3.6
+03/11/02 - Ken Jones
+         - change msg graphs to msg/hour
+         - set concurrency lable on graphs to max concurrency
+         - checkq: needs to return 0 so that Makefile will complete
+
+03/09/02 - Ken Jones
+         - change bytes to bits so we can compare to network bandwidth 
+         - set bit graphs to be at bits/sec
+         - set message graphs to be at msg/hour
+
+3.5
+02/15/02 - Ken Jones
+         - r option had fields reversed
+
+02/14/02 - Ken Jones
+         - add support for robomail logs
+
+3.4
+01/13/02 - Ken Jones
+         - put graphs in table with two graphs per row
+         - set all link colors to black
+         - set border around images to 1 pixel
+
+01/12/02 - Ken Jones
+         - update the INSTALL doc
+
+01/11/02 - Ken Jones
+         - support auto detection of big todo patch
+         - support auto detection of conf-split size
+         - update index.html to put links on the images
+
+3.3
+01/03/02 - Ken Jones
+         - concurrency check was checking for end of string with
+           wrong tmpstr variable
+
+12/21/01 Richard A. Secor <rsecor@seqlogic.com>
+         - track rblsmtpd hits as smtpd denials
+
+3.2
+10/23/01 - Ken Jones
+         - update max value for message status graph to 10K
+           with 100,000 as the absolute max. 10K is about the
+           best I've seen on a mail server. 
+
+08/08/01 - Ken Jones
+         - moved concurrency graph in index.html to just
+           under the messages graph 
+
+08/07/01 - Ken Jones
+         - more efficent queue size checking function
+
+3.1
+07/07/01 - Ken Jones
+         - concurrency local/remote wasn't setting remote
+
+06/19/01 - Ken Jones
+         - update qmail.mrtg.cfg to only show one ledgend for 
+           smtp and pop concurrency
+
+         - update max values for smtp, pop and qmail remote/local
+           to match my default setup.

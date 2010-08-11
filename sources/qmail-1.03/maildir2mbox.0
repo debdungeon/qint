@@ -1,0 +1,33 @@
+maildir2mbox(1)                                                maildir2mbox(1)
+
+
+
+NNAAMMEE
+       maildir2mbox - move mail from a maildir to an mbox
+
+SSYYNNOOPPSSIISS
+       mmaaiillddiirr22mmbbooxx
+
+DDEESSCCRRIIPPTTIIOONN
+       mmaaiillddiirr22mmbbooxx moves mail from a _m_a_i_l_d_i_r-format directory to an _m_b_o_x-for‐
+       mat file.
+
+       You must supply three environment variables to mmaaiillddiirr22mmbbooxx: MMAAIILLDDIIRR is
+       the name of your _m_a_i_l_d_i_r directory; MMAAIILL is the name of your _m_b_o_x file;
+       and MMAAIILLTTMMPP is  a  temporary  file  that  mmaaiillddiirr22mmbbooxx  can  overwrite.
+       MMAAIILLTTMMPP and MMAAIILL must be on the same filesystem.
+
+       mmaaiillddiirr22mmbbooxx  is  reliable:  it  will  not remove messages from MMAAIILLDDIIRR
+       until the messages have been successfully appended to MMAAIILL.
+
+       mmaaiillddiirr22mmbbooxx locks MMAAIILL to protect against  simultaneous  access  by  a
+       mail reader.  This locking system does not protect against simultaneous
+       access by another mmaaiillddiirr22mmbbooxx; you should run only one mmaaiillddiirr22mmbbooxx at
+       a time.
+
+SSEEEE AALLSSOO
+       maildir(5)
+
+
+
+                                                               maildir2mbox(1)

@@ -1,0 +1,50 @@
+ezmlm-issubn(1)                                                ezmlm-issubn(1)
+
+
+
+NNAAMMEE
+       ezmlm-checksub - reject senders not subscribed to a mailing list
+
+SSYYNNOOPPSSIISS
+       eezzmmllmm--cchheecckkssuubb [ --nnNN ] [ --mm MMEESSSSAAGGEE ] _d_i_r _[ _s_u_b_d_i_r_1 _._._. _]
+
+DDEESSCCRRIIPPTTIIOONN
+       eezzmmllmm--cchheecckkssuubb  checks to see if the address obtained from the environ‐
+       ment variable _S_E_N_D_E_R is  subscribed  to  the  mailing  list  stored  in
+       _d_i_r_/_s_u_b_d_i_r_1 or the mailing list in _d_i_r_/_s_u_b_d_i_r_2 or ...
+
+       If _S_E_N_D_E_R is not defined eezzmmllmm--cchheecckkssuubb exits with an error.
+
+       If  --NN  is  set  (the  default) and _S_E_N_D_E_R is not on any of the mailing
+       lists, eezzmmllmm--cchheecckkssuubb outputs the  message  named  _T_X_T___O_N_L_Y___S_U_B_S_C_R_I_B_E_R_S
+       and exits 100, indicating a permanent failure to qmail.
+
+       If  --nn is set and _S_E_N_D_E_R is on any of the mailing lists, eezzmmllmm--cchheecckkssuubb
+       outputs the message named _T_X_T___R_E_J_E_C_T___P_O_S_T_S and exits 100.
+
+       Otherwise, eezzmmllmm--cchheecckkssuubb exits with a zero exit code (success).
+
+       If _s_u_b_d_i_r_1 (or more) are present on the command line and  are  relative
+       paths, eezzmmllmm--cchheecckkssuubb only examines the named subdirectories within the
+       absolute path _d_i_r.
+
+       eezzmmllmm--cchheecckkssuubb exits 111 on errors.
+
+OOPPTTIIOONNSS
+       --mm _M_E_S_S_A_G_E
+              Use _M_E_S_S_A_G_E in place of either the message  named  _T_X_T___O_N_L_Y___S_U_B_‐
+              _S_C_R_I_B_E_R_S or _T_X_T___R_E_J_E_C_T___P_O_S_T_S in rejections.
+
+       --nn     Negative operation: ensure the sender is not a subscriber.  This
+              is useful when trying to exclude SENDERs.
+
+       --NN     (Default.)  Normal operation: ensure if the  sender  is  a  sub‐
+              scriber.
+
+SSEEEE AALLSSOO
+       ezmlm-issubn(1),  ezmlm-list(1), ezmlm-manage(1), ezmlm-make(1), ezmlm-
+       send(1), ezmlm-sub(1), ezmlm-unsub(1), ezmlm(5)
+
+
+
+                                                               ezmlm-issubn(1)

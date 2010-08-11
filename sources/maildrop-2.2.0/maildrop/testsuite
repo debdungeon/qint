@@ -1,0 +1,259 @@
+#!/bin/sh
+#  $Id: testsuite.in,v 1.5 2008/09/20 12:50:56 mrsam Exp $
+#
+# Copyright 1998 - 2008 Double Precision, Inc.  See COPYING for
+# distribution information.
+
+PWD=`pwd`
+if test "@USE_GDBM@@USE_DB@" != "00" -a -x ../makedat/makedatprog
+then
+
+cat <<EOF >testsuite.chk
+foo	bar
+foo.bar.com	foobar
+foobar@foo.bar.com	barfoo
+.
+EOF
+../makedat/makedatprog testsuite.chk testsuite.tmp testsuite.dat
+
+cat <<EOF >testsuite.recipe
+if ( gdbmopen("$PWD/testsuite.dat", "R") != 0 )
+{
+	exit
+}
+
+FOO=gdbmfetch("foo")
+echo "FOO: \$FOO"
+
+FOO=gdbmfetch("foobar@foo.bar.com", "D")
+echo "FOO: \$FOO"
+FOO=gdbmfetch("foobaz@foo.bar.com", "D")
+echo "FOO: \$FOO"
+EOF
+
+chmod go-rw testsuite.recipe
+cat <<EOF >testsuite.chk
+FOO: bar
+FOO: barfoo
+FOO: foobar
+EOF
+./maildrop ./testsuite.recipe </dev/null | diff - testsuite.chk
+
+fi
+
+
+if test "1" = 1
+then
+	rm -rf testsuite.maildir
+	../maildir/maildirmake ./testsuite.maildir
+	
+	cat <<EOF >testsuite.recipe
+
+	MAILDIRQUOTA="1C"
+	exception {
+		cc "$PWD/testsuite.maildir"
+		echo "Delivered message one"
+		cc "$PWD/testsuite.maildir"
+		echo "Delivered message two"
+	}
+	echo "Done."
+	exit
+EOF
+
+	chmod go-rw testsuite.recipe
+	cat <<EOF >testsuite.chk
+Delivered message one
+Done.
+EOF
+	echo "To: testsuite" | ./maildrop ./testsuite.recipe 2>/dev/null \
+		| diff - testsuite.chk
+fi
+
+cat <<EOF >testsuite.recipe
+if ( 2 && 3 )
+{
+     echo "Yes1"
+}
+
+if ( 2 && 0 )
+{
+     echo "No1"
+}
+
+if ( 2 & 1 )
+{
+     echo "No2"
+}
+
+if ( 2 & 3 )
+{
+     echo "Yes2"
+}
+
+a=(4 || 2)
+
+echo "Four: \$a"
+
+a=(4 | 2)
+
+echo "Six: \$a"
+
+a=(5 && 3)
+
+echo "Three: \$a"
+
+a=(5 & 3)
+
+echo "One: \$a"
+
+a=! 5
+
+echo "Zero: \$a"
+
+a= ~5
+
+echo "Minus six: \$a"
+
+EOF
+
+chmod go-rw testsuite.recipe
+./maildrop ./testsuite.recipe </dev/null
+
+
+./reformail -s /bin/bash -c 'cat >testmsg.$FILENO' <<EOF
+
+From message1
+From: nobody@example.com
+Subject: message1
+
+message1
+
+From message2
+From: nobody@example.com
+Subject: message2
+
+message2
+EOF
+
+./reformail -x subject: <testmsg.000
+./reformail -x subject: <testmsg.001
+rm testmsg.00[01]
+
+rm -f testcache.dat
+./reformail -D 2000 testcache.dat <<EOF
+Subject: dummy
+Message-ID: <1>
+
+EOF
+echo "Not dupe: $?"
+./reformail -D 2000 testcache.dat <<EOF
+Subject: dummy
+Message-ID: <1>
+
+EOF
+echo "Not dupe: $?"
+rm -f testcache.dat
+
+./reformail -x from: -x subject: <<EOF
+From: extract1@example.com
+Subject: subject1
+Date: today
+
+test
+EOF
+./reformail -X from: -X subject: <<EOF
+From: extract2@example.com
+Subject: subject2
+Date: today
+
+test
+EOF
+
+./reformail -a 'From: me@example.com' -a 'Subject: replacementsubject' <<EOF
+From: nobody@example.com
+
+-a test
+EOF
+
+./reformail -A 'From: me@example.com' -A 'Subject: replacementsubject' <<EOF
+From: nobody@example.com
+
+-A test
+EOF
+
+./reformail -c <<EOF
+From: nobody@example.com
+Subject: catenate
+	header test
+To: nobody@example.com
+
+test
+EOF
+
+./reformail -f0 <<EOF
+From testing
+Subject: remove From_ test
+
+test
+EOF
+./reformail -f0 <<EOF
+Subject: remove From_ test
+
+test
+EOF
+./reformail -f1 <<EOF
+From testing
+From: nobody@example.com
+Subject: add From_ test
+
+test
+EOF
+(./reformail -f1 | sed 's/example.com.*/example.com/') <<EOF
+From: nobody@example.com
+Subject: add From_ test
+
+test
+EOF
+./reformail -i 'Header1: value1' -i 'Header2: value2' <<EOF
+From: nobody@example.com
+Subject: -i test
+Header1: value1
+
+test
+EOF
+./reformail -I 'Header1:' -I 'Header2: value2' <<EOF
+From: nobody@example.com
+Subject: -I test
+Header1: value1
+Header2: old value2
+
+test
+EOF
+(./reformail -r -k -p '+' -P 'You wrote:%n' | ./reformail -I From:) <<EOF
+Subject: autoreply test
+Message-ID: <1@example.com>
+References: <2@example.com>
+	<3@example.com>
+From: nobody@example.com
+
+Autoreply test
+Original message
+EOF
+./reformail -R subject: old-subject: <<EOF
+Subject: -R option test
+From: nobody@example.com
+
+-R option test
+EOF
+./reformail -u 'subject:' <<EOF
+Subject: -u test, line1
+Subject: -u test, line2
+
+Testing -u option
+EOF
+./reformail -U 'subject:' <<EOF
+Subject: -u test, line1
+Subject: -u test, line2
+
+Testing -u option
+EOF

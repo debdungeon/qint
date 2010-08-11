@@ -1,0 +1,2 @@
+#!/bin/sh
+cd /var/qmail/bin && ./mkrcpt -c /var/qmail/control/validrcptto.cdb  > /dev/null 2>&1

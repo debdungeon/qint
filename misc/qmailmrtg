@@ -1,0 +1,6 @@
+Alias /qmailmrtg /var/www/qmailmrtg
+
+<Directory /var/www/qmailmrtg>
+  Order allow,deny
+  Allow from all
+</Directory>

@@ -1,0 +1,165 @@
+ERR_ADDR_AT:die Adresse enthält kein @
+ERR_ADDR_LONG:die Adresse ist zu lang
+ERR_ADDR_NL:die Adresse enthält einen Zeilenumbruch
+ERR_ANONYMOUS:ich antworte nicht an Sender ohne Host-Namen (#5.7.2)
+ERR_BADHOST:unzulässiger Listen-Hostname
+ERR_BADLOCAL:unzulässiger lokaler Teil der Listenadresse
+ERR_BADUSER:unzulässiger Nutzer
+ERR_BAD_ADDRESS:I nehme keine Nachrichten für diese Adresse an (unzulässiger lokaler Teil) (#5.1.1)
+ERR_BAD_ALL:Tut mir leid, nach dem Entfernen unzulässiger MIME-Bestandteile der Nachricht war diese leer. (#5.7.0)
+ERR_BAD_DIGCODE:ungültiger Zusammenfassungs-Code (#5.7.1)
+ERR_BAD_INDEX:Altes Format oder ungültiger Index. Starte ezmlm-idx! (#5.3.0)
+ERR_BAD_NAME:Dateinamen dürften ausschließlich Buchstaben und Unterstriche enthalten (#5.6.0)
+ERR_BAD_PART:Tut mir leid, ein Bestandteil der Nachricht hat einen unzulässigen Inhaltstyp: '<#1#>' (#5.2.3)
+ERR_BAD_REQUEST:Unzulässiges Anfrage-Format (#5.7.1)
+ERR_BAD_RETURN_ADDRESS:Ungültiges Format der Bounce- oder Empfänger-Adresse
+ERR_BAD_TYPE:Tut mir leid, ich akzeptiere keine Nachrichten mit folgendem MIME-Inhaltstyp: '<#1#>' (#5.2.3)
+ERR_BODYCOMMAND:Tut mir leid, da die Nachricht mit "[un]subscribe" beginnt, sieht sie wie eine Konfigurationsanfrage aus. Bitte sende eine Nachricht an die "-help"-Adresse (siehe "Mailing-List:"-Kopfzeile) für Infos zur Ein-/Austragung (#5.7.0)
+ERR_BOUNCE:Ich reagiere nicht auf Bounce-Nachrichten (#5.7.2)
+ERR_CFHOST:Bounce-Quelle erforderlich als erste Zeile von <#1#>
+ERR_CHDIR:konnte nicht in das Verzeichnis <#1#>wechseln
+ERR_CHILD_CRASHED:ein Unterprozess ist abgestürzt
+ERR_CHILD_FATAL:ein Unterprozess meldet einen schweren Fehler
+ERR_CHILD_TEMP:ein Unterprozess meldet einen vorübergehenden Fehler
+ERR_CHILD_UNKNOWN:ein Unterprozess meldet einen unbekannten Fehler
+ERR_CHMOD:chmod für <#1#> schlug fehl
+ERR_CHROOT:chroot nach <#1#> schlug fehl
+ERR_CLOSE:das Schließen von <#1#> schlug fehl
+ERR_COOKIE:die Nachricht enthält keinen gültigen Authentifikations-Code
+ERR_CREATE:die Erstellung von <#1#> schlug fehl
+ERR_CRONTAB:crontab-Aktualisierung schlug fehl. Bitte wenden sie sich mit den o.g. Informationen an ihren Systemadministrator
+ERR_DELETE:das Löschen von <#1#> schlug fehl
+ERR_DONE:die Nachricht wurde bereits erfolgreich von dieser Liste verarbeitet
+ERR_DOW:für die "Tag-in-derWoche"-Einstellung sind nur einzelne, durch Komma getrennte, Ziffern zulässig
+ERR_EDSIZE:Maximale Größe der Änderungsdatei überschritten (#5.6.0)
+ERR_EMPTY_DIGEST:keine Inhalte für eine Zusammenfassung vorhanden
+ERR_EMPTY_LIST:es befinden sich keine Nachrichten im Archiv
+ERR_ENDTAG:der Abschluss der Markierung ("/>") fehlt
+ERR_EUID:die effektive Nutzer-ID existiert nicht
+ERR_EXCESS_DEFER:überhöhter Verkehr: zurückgestellt
+ERR_EXCESS_MOD:überhöhter Verkehr: moderiert
+ERR_EXCLUSIVE:Aktionsbeieinflussende Schalter schließen sich gegenseitig aus
+ERR_EXECUTE:Ausführung schlug fehl <#1#>
+ERR_EXTRA_SUB:Die Aktivierung einer Sender-Überprüfung wurde erbeten für: <#1#>
+ERR_EXTRA_UNSUB:Eine Sender-Überprüfung wurde entfernt für: <#1#>
+ERR_FILENAME:Fortsetzungsmarkierung ohne Dateinamen: <#1#>
+ERR_FLUSH_STDOUT:Ausleerung der Standarausgabe schlug fehl
+ERR_FLUSH:Ausleerung schlug fehl
+ERR_FORK:Ein Prozess-Fork schlug fehl
+ERR_JUNK:Vorrang: unerwünschte Mail - Nachricht ignoriert
+ERR_LINKDIR:Link-Markierung ohne /dir: <#1#>
+ERR_LISTNO:maximale Anzahl von Listen-Einträgen überschritten
+ERR_LOOPING:die Nachricht hängt in einer Endlosschleife: sie enthält bereits meine "Delivered-To"-Kopfzeile (#5.4.6)
+ERR_MAILING_LIST:die Nachricht hat bereits eine Mailinglisten-Kopfzeile (vielleicht sollte ich eine eine Unter-Liste sein?) (#5.7.2)
+ERR_MAX_BOUNCE:maximale Bounce-Anzahl überschritten: dieses Bounce wird nicht gespeichert
+ERR_MAX_SIZE:Tut mir leid, ich akzeptiere keine Nachrichten, die größer sind, als <#1#> Bytes (#5.2.3)
+ERR_MIME_QUOTE:fehlende Abschliussmarkierung des MIME-Bereichs
+ERR_MIN_SIZE:Tut mir leid, ich akzeptiere keine Nachrichten, die kleiner sind, als <#1#> Bytes (#5.2.3)
+ERR_MKTAB:Fehler beim Anlegen der Abonnententabelle
+ERR_MOD_ACCEPTED:Tut mir leid, ich habe diese Nachricht bereits akzeptiert
+ERR_MOD_COOKIE:Ungültige oder veraltete Moderationsanfrage (#5.7.1)
+ERR_MOD_REJECTED:Tut mir leid, ich habe diese Nachricht bereits abgewiesen
+ERR_MOD_TIMEOUT:Tut mir leid, diese Nachricht ist nicht mehr vorhanden
+ERR_MOVE:Fehler beim Bewegen von <#1#> nach <#2#>
+ERR_NEWLINE:Verzeichnisnamen dürfen keine Zeilenumbrüche enthalten
+ERR_NOCMD:Befehl nicht verfügbar
+ERR_NODEFAULT:DEFAULT (Standardwert) ist nicht gesetzt
+ERR_NODTLINE:DTLINE ist nicht gesetzt
+ERR_NOEXIST:existiert nicht
+ERR_NOINDEX:Tut mir leid, ich kann den Index dieser Nachricht nicht finden
+ERR_NOLOCAL:LOCAL ist nicht gesetzt
+ERR_NOMEM:kein Speicher verfügbar
+ERR_NOSENDER:SENDER ist nicht gesetzt
+ERR_NOT_ACTIVE:diese Unter-Liste ist nicht aktiviert
+ERR_NOT_ALLOWED:diese Anfrage ist nur ModeratorInnen gestattet (#5.7.1)
+ERR_NOT_ARCHIVED:Tut mir leid, diese Liste wird nicht archiviert (#5.1.1)
+ERR_NOT_AVAILABLE:Befehl nicht verfügbar (#5.1.1)
+ERR_NOT_CLEAN:Unzulässiges Zeichen in Adressen-Komponente
+ERR_NOT_INDEXED:Tut mir leid, diese Liste wird nicht indiziert (#5.1.1)
+ERR_NOT_PARENT:diese Nachricht kommt nicht von meiner übergeordneten Liste (#5.7.2)
+ERR_NOT_PUBLIC:Tut mir leid, ich wurde angewiesen, alle Anfragen abzulehnen (#5.7.2)
+ERR_NO_ABSOLUTE:absolute Verzeichnisangaben außerhalb des Listenverzeichnisses werden nicht mehr unterstützt
+ERR_NO_ADDRESS:Die Listen-Adresse muss im Empfänger (TO:) oder als Kopienempfänger (Cc:) auftauchen
+ERR_NO_LEVELS:die Namen von Abonnenten-Tabellen dürfen keine Schrägstriche enthalten
+ERR_NO_MARK:fehlende Start-des-Texts- oder Ende-des-Texts-Markierung (#5.6.0)
+ERR_NO_MATCH:keine passenden Einträge gefunden
+ERR_NO_PLUGIN:kein Plugin in der Datenbank-Verbindungseinstellung angegeben
+ERR_NO_POST:Tut mir leid, Sie dürfen keine Nachrichten an diese Listen senden (#5.7.2)
+ERR_NO_SUBJECT:Tut mir leid, ich akzeptiere keine Nachrichten ohne Betreff-Zeile
+ERR_OBTAIN_LOCK:Fehler beim exklusiven Sperren von <#1#>
+ERR_OPEN_LISTMSGS:Fehler beim Öffnen von <#1#> in listmsgs. Versuche, ezmlm-archive erneut zu starten!
+ERR_OPEN:Fehler beim Öffnen von <#1#>
+ERR_PERIOD:Punkte sind in Markern (tags) nicht erlaubt
+ERR_QMAIL_QUEUE:Fehler beim Starten von qmail-queue
+ERR_QUOTE:Anführungsstriche im Verzeichnisnamen sind nicht zulässig
+ERR_READ_INPUT:Fehler beim Lesen der Eingabe
+ERR_READ_NOTHING:Fehler beim Lesen von <#1#>: nicht gefunden
+ERR_READ_STDIN:Fehler beim Lesen deer Standardeingabe
+ERR_READ:Fehler beim Lesen von <#1#>
+ERR_REJECT:Tut mir leid, ich wurde angewiesen, diese Nachricht zurückzuweisen (#5.7.0)
+ERR_REQ_LISTNAME:Dieser Befehl erfordert den Namen einer Mailingliste (#5.1.1)
+ERR_REQ_LOCAL:der lokale Teil der Befehlszeichenkette passt nicht zu dieser Liste (#5.1.1)
+ERR_SEEK_INPUT:Fehler beim Positionieren in der Eingabe
+ERR_SEEK:Fehler beim Positionieren <#1#>
+ERR_SETUID:Fehler beim Setzen der UID
+ERR_SLASH:Verzeichnis (dir) und die Qmail-Dateien (dot) müssen mit einem Schrägstrich beginnen
+ERR_STAT:Fehler beim Zugriff auf <#1#>
+ERR_SUBCOMMAND:Tut mir leid, ich akzeptiere keine Befehle in der Betreff-Zeile. Bitte sende eine Nachricht an dir "-help"-Adresse (siehe Kopfzeile "Mailing-List:") für Informationen zur Verwendung von Befehlen (#5.7.0)
+ERR_SUBLIST:Nachrichten für Unter-Listen müssen eine "Mailing-List"-Kopfzeile haben (#5.7.2)
+ERR_SUBSCRIBER_CAN:nur AbonnentInnen dürfen <#1#> (#5.7.1)
+ERR_SUBST_UNSAFE:Tut mir leid, Ersetzungen der Zieladressen in Kopfzeilen mit #A# oder #t# sind unsicher und somit nicht erlaubt.
+ERR_SUB_NOP:das Ziel ist bereits eingeschrieben
+ERR_SUID:Tut mir leid, I werde nicht als root starten
+ERR_SYNC:Fehler beim Synchronisieren <#1#>
+ERR_SYNTAX_CONFIG:Syntax-Fehler in der Konfigurationsdatei <#1#>
+ERR_SYNTAX_MISSING_AUTHHASH:Syntax-Fehler: <#1#>: fehlender Hash des Autors
+ERR_SYNTAX_MISSING_AUTHOR:Syntax-Fehler: <#1#>: Autoren-Info fehlt
+ERR_SYNTAX_MISSING_FIRST:Syntax-Fehler: <#1#>: die erste Zeile fehlt
+ERR_SYNTAX_MISSING_SEMIDATE:Syntax-Fehler: <#1#>: das Semikolon nach dem Datum fehlt
+ERR_SYNTAX_MISSING_SEPARATOR:Syntax-Fehler: <#1#>: fehlendes Trennzeichen im Betreff
+ERR_SYNTAX_MISSING_SUBJHASH:Syntax-Fehler: <#1#>: fehlender Hash des Betreffs
+ERR_SYNTAX:Syntax-Fehler in <#1#>
+ERR_TMP_QMAIL_QUEUE:zeitweiliger qmail-queue-Fehler
+ERR_UID:Nutzer-ID nicht gefunden
+ERR_UNIQUE:Fehler beim Erzeugen eines einmaligen Nachrichten-Dateinamens
+ERR_UNSUB_NOP:das Ziel ist nicht eingeschrieben
+ERR_VERSION:ezmlmrc-Versionskonflikt. Das Verhalten kann von der Spezifikation abweichen.
+ERR_WRITE_STDOUT:Fehler beim Schreiben in die Standardausgabe
+ERR_WRITE:Fehler beim Schreiben von <#1#>
+SUB_CONFIRM_POST:Bestätige die Einsendung für <#L#>@<#H#>
+SUB_EDIT_LIST:Liste der veränderbaren Text-Dateien für <#L#>@<#H#>
+SUB_EDIT_REQUEST:Änderung von <#1#> für <#L#>@<#H#>
+SUB_EDIT_SUCCESS:Die Datei <#1#> wurde erfolgreich geändert für <#L#>@<#H#>
+SUB_FAQ:FAQ (häufig gestellte Fragen) für <#L#>@<#H#>
+SUB_GET_MSG:Archiv-Abfrage für <#L#>@<#H#>
+SUB_GOODBYE:Auf Wiedersehen von <#L#>@<#H#>
+SUB_HELP:Hilfe für <#L#>@<#H#>
+SUB_INFO:Informationen über <#L#>@<#H#>
+SUB_LIST:AbonnentInnen-Aufstellung für <#L#>@<#H#>
+SUB_LOG_SEARCH:Suchergebnisse für das Protokoll von <#L#>@<#H#>
+SUB_LOG:AbonnentInnen-Protokoll für <#L#>@<#H#>
+SUB_MODERATE:Moderation von <#L#>@<#H#>
+SUB_MOD_HELP:Moderationshilfe für <#L#>@<#H#>
+SUB_MOD_SUBSCRIBE:Bestätigung der Einschreibung in <#L#>@<#H#>
+SUB_MOD_UNSUBSCRIBE:Bestätigung der Austragung aus <#L#>@<#H#>
+SUB_PROBE:Test-Mail von <#L#>@<#H#>
+SUB_RESULTS:Ergebniss von <#L#>
+SUB_RETURNED_POST:Rückkehrende Einsundung für <#L#>@<#H#>
+SUB_STATUS:Einschreibungsstatus für <#L#>@<#H#>
+SUB_SUBSCRIBE_NOP:Bereits eingeschrieben in <#L#>@<#H#>
+SUB_UNSUBSCRIBE_NOP:Nicht eingeschrieben in <#L#>@<#H#>
+SUB_USR_SUBSCRIBE:bestätige die Einschreibung in <#L#>@<#H#>
+SUB_USR_UNSUBSCRIBE:bestätige die Austragung aus <#L#>@<#H#>
+SUB_WARNING:Warnung von <#L#>@<#H#>
+SUB_WELCOME:Willkommen zu <#L#>@<#H#>
+TXT_ADMINISTRIVIA:Administration:
+TXT_BY:von: <#1#>
+TXT_EDIT_END:%%% ENDE DER TEXT DATEI
+TXT_EDIT_START:%%% ANFANG DER TEXT DATEI
+TXT_LISTMEMBERS:Abonnenten dieser Liste sind:
+TXT_MAILING_LIST:wende dich an <#L#>-help@<#H#>; basierend auf ezmlm
+TXT_NOINDEX:aaaaaaaaaaaaaaaaaaaa <- Betreff-Index ist nicht verfügbar für Nachricht(en) ->
+TXT_ONLY_SUBSCRIBERS:Hier werden nur Nachrichten von Abonnenten der Liste akzeptiert. Falls Sie die Liste beziehen aber trotzdem nicht schreiben duerfen, schicken Sie bitte diese Nachricht an <#L#>-owner@<#H#> weiter, damit Ihre neue Adresse aufgenommen werden kann. Der Listeneigentuemer kann Sie ebenso gezielt fuer das Schreiben von Nachrichten freischalten, auch wenn Sie die Liste nicht beziehen.
+TXT_REJECT_POSTS:Tut mir leid, ich wurde angewies en, Ihre Nachrichten nicht anzunehmen. Diesbezuegliche Fragen richten Sie bitte an <#L#>-owner@<#H#>
+TXT_SUPPRESSED:<unterdrückt>
+TXT_TOP_TOPICS:Themen (Nachrichten <#1#> bis <#2#>)

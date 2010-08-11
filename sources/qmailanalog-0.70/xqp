@@ -1,0 +1,11 @@
+#!/bin/sh
+# WARNING: This file was auto-generated. Do not edit!
+
+awk '
+  /^d/ {
+    if ($9 == x) print
+  }
+  /^m/ {
+    if ($9 == x) print
+  }
+' x="$1"

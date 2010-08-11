@@ -1,0 +1,31 @@
+qmail-newu(8)                                                    qmail-newu(8)
+
+
+
+NNAAMMEE
+       qmail-newu - prepare address assignments for qmail-lspawn
+
+SSYYNNOOPPSSIISS
+       qqmmaaiill--nneewwuu
+
+DDEESSCCRRIIPPTTIIOONN
+       qqmmaaiill--nneewwuu  reads the assignments in //vvaarr//qqmmaaiill//uusseerrss//aassssiiggnn and writes
+       them into //vvaarr//qqmmaaiill//uusseerrss//ccddbb in a  binary  format  suited  for  quick
+       access by qqmmaaiill--llssppaawwnn.
+
+       If  there  is  a  problem  with  uusseerrss//aassssiiggnn, qqmmaaiill--nneewwuu complains and
+       leaves uusseerrss//ccddbb alone.
+
+       qqmmaaiill--nneewwuu ensures that uusseerrss//ccddbb  is  updated  atomically,  so  qqmmaaiill--
+       llssppaawwnn never has to wait for qqmmaaiill--nneewwuu to finish.  However, qqmmaaiill--nneewwuu
+       makes no  attempt  to  protect  against  two  simultaneous  updates  of
+       uusseerrss//ccddbb.
+
+       The binary uusseerrss//ccddbb format is portable across machines.
+
+SSEEEE AALLSSOO
+       qmail-users(5), qmail-lspawn(8), qmail-pw2u(8)
+
+
+
+                                                                 qmail-newu(8)

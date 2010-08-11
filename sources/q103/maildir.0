@@ -1,0 +1,110 @@
+maildir(5)                                                          maildir(5)
+
+
+
+NNAAMMEE
+       maildir - directory for incoming mail messages
+
+IINNTTRROODDUUCCTTIIOONN
+       _m_a_i_l_d_i_r  is  a structure for directories of incoming mail messages.  It
+       solves the reliability problems that plague _m_b_o_x files and _m_h  folders.
+
+RREELLIIAABBIILLIITTYY IISSSSUUEESS
+       A  machine  may  crash while it is delivering a message.  For both _m_b_o_x
+       files and _m_h folders this means that the message will be silently trun‐
+       cated.  Even worse: for _m_b_o_x format, if the message is truncated in the
+       middle of a line, it will be silently joined to the next message.   The
+       mail  transport  agent will try again later to deliver the message, but
+       it is unacceptable that a corrupted message should show up at all.   In
+       _m_a_i_l_d_i_r, every message is guaranteed complete upon delivery.
+
+       A  machine  may have two programs simultaneously delivering mail to the
+       same user.  The _m_b_o_x and _m_h formats require the programs  to  update  a
+       single  central  file.   If the programs do not use some locking mecha‐
+       nism, the central file will be corrupted.  There are several  _m_b_o_x  and
+       _m_h  locking  mechanisms,  none of which work portably and reliably.  In
+       contrast, in _m_a_i_l_d_i_r, no locks are ever necessary.  Different  delivery
+       processes never touch the same file.
+
+       A  user  may try to delete messages from his mailbox at the same moment
+       that the machine delivers a new message.  For _m_b_o_x and _m_h formats,  the
+       user’s  mail-reading program must know what locking mechanism the mail-
+       delivery programs use.  In contrast, in _m_a_i_l_d_i_r, any delivered  message
+       can be safely updated or deleted by a mail-reading program.
+
+       Many  sites  use Sun’s NNeettwwoorrkk FFaiilluree SSyysstteemm (NFS), presumably because
+       the operating system vendor does not offer anything else.  NFS  exacer‐
+       bates  all  of the above problems.  Some NFS implementations don’t pro‐
+       vide aannyy reliable locking mechanism.  With _m_b_o_x and _m_h formats, if  two
+       machines  deliver  mail  to the same user, or if a user reads mail any‐
+       where except the delivery machine, the user’s mail is at risk.  _m_a_i_l_d_i_r
+       works without trouble over NFS.
+
+TTHHEE MMAAIILLDDIIRR SSTTRRUUCCTTUURREE
+       A directory in _m_a_i_l_d_i_r format has three subdirectories, all on the same
+       filesystem: ttmmpp, nneeww, and ccuurr.
+
+       Each file in nneeww is a newly delivered mail message.   The  modification
+       time  of  the file is the delivery date of the message.  The message is
+       delivered _w_i_t_h_o_u_t an extra UUCP-style FFrroomm__  line,  _w_i_t_h_o_u_t  any  >>FFrroomm
+       quoting,  and  _w_i_t_h_o_u_t  an extra blank line at the end.  The message is
+       normally in RFC 822 format, starting with  a  RReettuurrnn--PPaatthh  line  and  a
+       DDeelliivveerreedd--TToo  line,  but  it  could  contain arbitrary binary data.  It
+       might not even end with a newline.
+
+       Files in ccuurr are just like files in nneeww.  The big  difference  is  that
+       files  in ccuurr are no longer new mail: they have been seen by the user’s
+       mail-reading program.
+
+HHOOWW AA MMEESSSSAAGGEE IISS DDEELLIIVVEERREEDD
+       The ttmmpp directory is used to ensure  reliable  delivery,  as  discussed
+       here.
+
+       A  program delivers a mail message in six steps.  First, it cchhddiirr(())s to
+       the _m_a_i_l_d_i_r directory.  Second, it ssttaatt(())ss the name  ttmmpp//_t_i_m_e_._p_i_d_._h_o_s_t,
+       where  _t_i_m_e  is  the number of seconds since the beginning of 1970 GMT,
+       _p_i_d is the program’s process ID, and _h_o_s_t is the host name.  Third,  if
+       ssttaatt(())  returned anything other than ENOENT, the program sleeps for two
+       seconds, updates _t_i_m_e, and tries the ssttaatt(()) again, a limited number  of
+       times.  Fourth, the program creates ttmmpp//_t_i_m_e_._p_i_d_._h_o_s_t.  Fifth, the pro‐
+       gram _N_F_S_-_w_r_i_t_e_s the message to the file.  Sixth,  the  program  lliinnkk(())s
+       the  file  to  nneeww//_t_i_m_e_._p_i_d_._h_o_s_t.  At that instant the message has been
+       successfully delivered.
+
+       The delivery program is required to start a 24-hour timer before creat‐
+       ing  ttmmpp//_t_i_m_e_._p_i_d_._h_o_s_t, and to abort the delivery if the timer expires.
+       Upon error, timeout, or normal completion,  the  delivery  program  may
+       attempt to uunnlliinnkk(()) ttmmpp//_t_i_m_e_._p_i_d_._h_o_s_t.
+
+       _N_F_S_-_w_r_i_t_i_n_g  means  (1) as usual, checking the number of bytes returned
+       from each wwrriittee(()) call; (2) calling ffssyynncc(())  and  checking  its  return
+       value;  (3)  calling  cclloossee(()) and checking its return value.  (Standard
+       NFS implementations handle ffssyynncc(()) incorrectly but make up  for  it  by
+       abusing cclloossee(()).)
+
+HHOOWW AA MMEESSSSAAGGEE IISS RREEAADD
+       A mail reader operates as follows.
+
+       It  looks  through  the nneeww directory for new messages.  Say there is a
+       new message, nneeww//_u_n_i_q_u_e.  The reader may freely display the contents of
+       nneeww//_u_n_i_q_u_e, delete nneeww//_u_n_i_q_u_e, or rename nneeww//_u_n_i_q_u_e as ccuurr//_u_n_i_q_u_e_:_i_n_f_o.
+       See hhttttpp::////ppoobbooxx..ccoomm//~~ddjjbb//pprroottoo//mmaaiillddiirr..hhttmmll for the meaning of _i_n_f_o.
+
+       The reader is also expected to look through the ttmmpp  directory  and  to
+       clean  up  any  old  files  found  there.   A file in ttmmpp may be safely
+       removed if it has not been accessed in 36 hours.
+
+       It is a good idea for readers to skip all  filenames  in  nneeww  and  ccuurr
+       starting  with  a  dot.  Other than this, readers should not attempt to
+       parse filenames.
+
+EENNVVIIRROONNMMEENNTT VVAARRIIAABBLLEESS
+       Mail readers supporting _m_a_i_l_d_i_r use the MMAAIILLDDIIRR environment variable as
+       the name of the user’s primary mail directory.
+
+SSEEEE AALLSSOO
+       mbox(5), qmail-local(8)
+
+
+
+                                                                    maildir(5)

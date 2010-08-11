@@ -1,0 +1,10 @@
+AUTOFILES
+Makefile
+SRCFILES
+TARGETS
+conf-bgincs
+conf-bglibs
+conf-bin
+conf-cc
+conf-ld
+conf-man

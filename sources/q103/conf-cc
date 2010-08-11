@@ -1,0 +1,3 @@
+cc -O2 -DTLS -DEXTERNAL_TODO -I/usr/local/ssl/include -I/usr/kerberos/include
+
+This will be used to compile .c files.

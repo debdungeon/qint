@@ -1,0 +1,105 @@
+<?xml version="1.0"?>
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><title>mailbot</title><link rel="stylesheet" href="style.css" type="text/css"/><meta name="generator" content="DocBook XSL Stylesheets V1.73.2"/><link rel="start" href="#mailbot" title="mailbot"/><link xmlns="" rel="stylesheet" type="text/css" href="manpage.css"/><meta xmlns="" name="MSSmartTagsPreventParsing" content="TRUE"/><link xmlns="" rel="icon" href="icon.gif" type="image/gif"/><!--
+
+Copyright 1998 - 2007 Double Precision, Inc.  See COPYING for distribution
+information.
+
+--></head><body><div class="refentry" lang="en" xml:lang="en"><a id="mailbot" shape="rect"> </a><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>mailbot — A MIME-aware autoresponder utility</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><div class="cmdsynopsis"><p><code class="command">mailbot</code>  [options] {<em class="replaceable"><code>program</code></em>} [arg...]</p></div><div class="informalexample"><p>In <code class="filename">.mailfilter:</code></p><pre class="programlisting" xml:space="preserve">
+if (/^Subject: *info/)
+{
+     cc "| mailbot -t /usr/share/autoresponse/info -d autoresponsedb \
+            -A 'From: info@domain.com' /usr/bin/sendmail -f ''"
+}
+</pre></div></div><div class="refsect1" lang="en" xml:lang="en"><a id="id391163" shape="rect"> </a><h2>DESCRIPTION</h2><p><span class="command"><strong>mailbot</strong></span> reads an E-mail message on standard input
+and creates an E-mail message replying to the original message's sender.
+A
+<span class="command"><strong>program</strong></span> is specified as an argument to
+<span class="command"><strong>mailbot</strong></span> after all of <span class="command"><strong>mailbot</strong></span> options.
+<span class="command"><strong>program</strong></span> is expected to read the
+created autoreply on its standard input, and mail it.
+If <span class="command"><strong>program</strong></span> is not specified,
+<span class="command"><strong>mailbot</strong></span> runs '<code class="literal">sendmail -f ""</code>'.</p><p>
+<span class="command"><strong>mailbot</strong></span> has several options for suppressing duplicate
+autoresponse messages.
+If <span class="command"><strong>mailbot</strong></span> chooses not to send an autoresponse, it quietly
+terminates without running <span class="command"><strong>program</strong></span>.
+The autoresponse is optionally
+formatted as a MIME delivery status notification.</p><p>
+The text of the autoresponse is specified by the <code class="option">-t</code> or
+the <code class="option">-m</code> argument. Either one is required.
+Everything else is optional.
+The default behavior is to send an autoresponse unless the original message
+has the "<code class="literal">Precedence: junk</code>" or the
+"<code class="literal">Precedence: bulk</code>" header, or the
+"<code class="literal">Precedence: list</code>" header, or the
+"<code class="literal">List-ID:</code>" header,
+or if
+its MIME content type is "<code class="literal">multipart/report</code>"
+(this is the MIME content type for delivery status notifications).
+The <code class="option">-M</code> option formats the
+the autoresponse itself as a MIME delivery status notification.</p></div><div class="refsect1" lang="en" xml:lang="en"><a id="id365529" shape="rect"> </a><h2>OPTIONS</h2><div class="variablelist"><dl><dt><span class="term">-f<em class="replaceable"><code>address</code></em></span></dt><dd><p>
+Address the autoresponse to <em class="replaceable"><code>address</code></em>, which must
+be an
+<a class="ulink" href="http://www.rfc-editor.org/rfc/rfc2822.txt" target="_top" shape="rect">RFC 2822</a>
+address.
+By default <span class="command"><strong>mailbot</strong></span> takes the autoresponse
+address from the
+<code class="literal">From:</code> (or the <code class="literal">Reply-To:</code>) header
+in the original message.
+<code class="option">-f</code>, if present, overrides and explicitly sets the
+autoresponse address.
+"<em class="replaceable"><code>address</code></em>" must immediately follow the
+<code class="option">-f</code> option without an intervening space
+(it's a single command line argument).
+An <code class="option">-f</code> option without an <em class="replaceable"><code>address</code></em>
+takes the address from the <code class="envar">SENDER</code> environment variable.</p></dd><dt><span class="term">-t <em class="replaceable"><code>filename</code></em></span></dt><dd><p>
+Read text autoresponse from <em class="replaceable"><code>filename</code></em>,
+which should contain a plain text message.</p></dd><dt><span class="term">-c <em class="replaceable"><code>charset</code></em></span></dt><dd><p>
+Set the autoresponse's MIME character set to
+<em class="replaceable"><code>charset</code></em>.
+Run <span class="command"><strong>mailbot</strong></span> without any arguments to see the
+default character set.</p></dd><dt><span class="term">-m <em class="replaceable"><code>filename</code></em></span></dt><dd><p>
+Read a MIME autoresponse from <code class="filename">filename</code>.
+This is similar to the <code class="option">-t</code> option,
+except that <em class="replaceable"><code>filename</code></em> contains MIME headers,
+followed by a blank line, and the corresponding
+MIME content. The contents of <em class="replaceable"><code>filename</code></em> are
+inserted in the autoresponse without further processing.</p></dd><dt><span class="term">-M <em class="replaceable"><code>address</code></em></span></dt><dd><p>
+Format the autoresponse as a delivery status
+notification
+(<a class="ulink" href="http://www.rfc-editor.org/rfc/rfc1894.txt" target="_top" shape="rect">RFC 1894</a>).
+<em class="replaceable"><code>address</code></em> is an
+<a class="ulink" href="http://www.rfc-editor.org/rfc/rfc2822.txt" target="_top" shape="rect">RFC 2822</a>
+E-mail address that generates the DSN.
+Note that the <code class="option">-A</code> option should be used in 
+ddition to <code class="option">-M</code> in order to set the
+<code class="literal">From:</code> header on the autoresponse.</p></dd><dt><span class="term">-r <em class="replaceable"><code>addrlist</code></em></span></dt><dd><p>
+<em class="replaceable"><code>addrlist</code></em> is a comma-separated list of
+<a class="ulink" href="http://www.rfc-editor.org/rfc/rfc2822.txt" target="_top" shape="rect">RFC 2822</a>
+E-mail addresses.
+<span class="command"><strong>mailbot</strong></span> sends an autoresponse only if
+the original message has at least one of the specified addresses in any
+<code class="literal">To:</code> or <code class="literal">Cc:</code> header.</p></dd><dt><span class="term">-d <em class="replaceable"><code>filename</code></em></span></dt><dd><p>
+Create a small database, <em class="replaceable"><code>filename</code></em>,
+that keeps track of sender's E-mail addresses,
+and prevent duplicate autoresponses going to the same address
+(suppress autoresponses going back to the same senders, for subsequent
+received messages).
+The <code class="option">-d</code> option is only available if
+<span class="command"><strong>maildrop</strong></span> has GDBM/DB extensions enabled.</p></dd><dt><span class="term">-D <em class="replaceable"><code>x</code></em></span></dt><dd><p>
+Do not send duplicate autoresponses (see the
+<code class="option">-d</code> option) for at least
+<em class="replaceable"><code>x</code></em> days (default: 1 day). The
+<code class="option">-d</code> option creates a database of E-mail addresses and
+the times an
+autoresponse was last mailed to them. Another autoresponse to the same
+address will not be mailed until at least the amount of time specified by
+the <code class="option">-D</code> option has elapsed.</p></dd><dt><span class="term">-s "<em class="replaceable"><code>subject</code></em>"</span></dt><dd><p>
+Set the <code class="literal">Subject:</code> header on the autoresponse to
+<em class="replaceable"><code>subject</code></em>.</p></dd><dt><span class="term">-A "<em class="replaceable"><code>header: value</code></em>"</span></dt><dd><p>
+Add an arbitrary header to the
+autoresponse. Multiple <code class="option">-A</code> options are allowed.</p></dd></dl></div></div><div class="refsect1" lang="en" xml:lang="en"><a id="id410093" shape="rect"> </a><h2>SEE ALSO</h2><p>
+<a class="ulink" href="maildrop.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">maildrop</span>(1)</span></a>,
+<a class="ulink" href="reformail.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">reformail</span>(1)</span></a>,
+<a class="ulink" href="reformime.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">reformime</span>(1)</span></a>.
+</p></div></div></body></html>

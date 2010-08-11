@@ -1,0 +1,16 @@
+Source: autorespond
+Section: contrib/net
+Priority: optional
+Maintainer: Sam Johnston <samj@debian.org>
+Build-Depends: debhelper (>> 3.0.0)
+Standards-Version: 3.5.2
+
+Package: autorespond
+Architecture: any
+Depends: ${shlibs:Depends}
+Suggests: qmail
+Description: email autoresponder for qmail
+ autorespond sends an automatically generated response to emails for given
+ address(es). It catches simple situations such as mail from a mailer-daemon,
+ empty envelope sender, bulk precedence headers, etc.
+

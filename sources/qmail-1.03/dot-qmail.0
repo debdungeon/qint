@@ -1,0 +1,184 @@
+dot-qmail(5)                                                      dot-qmail(5)
+
+
+
+NNAAMMEE
+       dot-qmail - control the delivery of mail messages
+
+DDEESSCCRRIIPPTTIIOONN
+       Normally the qqmmaaiill--llooccaall program delivers each incoming message to your
+       system mailbox, _h_o_m_e_d_i_r//MMaaiillbbooxx, where _h_o_m_e_d_i_r is your home  directory.
+
+       It can instead write the mail to a different file or directory, forward
+       it to another address, distribute it to a mailing list, or even execute
+       programs, all under your control.
+
+TTHHEE QQMMAAIILL FFIILLEE
+       To  change  qqmmaaiill--llooccaall’s  behavior,  set up a ..qqmmaaiill file in your home
+       directory.
+
+       ..qqmmaaiill contains one or more lines.  Each line is  a  delivery  instruc‐
+       tion.   qqmmaaiill--llooccaall  follows  each instruction in turn.  There are five
+       types of delivery instructions: (1) comment; (2) program; (3)  forward;
+       (4) mbox; (5) maildir.
+
+       (1)  A comment line begins with a number sign:
+
+                 # this is a comment
+
+            qqmmaaiill--llooccaall ignores the line.
+
+       (2)  A program line begins with a vertical bar:
+
+                 |preline /usr/ucb/vacation djb
+
+            qqmmaaiill--llooccaall  takes  the rest of the line as a command to supply to
+            sshh.  See qqmmaaiill--ccoommmmaanndd((88)) for further information.
+
+       (3)  A forward line begins with an ampersand:
+
+                 &me@new.job.com
+
+            qqmmaaiill--llooccaall takes the rest of the line as a mail address; it  uses
+            qqmmaaiill--qquueeuuee  to  forward the message to that address.  The address
+            must contain a fully qualified domain name; it  must  not  contain
+            extra spaces, angle brackets, or comments:
+
+                 # the following examples are WRONG
+                 &me@new
+                 &<me@new.job.com>
+                 & me@new.job.com
+                 &me@new.job.com (New Address)
+
+            If  the  address begins with a letter or number, you may leave out
+            the ampersand:
+
+                 me@new.job.com
+
+            Note that qqmmaaiill--llooccaall omits its new RReettuurrnn--PPaatthh line when forward‐
+            ing messages.
+
+       (4)  An  _m_b_o_x  line begins with a slash or dot, and does not end with a
+            slash:
+
+                 /home/djb/Mailbox.sos
+
+            qqmmaaiill--llooccaall takes the entire line as a filename.  It  appends  the
+            mail  message to that file, using fflloocckk-style file locking if pos‐
+            sible.  qqmmaaiill--llooccaall stores the mail message  in  _m_b_o_x  format,  as
+            described in mmbbooxx((55)).
+
+            WWAARRNNIINNGG:: On many systems, anyone who can read a file can fflloocckk it,
+            and thus hold up qqmmaaiill--llooccaall’s delivery forever.  Do  not  deliver
+            mail to a publicly accessible file!
+
+            If  qqmmaaiill--llooccaall  is able to lock the file, but has trouble writing
+            to it (because, for example, the disk is full), it  will  truncate
+            the  file back to its original length.  However, it cannot prevent
+            mailbox corruption if the system crashes during delivery.
+
+       (5)  A _m_a_i_l_d_i_r line begins with a slash or dot, and ends with a slash:
+
+                 /home/djb/Maildir/
+
+            qqmmaaiill--llooccaall takes the entire line as the name of  a  directory  in
+            _m_a_i_l_d_i_r  format.   It reliably stores the incoming message in that
+            directory.  See mmaaiillddiirr((55)) for more details.
+
+       If ..qqmmaaiill has the execute bit set, it  must  not  contain  any  program
+       lines,  _m_b_o_x  lines,  or  _m_a_i_l_d_i_r  lines.  If qqmmaaiill--llooccaall sees any such
+       lines, it will stop and indicate a temporary failure.
+
+       If ..qqmmaaiill is completely empty (0 bytes long), or does not exist, qqmmaaiill--
+       llooccaall  follows  the  _d_e_f_a_u_l_t_d_e_l_i_v_e_r_y  instructions  set  by your system
+       administrator; normally _d_e_f_a_u_l_t_d_e_l_i_v_e_r_y is  ..//MMaaiillbbooxx,  so  qqmmaaiill--llooccaall
+       appends the mail message to MMaaiillbbooxx in _m_b_o_x format.
+
+       ..qqmmaaiill  may  contain extra spaces and tabs at the end of a line.  Blank
+       lines are allowed, but not for the first line of ..qqmmaaiill.
+
+       If ..qqmmaaiill is world-writable or group-writable,  qqmmaaiill--llooccaall  stops  and
+       indicates a temporary failure.
+
+SSAAFFEE QQMMAAIILL EEDDIITTIINNGG
+       Incoming messages can arrive at any moment.  If you want to safely edit
+       your ..qqmmaaiill file, first set the sticky bit on your home directory:
+
+            chmod +t $HOME
+
+       qqmmaaiill--llooccaall will temporarily defer delivery of any message  to  you  if
+       your  home  directory  is  sticky (or group-writable or other-writable,
+       which should never happen).  Make sure to
+
+            chmod -t $HOME
+
+       when you are done!  It’s a good idea to test your new  ..qqmmaaiill  file  as
+       follows:
+
+            qmail-local -n $USER ~ $USER ’’ ’’ ’’ ’’ ./Mailbox
+
+EEXXTTEENNSSIIOONN AADDDDRREESSSSEESS
+       In  the qqmmaaiill system, you control all local addresses of the form _u_s_e_r--
+       _a_n_y_t_h_i_n_g, as well as the  address  _u_s_e_r  itself,  where  _u_s_e_r  is  your
+       account  name.   Delivery  to  _u_s_e_r--_a_n_y_t_h_i_n_g  is controlled by the file
+       _h_o_m_e_d_i_r_/..qqmmaaiill--_a_n_y_t_h_i_n_g.  (These rules may be  changed  by  the  system
+       administrator; see qqmmaaiill--uusseerrss(5).)
+
+       The aalliiaass user controls all other addresses.  Delivery to _l_o_c_a_l is con‐
+       trolled by the file _h_o_m_e_d_i_r_/..qqmmaaiill--_l_o_c_a_l, where _h_o_m_e_d_i_r is aalliiaass’s home
+       directory.
+
+       In  the  following  description,  qqmmaaiill--llooccaall  is  handling  a  message
+       addressed to _l_o_c_a_l_@_d_o_m_a_i_n, where _l_o_c_a_l  is  controlled  by  ..qqmmaaiill--_e_x_t.
+       Here is what it does.
+
+       If  ..qqmmaaiill--_e_x_t  is completely empty, qqmmaaiill--llooccaall follows the _d_e_f_a_u_l_t_d_e_‐
+       _l_i_v_e_r_y instructions set by your system administrator.
+
+       If ..qqmmaaiill--_e_x_t doesn’t exist, qqmmaaiill--llooccaall will try some  default  ..qqmmaaiill
+       files.   For  example,  if  _e_x_t  is ffoooo--bbaarr, qqmmaaiill--llooccaall will try first
+       ..qqmmaaiill--ffoooo--bbaarr, then ..qqmmaaiill--ffoooo--ddeeffaauulltt,  and  finally  ..qqmmaaiill--ddeeffaauulltt.
+       If  none  of these exist, qqmmaaiill--llooccaall will bounce the message.  (Excep‐
+       tion: for the basic _u_s_e_r  address,  qqmmaaiill--llooccaall  treats  a  nonexistent
+       ..qqmmaaiill the same as an empty ..qqmmaaiill.)
+
+       WWAARRNNIINNGG:: For security, qqmmaaiill--llooccaall replaces any dots in _e_x_t with colons
+       before checking ..qqmmaaiill--_e_x_t.  For convenience, qqmmaaiill--llooccaall converts  any
+       uppercase letters in _e_x_t to lowercase.
+
+       When  qqmmaaiill--llooccaall  forwards  a  message as instructed in ..qqmmaaiill--_e_x_t (or
+       ..qqmmaaiill--ddeeffaauulltt), it checks whether ..qqmmaaiill--_e_x_t--oowwnneerr exists.  If so,  it
+       uses  _l_o_c_a_l--oowwnneerr@@_d_o_m_a_i_n  as the envelope sender for the forwarded mes‐
+       sage.  Otherwise it retains the envelope sender of  the  original  mes‐
+       sage.   Exception:  qqmmaaiill--llooccaall  always  retains  the original envelope
+       sender if it is the empty address or ##@@[[]], i.e., if this  is  a  bounce
+       message.
+
+       qqmmaaiill--llooccaall  also  supports  vvaarriiaabbllee eennvveellooppee rreettuurrnn ppaatthhss (VERPs): if
+       ..qqmmaaiill--_e_x_t--oowwnneerr  and  ..qqmmaaiill--_e_x_t--oowwnneerr--ddeeffaauulltt  both  exist,  it  uses
+       _l_o_c_a_l--oowwnneerr--@@_d_o_m_a_i_n--@@[[]]  as  the  envelope  sender.   This will cause a
+       recipient   _r_e_c_i_p@@_r_e_c_i_p_h_o_s_t   to   see   an    envelope    sender    of
+       _l_o_c_a_l--oowwnneerr--_r_e_c_i_p==_r_e_c_i_p_h_o_s_t@@_d_o_m_a_i_n.
+
+EERRRROORR HHAANNDDLLIINNGG
+       If  a  delivery  instruction  fails,  qqmmaaiill--llooccaall stops immediately and
+       reports  failure.   qqmmaaiill--llooccaall  handles  forwarding  after  all  other
+       instructions, so any error in another type of delivery will prevent all
+       forwarding.
+
+       If a program returns exit code 99, qqmmaaiill--llooccaall ignores  all  succeeding
+       lines in ..qqmmaaiill, but it still pays attention to previous forward lines.
+
+       To set up independent instructions,  where  a  temporary  or  permanent
+       failure  in  one  instruction  does  not  affect  the others, move each
+       instruction into a separate ..qqmmaaiill--_e_x_t  file,  and  set  up  a  central
+       ..qqmmaaiill  file that forwards to all of the ..qqmmaaiill--_e_x_ts.  Note that qqmmaaiill--
+       llooccaall can handle any number of forward lines simultaneously.
+
+SSEEEE AALLSSOO
+       envelopes(5),  maildir(5),  mbox(5),  qmail-users(5),   qmail-local(8),
+       qmail-command(8), qmail-queue(8), qmail-lspawn(8)
+
+
+
+                                                                  dot-qmail(5)

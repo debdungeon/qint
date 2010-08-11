@@ -1,0 +1,29 @@
+# Revision: 1
+Per confermare che vuoi che
+
+<#A#>
+
+venga cancellato dalla mailing list <#l#>, invia un
+messaggio vuoto all'indirizzo:
+
+<#R#>
+
+Di solito è sufficiente premere il bottone "Rispondi". Se non funziona,
+puoi copiare l'indirizzo e incollarlo nel campo "A:" di un nuovo
+messaggio.
+
+Oppure, clicca qui:
+        mailto:<#R#>
+
+Non ho controllato se il tuo indirizzo è al momento iscritto lla mailing
+list. Per vedere quale indirizzo hai usato per iscriverti, guarda nei
+messaggi che stai ricevendo dalla mailing list: ogni messaggio ha il
+tuo indirizzo nascosto nell'indirizzo di ritorno; ad esempio, l'utente
+mary@example.com riceverebbe i messaggi con l'indirizzo di ritorno:
+<<#l#>-return-<numero>-mary=example.com@<#h#>.
+
+<=q=>
+Alcuni programmi di posta sono difettosi e non sono in grado di gestire
+indirizzi molto lunghi. Se non riesci a rispondere a questa richiesta,
+spedisci un messaggio a <<#L#>-request@<#h#>>
+e metti l'intero indirizzo indicato sopra nel campo "Oggetto:".

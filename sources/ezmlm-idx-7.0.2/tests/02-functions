@@ -1,0 +1,157 @@
+fatal() {
+  for line in "$@"; do
+    ${ECHO} "$line" >&2
+  done
+  exit 100;
+}
+
+grephdr() {
+  # Search for the header line, and produce an error if it didn't match.
+  ${GREP} "^$*$" "$QQHDR" >/dev/null 2>&1 || \
+  {
+    ${ECHO} "Header is missing or wrong $1 line:";
+    ${GREP} -i "^$1" "$QQHDR"
+    BUG="${BUG} headers"
+    prompt "..............: "
+  }
+  # Remove any found lines from the header file
+  ${GREP} -iv "^$1" "$QQHDR" >"${TMP}hdr"
+  ${MV} -f "${TMP}hdr" "$QQHDR"
+}
+
+grepbody() {
+  ${GREP} "^$*$" "$QQBODY" >/dev/null 2>&1 || \
+  {
+    ${ECHO} "Body is missing or wrong $1 line:";
+    ${GREP} -i "^$1" "$QQBODY"
+    BUG="${BUG} body"
+    prompt "..............: "
+  }
+}
+
+grepbodynot() {
+  ${GREP} "^$*" "$QQBODY" >/dev/null 2>&1 && \
+  {
+    ${ECHO} "Body is contains extraneous $1 line:";
+    ${GREP} -i "^$1" "$QQBODY"
+    BUG="${BUG} body"
+    prompt "..............: "
+  }
+}
+
+grephdr_std() {
+  grephdr Message-ID: "<[0123456789]*\\.[0123456789]*\\.ezmlm@${HOST}>"
+  grephdr Delivered-To: "responder for ${LOC}@${HOST}"
+  grephdr MIME-Version: 1.0
+}
+
+grephdr_list() {
+  grephdr Mailing-List: "contact ${LOC}-help@${HOST}; run by ezmlm"
+  grephdr List-Help: "<mailto:${LOC}-help@${HOST}>"
+  grephdr List-Post: "<mailto:${LOC}@${HOST}>"
+  grephdr List-Subscribe: "<mailto:${LOC}-subscribe@${HOST}>"
+  if [ -n "$*" ]; then
+    grephdr List-Unsubscribe: "<mailto:${LOC}-unsubscribe@${HOST}>"
+  fi
+}
+
+grephdr_manage() {
+  grephdr_std
+  grephdr_list
+  grephdr Date: '..* ... .... ..:..:.. [-+]....'
+  grephdr From: "${LOC}-help@${HOST}"
+  grephdr To: "test@example.org"
+  grephdr Content-Type: "text/plain; charset=.*"
+}
+
+grephdr_empty() {
+  # Use this after all other grephdr checks to ensure nothing else was output
+  test -s "$QQHDR" && \
+  {
+    ${ECHO} "Headers contained extra lines:"
+    ${CAT} "$QQHDR"
+    BUG="${BUG} headers"
+  }
+}
+
+checkenv()
+{
+  msg="$1"
+  ${HEAD} -n 1 "$QQENV" | grep "^F$2$" >/dev/null \
+  || fatal "envelope for $msg has wrong sender"
+  test $# = $(wc -l <"$QQENV") \
+  || fatal "envelope for $msg has wrong number of recipients"
+  shift 2
+  for rcpt in "$@"; do
+    grep "^T$rcpt$" "$QQENV" >/dev/null \
+    || fatal "envelope for $msg is missing recipient $rcpt"
+  done
+}
+
+###############################
+# message generating function #
+###############################
+make_body()
+{
+  ${ECHO} "This is a simple message body"
+  ${ECHO} "--bound123ary"
+  ${ECHO} "Content-type: Text/pLAIn"
+  ${ECHO}
+  ${ECHO} "plain text"
+  ${ECHO} "--bound123ary"
+  ${ECHO} "Content-type: texT/Html"
+  ${ECHO}
+  ${ECHO} "html text"
+  ${ECHO} "--bound123ary--"
+  ${ECHO}
+  ${ECHO} "junk after boundary"
+  return 0
+}
+
+qqclean()
+{
+  ${RM} -f "$QQBODY" "$QQENV" "$QQHDR" "$QQMSG" "$QQMSG".*
+}
+
+make_message()
+{
+  ${ECHO} "ReCEIved: #LAST#"
+  ${ECHO} "ReCeIved: #PENULTIMATE#"
+  ${ECHO} "retuRN-RECeipt-to: nobody"
+  ${ECHO} "To: $TO"
+  ${ECHO} "CC: "
+  ${ECHO} " $CC"
+  ${ECHO} "FROM: $FROM"
+  if [ ! -z "$CONTENT" ]; then
+	${ECHO} "MIME-Version: 1.0"
+	${ECHO} "Content-type: $CONTENT;"
+	${ECHO} " boundary=bound123ary${AFTERBOUND}"
+  fi
+  if [ ! -z "$SUBJECT" ]; then
+	${ECHO} "Subject: $SUBJECT"
+  fi
+  ${ECHO}
+  make_body
+  return 0
+}
+
+#########################
+# Tests for file status #
+#########################
+exists() {
+  for file in "$@"; do
+    ${TEST} -e "$file" || return 1
+  done
+  return 0
+}
+
+msgexists() {
+  ${TEST} -s "$QQMSG" -a -s "${QQENV}"
+}
+
+#######################################
+# Extract parts of the message header #
+#######################################
+gethdr() {
+    ${SED} -e "/^$1:/!d; s/[^ ]* *//;" "$QQHDR"
+}

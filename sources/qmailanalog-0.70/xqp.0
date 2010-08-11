@@ -1,0 +1,25 @@
+xqp(1)                                                                  xqp(1)
+
+
+
+NNAAMMEE
+       xqp - locate a message given its qp
+
+SSYYNNTTAAXX
+       xxqqpp _q_p
+
+DDEESSCCRRIIPPTTIIOONN
+       xxqqpp  reads  message  lines  and  delivery lines printed by mmaattcchhuupp.  It
+       prints the lines that involve messages with long-term queue  identifier
+       _q_p.
+
+       Long-term  queue  identifiers  are not permanent identifiers.  They are
+       based on process IDs; 15-bit process IDs can easily wrap around in less
+       than an hour on a busy system.
+
+SSEEEE AALLSSOO
+       matchup(1)
+
+
+
+                                                                        xqp(1)

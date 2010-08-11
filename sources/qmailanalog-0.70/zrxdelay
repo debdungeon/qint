@@ -1,0 +1,10 @@
+#!/bin/sh
+# WARNING: This file was auto-generated. Do not edit!
+echo 'Recipients in the best order for mailing lists
+
+One line per recipient, sorted by avg. Information on each line:
+* avg is the _average_ xdelay for the recipient.
+* tries is the number of deliveries that avg is based on.
+'
+( echo avg tries recipient
+/usr/local/qmailanalog/bin/recipients | /usr/local/qmailanalog/bin/rxdelay ) | /usr/local/qmailanalog/bin/columnt

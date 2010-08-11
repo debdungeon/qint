@@ -1,0 +1,251 @@
+ezmlm-get(1)                                                      ezmlm-get(1)
+
+
+
+NNAAMMEE
+       ezmlm-get - handles mailing list archive retrieval and digests
+
+SSYYNNOOPPSSIISS
+       eezzmmllmm--ggeett [ --bbBBccCCppPPssSSvvVV ][ --ff _f_o_r_m_a_t ] _d_i_r [ _d_i_g_e_s_t_c_o_d_e_[_f_] ]
+
+DDEESSCCRRIIPPTTIIOONN
+       eezzmmllmm--ggeett  handles archive retrieval and optionally makes and sends out
+       digests for the mailing list stored in _d_i_r.  Subscribers of the  digest
+       list are stored in _d_i_r//ddiiggeesstt//ssuubbssccrriibbeerrss//.
+
+       The  contents of _d_i_r//hheeaaddeerraadddd are added to the header of outgoing mes‐
+       sages.
+
+       If _d_i_g_e_s_t_c_o_d_e is not specified on the command line, eezzmmllmm--ggeett will  try
+       to read it from the file _d_i_r//ddiiggeessttccooddee ..
+
+       eezzmmllmm--ggeett  is  normally invoked from a ..qqmmaaiill((77)) file.  It reads a mail
+       message from its standard input, and a mail envelope from  the  SSEENNDDEERR,
+       LLOOCCAALL, and HHOOSSTT environment variables.
+
+       eezzmmllmm--ggeett  uses LLOOCCAALL to determine where it is invoked. If LLOOCCAALL is the
+       list local name only, eezzmmllmm--ggeett assumes it is run  from  _d_i_r//eeddiittoorr  to
+       produce  a digest.  The digest is sent directly to the digest list sub‐
+       scribers.
+
+       If LLOOCCAALL is empty or undefined, eezzmmllmm--ggeett assumes it is  run  from  the
+       command  line  or  a  script.  In  this  case it behaves as if run from
+       _d_i_r//eeddiittoorr and sends out a digest to the digest subscribers.
+
+       Otherwise, eezzmmllmm--ggeett expects LLOOCCAALL to be of the form _l_i_s_t--_a_c_t_i_o_n.  Here
+       _l_i_s_t  is  the  first line of _d_i_r//oouuttllooccaall and _a_c_t_i_o_n is a request.  The
+       output is sent to the envelope sender.
+
+       eezzmmllmm--ggeett checks _a_c_t_i_o_n for ddiigg.._d_i_g_e_s_t_c_o_d_e, iinnddeexx, tthhrreeaadd, and ggeett.  If
+       _a_c_t_i_o_n  is  one  of  these,  eezzmmllmm--ggeett  handles the request and sends a
+       reply. If successful, it exits  99  (ignore  remaining  ..qqmmaaiill((77))  file
+       entries).   If  _a_c_t_i_o_n is not one of these, eezzmmllmm--ggeett exits 0 (success)
+       to pass the message on to later handlers, such as eezzmmllmm--mmaannaaggee((11)).
+
+       eezzmmllmm--ddiigg.._d_i_g_e_s_t_c_o_d_e returns a digest of messages  received  since  the
+       last  digest, unless numerical arguments are given.  _d_i_g_e_s_t_c_o_d_e must be
+       alphanumeric, and match (case-insensitive) _d_i_g_e_s_t_c_o_d_e on the  eezzmmllmm--ggeett
+       command  line.  Otherwise,  the  request  will  be  ignored. This is to
+       restrict digest creation. The body of the requesting message up to  the
+       first  line  starting with ’-’ is copied into the _a_d_m_i_n_i_s_t_r_i_v_i_a section
+       of the digest. This is followed by the contents of _d_i_r//tteexxtt//ddiiggeesstt,  if
+       this file exists.
+
+       NNoottee::  Anyone  who  can read your _d_i_r//mmaannaaggeerr and _d_i_r//ddiiggeessttccooddee files,
+       digest-requesting scripts, or mail log knows  the  _d_i_g_e_s_t_c_o_d_e  and  can
+       trigger digests.
+
+       eezzmmllmm--ggeett copies the _T_X_T___M_A_I_L_I_N_G___L_I_S_T message into a MMaaiilliinngg--LLiisstt field
+       in its response.  If the incoming message  has  a  MMaaiilliinngg--LLiisstt  field,
+       eezzmmllmm--ggeett  refuses  to  respond.   eezzmmllmm--ggeett also refuses to respond to
+       bounce messages.
+
+       If _d_i_r//lliissttiidd exists, eezzmmllmm--ggeett will assume that the format is  correct
+       and create a ‘‘List-ID:’’ header by placing the contents after the text
+       ‘‘List-ID: ’’.
+
+       If _d_i_r//qqmmqqppsseerrvveerrss exists, eezzmmllmm--ggeett wwiillll  uussee  qqmmaaiill--qqmmqqpp((11))  to  send
+       digests. Other messages are sent by the normal qmail mechanism.
+
+       If  _d_i_r//ppuubblliicc  does not exist, eezzmmllmm--ggeett rejects all archive retrieval
+       attempts, unless the --pp command line switch is used.
+
+       Archive retrieval actions can be of the form  aaccttiioonn[[ff]],  aaccttiioonn[[ff]].._n_u_m
+       or  aaccttiioonn[[ff]].._n_u_m___n_u_m_2,  where _n_u_m is the message number for the action
+       or _n_u_m___n_u_m_2 the range of message numbers for the action.
+
+       ff is an optional format specifier for _-_g_e_t, _-_t_h_r_e_a_d, and _-_d_i_g requests.
+       It  is allowed, but ignored for _-_i_n_d_e_x requests. Currently, the follow‐
+       ing are allowed:
+
+
+       rr      rfc1153. This is a ‘‘plain’’ non-MIME format for dumb clients.
+
+       mm      (Default.) MIME _m_u_l_t_i_p_a_r_t_/_d_i_g_e_s_t with a subset of ordered  head‐
+              ers  sorted.   Currently,  the following headers are included in
+              the order listed: Date:, To:, From:, Reply-To:,  Cc:,  MIME-Ver‐
+              sion:,  Content-Type:,  Message-ID:, and Keywords:.  This can be
+              customized with the optional file _d_i_r//ddiigghheeaaddeerrss,  which  should
+              contain the desired headers up to but not including the colon.
+
+              The  format  is no longer compliant with rfc1153, as the rfc1153
+              format is incompatible with rfc2046, with which  the  format  is
+              (should be) compatible.
+
+       xx      MIXED:  This is the same as the default MIME format, except that
+              the Content-Type is _m_u_l_t_i_p_a_r_t_/_m_i_x_e_d.  This helps  circumnavigate
+              a  Pine  bug:  when the digest is content-transfer-encoded, Pine
+              will refuse to display the initial text/plain part of  a  _m_u_l_t_i_‐
+              _p_a_r_t_/_d_i_g_e_s_t  message,  but  display  the  same  part of a _m_u_l_t_i_‐
+              _p_a_r_t_/_m_i_x_e_d message. Some MUAs for some strange reason treat  the
+              two  multipart  formats  differently. In some cases, ‘‘x’’ works
+              better than ‘‘m’’.
+
+       vv      VIRGIN: This is MIME  _m_u_l_t_i_p_a_r_t_/_d_i_g_e_s_t  with  messages  returned
+              without any header filtering.
+
+       nn      NATIVE:  This  is VIRGIN format without threading, i.e. messages
+              are presented in numerical order and the message index  is  sup‐
+              pressed.
+
+
+       For  flexibility  and  backwards  compatibility, the ’.’ separating the
+       action from the first argument can be replaced by ’-’, or omitted.  Any
+       non-alphanumeric character can separate _n_u_m_2 from _n_u_m.
+
+
+       If _a_c_t_i_o_n is _d_i_g_._d_i_g_e_s_t_c_o_d_e, eezzmmllmm--ggeett returns a digest of the messages
+       received since the last digest, and updates the digest issue counter.
+
+       If _a_c_t_i_o_n is _g_e_t, eezzmmllmm--ggeett sends back message(s) _n_u_m  or  _n_u_m  through
+       _n_u_m_2.   from  _d_i_r//aarrcchhiivvee//.   If _n_u_m is omitted and _d_i_r//ddiiggnnuumm does not
+       exist or is 0, the latest HISTGET message (default  30)  are  returned.
+       Otherwise,  the messages since the latest digest are returned including
+       the last message in that digest, so that always at least 1  message  is
+       send.  If the number of messages exceeds MAXGET (default 100), only the
+       MAXGET last messages are returned.  if _n_u_m is greater than  the  latest
+       message  in  the  archive  _and_ _n_u_m_2 is specified, the latest messages
+       back to HISTGET before the end of the latest digest up to  MAXGET  mes‐
+       sages  are  returned. This is a good way of always getting at least the
+       latest 30 messages without knowing the latest message  number.  A  link
+       with such a command could be put into e.g.  _d_i_r//tteexxtt//ssuubb--ookk.
+
+       _n_u_m and _n_u_m_2 are adjusted to make both > 0, and _n_u_m_2 >= _n_u_m.  If either
+       is greater than the largest message number processed,  it  is  silently
+       set  to the largest message number.  At most 100 messages are returned.
+
+       If _a_c_t_i_o_n is iinnddeexx_, eezzmmllmm--ggeett sends back the subjects  and  authors  of
+       the   message(s)   _n_u_m  or  _n_u_m  through  _n_u_m_2  in  sets  of  100  from
+       _d_i_r//aarrcchhiivvee//.  _n_u_m and _n_u_m_2 are reasonable adjusted as  for  ’get’.  No
+       warnings  are sent. At most 20 sets of 100 message entries are returned
+       per request. If _n_u_m is omitted, eezzmmllmm--ggeett returns the last 100-200 mes‐
+       sage entries, which automatically gives information about the last mes‐
+       sage number.
+
+       If _a_c_t_i_o_n is tthhrreeaadd_, eezzmmllmm--ggeett sends back the message(s) that  have  an
+       index subject entry identical to that of message _n_u_m from _d_i_r//aarrcchhiivvee//.
+
+       If _n_u_m_2 is given it is ignored. If _n_u_m is out of range, and error  mes‐
+       sage  is returned. The message range scanned for the subject is limited
+       to 2000 messages before and after the master message, i.e.  the  tthhrreeaadd
+       argument.   This  limit protects very large archives.  Most threads are
+       expected to be considerably more short-lived.  In  the  unlikely  event
+       that  there  are  further  messages, these can be retrieved by a second
+       request for the highest/lowest message returned in the first request.
+
+       eezzmmllmm--ggeett reads _d_i_r//ccooppyylliinneess to determine how many lines of the origi‐
+       nal  message  to copy into the outgoing message.  If this file is empty
+       or not present, a value of _0 is presumed, meaning that only the  header
+       is copied.
+
+OOPPTTIIOONNSS
+       --bb     (Default.)   Copy  administrative information and the request to
+              the bottom of replies.  This informs the recipient of other com‐
+              mands,  and allows some error tracking in case the recipient did
+              not originate the request.
+
+       --BB     Suppress the normal administrative information and request copy.
+              This  may  make it harder for the recipient to diagnose problems
+              and learn commands.
+
+       --cc     (Default.)  Process and  reply  to  commands  (does  not  affect
+              digests).
+
+       --CC     Ignore all commands except digest.
+
+       --ff _f_o_r_m_a_t
+              eezzmmllmm--ggeett will use _f_o_r_m_a_t as the default format for all returned
+              message collections. The  default  is  the  first  character  in
+              _d_i_r//ddiiggffoorrmmaatt,  or ’m’ if it does not exist.  This produces MIME
+              with a header subset (see above). Format  specifiers  sent  with
+              individual  requests override the default set with the --ff switch
+              or the _d_i_r//ddiiggffoorrmmaatt file.
+
+       --pp     -get, -index, and -thread commands are available to  all  users,
+              provided  other  flags  are  permissive.  This  overrides normal
+              behavior, which is to allow archive retrieval  only  to  modera‐
+              tors,  when  _d_i_r//mmooddggeettoonnllyy exists or _d_i_r//ppuubblliicc does not exist.
+              This is useful to set up non-public lists that still give  users
+              archive access.
+
+       --PP     -get, -index, and -thread commands are available only to modera‐
+              tors, even if _d_i_r//ppuubblliicc exists and _d_i_r//mmooddggeettoonnllyy does not. The
+              --CC  and  --ss  flags can restrict this further. This is useful for
+              public lists with archive retrieval restricted to  a  subset  of
+              users (moderators).
+
+       --ss     -get,  -index, and -thread requests are processed only if SSEENNDDEERR
+              is a subscriber.  This overrides normal behavior,  which  is  to
+              allow  anyone to issue -get, -index, and -thread requests unless
+              _d_i_r//ssuubbggeettoonnllyy exists.
+
+       --SS     Anyone can issue -get, -index, and -thread requests.
+
+       --vv     Print version info.
+
+       --VV     Print version info.
+
+CCHHAARRAACCTTEERR SSEETTSS
+       If _d_i_r//cchhaarrsseett exists, eezzmmllmm--ggeett will use the character set listed  for
+       all  messages.  Otherwise,  the  default ‘‘us-ascii’’ will be used. The
+       character set can be suffixed by ‘‘:’’ followed by a code. If the  code
+       is  ‘‘Q’’, outgoing messages are sent as ‘‘Quoted-Printable’’, if it is
+       ‘‘B’’ they are sent ‘‘base64’’ encoded.  Otherwise, text is sent as is.
+
+FFIILLEESS
+       _d_i_r//ddiiggnnuumm
+              The last message included in the latest normal mode digest.
+
+       _d_i_r//ddiiggiissssuuee
+              The issue number of the latest normal mode digest.
+
+       _d_i_r//tteexxtt//ggeett--bbaadd
+              Returned if a/the message cannot be found.
+
+       _d_i_r//tteexxtt//ddiiggeesstt
+              Copied  into the _A_d_m_i_n_i_s_t_r_i_v_i_a section of digests after the body
+              of the requesting message.
+
+       _d_i_r//cchhaarrsseett
+              The character set used for all eezzmmllmm--ggeett messages  (see  above).
+              If  not  present,  the  default,  ‘‘us-ascii’’,  is used without
+              encoding.
+
+BBUUGGSS
+       The digest format per rfc2046 should (but is not required to) be multi‐
+       part/mixed with the table-of-contents a text/plain part, and the entire
+       remainder of the digest a multipart/digest part.  The  multipart/digest
+       in  turn  should contain all the messages. Many MUA’s fail to split out
+       the individual messages from such a hierarchy, so the  format  used  by
+       eezzmmllmm--ggeett is a simple multipart/digest, explicitly typing the table-of-
+       contents to text/plain, with the ‘‘x’’ format changing  the  mail  con‐
+       tent-type to multipart/mixed.
+
+SSEEEE AALLSSOO
+       ezmlm-make(1),  ezmlm-manage(1),  ezmlm-send(1),  ezmlm(5),  qmail-com‐
+       mand(8), qmail-qmqp(1)
+
+
+
+
+                                                                  ezmlm-get(1)

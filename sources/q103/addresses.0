@@ -1,0 +1,176 @@
+addresses(5)                                                      addresses(5)
+
+
+
+NNAAMMEE
+       addresses - formats for Internet mail addresses
+
+IINNTTRROODDUUCCTTIIOONN
+       A mmaaiill aaddddrreessss is a string of characters containing @.
+
+       Every mail address has a llooccaall ppaarrtt and a ddoommaaiinn ppaarrtt.  The domain part
+       is everything after the final @.  The local part is everything  before.
+
+       For example, the mail addresses
+
+          God@heaven.af.mil
+          @heaven.af.mil
+          @at@@heaven.af.mil
+
+       all  have  domain  part hheeaavveenn..aaff..mmiill.  The local parts are GGoodd, empty,
+       and @@aatt@@.
+
+       Some domains have owners.  It is up to the owner  of  hheeaavveenn..aaff..mmiill  to
+       say  how  mail messages will be delivered to addresses with domain part
+       hheeaavveenn..aaff..mmiill.
+
+       The domain part of an address is interpreted without regard to case, so
+
+          God@heaven.af.mil
+          God@HEAVEN.AF.MIL
+          God@Heaven.AF.Mil
+
+       all refer to the same domain.
+
+       There  is  one  exceptional address that does not contain an @: namely,
+       the empty string.  The empty string  cannot  be  used  as  a  recipient
+       address.   It  can  be used as a sender address so that the real sender
+       doesn’t receive bounces.
+
+QQMMAAIILL EEXXTTEENNSSIIOONNSS
+       The qqmmaaiill system allows several further  types  of  addresses  in  mail
+       envelopes.
+
+       First,  an  envelope  recipient  address without an @ is interpreted as
+       being at _e_n_v_n_o_a_t_h_o_s_t.  For example, if  _e_n_v_n_o_a_t_h_o_s_t  is  hheeaavveenn..aaff..mmiill,
+       the address GGoodd will be rewritten as GGoodd@@hheeaavveenn..aaff..mmiill.
+
+       Second, the address ##@@[[]] is used as an envelope sender address for dou‐
+       ble bounces.
+
+       Third, envelope sender addresses of the form _p_r_e@@_h_o_s_t--@@[[]] are  used  to
+       support  variable  envelope  return  paths  (VERPs).   qqmmaaiill--sseenndd  will
+       rewrite  _p_r_e@@_h_o_s_t--@@[[]]  as  _p_r_e_r_e_c_i_p==_d_o_m_a_i_n@@_h_o_s_t   for   deliveries   to
+       _r_e_c_i_p@@_d_o_m_a_i_n.   Bounces  directly  from  qqmmaaiill--sseenndd  will  come back to
+       _p_r_e@@_h_o_s_t.
+
+CCHHOOOOSSIINNGG MMAAIILL AADDDDRREESSSSEESS
+       Here are some suggestions on choosing mail addresses for the  Internet.
+
+       Do  not  use  non-ASCII  characters.   Under RFC 822 and RFC 821, these
+       characters cannot be used in mail headers  or  in  SMTP  commands.   In
+       practice, they are regularly corrupted.
+
+       Do  not  use ASCII control characters.  NUL is regularly corrupted.  CR
+       and LF cannot be used in some combinations and are  corrupted  in  all.
+       None of these characters are usable on business cards.
+
+       Avoid spaces and the characters
+
+          \"<>()[],;:
+
+       These  all  require quoting in mail headers and in SMTP.  Many existing
+       mail programs do not handle quoting properly.
+
+       Do not use @ in a local part.  @ requires quoting in mail  headers  and
+       in  SMTP.   Many programs incorrectly look for the first @, rather than
+       the last @, to find the domain part of an address.
+
+       In a local part, do not use two consecutive dots, a dot at  the  begin‐
+       ning,  or a dot at the end.  Any of these would require quoting in mail
+       headers.
+
+       Do not use an empty local part; it cannot appear in SMTP commands.
+
+       Avoid local parts longer than 64 characters.
+
+       Be wary of uppercase letters in local parts.  Some mail  programs  (and
+       users!)     will     incorrectly     convert    GGoodd@@hheeaavveenn..aaff..mmiill    to
+       ggoodd@@hheeaavveenn..aaff..mmiill.
+
+       Be wary of the following characters:
+
+          $&!#~‘’^*|{}
+
+       Some users will not know how to feed these characters safely  to  their
+       mail programs.
+
+       In  domain names, stick to letters, digits, dash, and dot.  One popular
+       DNS resolver has, under the banner of security, recently begun destroy‐
+       ing  domain  names  that  contain  certain  other characters, including
+       underscore.  Exception: A dotted-decimal IP address in  brackets,  such
+       as  [[112277..00..00..11]],  identifies a domain owned by whoever owns the host at
+       that IP address, and can be used safely.
+
+       In a domain name, do not use two consecutive dots, a dot at the  begin‐
+       ning, or a dot at the end.  This means that, when a domain name is bro‐
+       ken down into components separated by dots, there are no  empty  compo‐
+       nents.
+
+       Always  use  at  least  one  dot  in a domain name.  If you own the mmiill
+       domain, don’t bother using the address rroooott@@mmiill;  most  users  will  be
+       unable to send messages to that address.  Same for the root domain.
+
+       Avoid domain names longer than 64 characters.
+
+EENNCCOODDEEDD AADDDDRREESSSSEESS IINN SSMMTTPP CCOOMMMMAANNDDSS
+       RFC  821  defines  an encoding of mail addresses in SMTP.  For example,
+       the addresses
+
+          God@heaven.af.mil
+          a"quote@heaven.af.mil
+          The Almighty.One@heaven.af.mil
+
+       could be encoded in RCPT commands as
+
+          RCPT TO:<God@heaven.af.mil>
+          RCPT TO:<a\"quote@heaven.af.mil>
+          RCPT TO:<The\ Almighty.One@heaven.af.mil>
+
+       There are several restrictions in RFC 821 on the  mail  addresses  that
+       can be used over SMTP.  Non-ASCII characters are prohibited.  The local
+       part must not be empty.  The domain part must be a sequence of elements
+       separated by dots, where each element is either a component, a sequence
+       of digits preceded by #, or a dotted-decimal IP address  surrounded  by
+       brackets.   The  only  allowable  characters in components are letters,
+       digits, and dashes.  Every component must (believe it or not)  have  at
+       least  three characters; the first character must be a letter; the last
+       character must not be a hyphen.
+
+EENNCCOODDEEDD AADDDDRREESSSSEESS IINN MMAAIILL HHEEAADDEERRSS
+       RFC 822 defines an encoding of mail addresses in certain header  fields
+       in a mail message.  For example, the addresses
+
+          God@heaven.af.mil
+          a"quote@heaven.af.mil
+          The Almighty.One@heaven.af.mil
+
+       could be encoded in a TToo field as
+
+          To: God@heaven.af.mil,
+            <@brl.mil:"a\"quote"@heaven.af.mil>,
+              "The Almighty".One@heaven.af.mil
+
+       or perhaps
+
+          To: < "God"@heaven .af.mil>,
+            "a\"quote" (Who?) @ heaven . af.  mil
+            , God<"The Almighty.One"@heaven.af.mil>
+
+       There  are  several restrictions on the mail addresses that can be used
+       in these header fields.   Non-ASCII  characters  are  prohibited.   The
+       domain  part  must  be  a sequence of elements separated by dots, where
+       each element either (1) begins with [ and ends  with  ]  or  (2)  is  a
+       nonempty string of printable ASCII characters not including any of
+
+          \".<>()[],;:
+
+       and not including space.
+
+SSEEEE AALLSSOO
+       envelopes(5), qmail-header(5), qmail-inject(8), qmail-remote(8), qmail-
+       smtpd(8)
+
+
+
+                                                                  addresses(5)

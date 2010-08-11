@@ -1,0 +1,39 @@
+splogger(8)                                                        splogger(8)
+
+
+
+NNAAMMEE
+       splogger - make entries in syslog
+
+SSYYNNOOPPSSIISS
+       ssppllooggggeerr [ _t_a_g [ _f_a_c ] ]
+
+DDEESSCCRRIIPPTTIIOONN
+       ssppllooggggeerr  reads  a series of messages and feeds them to ssyysslloogg.  At the
+       front of each message it puts _t_a_g (default: ssppllooggggeerr) and  a  numerical
+       timestamp.
+
+       ssppllooggggeerr  checks  for  aalleerrtt:: or wwaarrnniinngg:: at the beginning of each mes‐
+       sage.  It selects a priority of  LOG_ALERT,  LOG_WARNING,  or  LOG_INFO
+       accordingly.
+
+       ssppllooggggeerr  logs  messages  with  facility _f_a_c.  _f_a_c (default: 2) must be
+       numeric.
+
+       ssppllooggggeerr converts unprintable characters to question marks.
+
+       ssppllooggggeerr does not log blank lines.
+
+       ssppllooggggeerr folds messages after 800 characters, since ssyysslloogg can’t handle
+       long  messages.   ssppllooggggeerr  uses a + after the timestamp to mark folded
+       lines.
+
+       Note that the ssyysslloogg mechanism is inherently unreliable:  it  does  not
+       guarantee that messages will be logged.  It is also very slow.
+
+SSEEEE AALLSSOO
+       syslog(3), logger(8)
+
+
+
+                                                                   splogger(8)

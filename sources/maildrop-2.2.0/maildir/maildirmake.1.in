@@ -1,0 +1,394 @@
+.\"  <!-- $Id: maildirmake.sgml,v 1.10 2009/05/10 14:48:33 mrsam Exp $ -->
+.\"  <!-- Copyright 1998 - 2009 Double Precision, Inc.  See COPYING for -->
+.\"  <!-- distribution information. -->
+.\"     Title: maildirmake
+.\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
+.\" Generator: DocBook XSL Stylesheets v1.74.0 <http://docbook.sf.net/>
+.\"      Date: 05/10/2009
+.\"    Manual: Double Precision, Inc.
+.\"    Source: Double Precision, Inc.
+.\"  Language: English
+.\"
+.TH "MAILDIRMAKE" "1" "05/10/2009" "Double Precision, Inc." "Double Precision, Inc."
+.\" -----------------------------------------------------------------
+.\" * (re)Define some macros
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" toupper - uppercase a string (locale-aware)
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.de toupper
+.tr aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ
+\\$*
+.tr aabbccddeeffgghhiijjkkllmmnnooppqqrrssttuuvvwwxxyyzz
+..
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" SH-xref - format a cross-reference to an SH section
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.de SH-xref
+.ie n \{\
+.\}
+.toupper \\$*
+.el \{\
+\\$*
+.\}
+..
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" SH - level-one heading that works better for non-TTY output
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.de1 SH
+.\" put an extra blank line of space above the head in non-TTY output
+.if t \{\
+.sp 1
+.\}
+.sp \\n[PD]u
+.nr an-level 1
+.set-an-margin
+.nr an-prevailing-indent \\n[IN]
+.fi
+.in \\n[an-margin]u
+.ti 0
+.HTML-TAG ".NH \\n[an-level]"
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+\." make the size of the head bigger
+.ps +3
+.ft B
+.ne (2v + 1u)
+.ie n \{\
+.\" if n (TTY output), use uppercase
+.toupper \\$*
+.\}
+.el \{\
+.nr an-break-flag 0
+.\" if not n (not TTY), use normal case (not uppercase)
+\\$1
+.in \\n[an-margin]u
+.ti 0
+.\" if not n (not TTY), put a border/line under subheading
+.sp -.6
+\l'\n(.lu'
+.\}
+..
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" SS - level-two heading that works better for non-TTY output
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.de1 SS
+.sp \\n[PD]u
+.nr an-level 1
+.set-an-margin
+.nr an-prevailing-indent \\n[IN]
+.fi
+.in \\n[IN]u
+.ti \\n[SN]u
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.ps \\n[PS-SS]u
+\." make the size of the head bigger
+.ps +2
+.ft B
+.ne (2v + 1u)
+.if \\n[.$] \&\\$*
+..
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" BB/BE - put background/screen (filled box) around block of text
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.de BB
+.if t \{\
+.sp -.5
+.br
+.in +2n
+.ll -2n
+.gcolor red
+.di BX
+.\}
+..
+.de EB
+.if t \{\
+.if "\\$2"adjust-for-leading-newline" \{\
+.sp -1
+.\}
+.br
+.di
+.in
+.ll
+.gcolor
+.nr BW \\n(.lu-\\n(.i
+.nr BH \\n(dn+.5v
+.ne \\n(BHu+.5v
+.ie "\\$2"adjust-for-leading-newline" \{\
+\M[\\$1]\h'1n'\v'+.5v'\D'P \\n(BWu 0 0 \\n(BHu -\\n(BWu 0 0 -\\n(BHu'\M[]
+.\}
+.el \{\
+\M[\\$1]\h'1n'\v'-.5v'\D'P \\n(BWu 0 0 \\n(BHu -\\n(BWu 0 0 -\\n(BHu'\M[]
+.\}
+.in 0
+.sp -.5v
+.nf
+.BX
+.in
+.sp .5v
+.fi
+.\}
+..
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" BM/EM - put colored marker in margin next to block of text
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.de BM
+.if t \{\
+.br
+.ll -2n
+.gcolor red
+.di BX
+.\}
+..
+.de EM
+.if t \{\
+.br
+.di
+.ll
+.gcolor
+.nr BH \\n(dn
+.ne \\n(BHu
+\M[\\$1]\D'P -.75n 0 0 \\n(BHu -(\\n[.i]u - \\n(INu - .75n) 0 0 -\\n(BHu'\M[]
+.in 0
+.nf
+.BX
+.in
+.fi
+.\}
+..
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "Name"
+maildirmake \- create maildirs and maildir folders
+.SH "Synopsis"
+.fam C
+.HP \w'\fBmaildirmake\fR\ 'u
+\fBmaildirmake\fR [options...] {\fImaildir\fR}
+.fam
+.SH "DESCRIPTION"
+.PP
+The
+\fBmaildirmake\fR
+command creates maildirs, and maildir folders\&. This documentation describes the
+\fBmaildirmake\fR
+command from the
+Courier
+mail server, which creates an extended form of maildirs that implements additional extensions beyond the basic maildir properties that were first implemented in the Qmail mail server\&.
+.SH "OPTIONS"
+.PP
+\FC\-S\F[]
+.RS 4
+create a "sharable" maildir\&. A sharable maildir has slightly different permissions which allows creation of publicly\-shared folders\&.
+.RE
+.PP
+\FC\-q\F[] \fIquota\fR
+.RS 4
+install a quota on the maildir\&. See
+\m[blue]\fB\fBmaildirquota\fR(7)\fR\m[]\&\s-2\u[1]\d\s+2, below\&.
+.RE
+.PP
+\FC\-f\F[] \fIfolder\fR
+.RS 4
+do not create a maildir, but create a folder in an existing maildir\&.
+.RE
+.PP
+\FC\-s\F[] \fImode\fR
+.RS 4
+create a publicly accessible folder in an existing sharable maildir\&. First, use the
+\fB\-S\fR
+option to create a sharable maildir\&. Then, run
+\fBmaildirmake\fR
+again with the
+\fB\-s\fR
+option to create publicly accessible folders\&.
+\fImode\fR
+is a comma\-separated list of the following keywords:
+\FCread\F[]
+\- readonly folder, only you can write messages to this folder;
+\FCwrite\F[]
+\- anyone can read and write messages to this folder;
+\FCgroup\F[]
+\- only allow members of your own system group to access messages in this folder (instead of everyone)\&.
+.RE
+.PP
+\FC\-\-add\F[] \fIname\fR=\fIpathname\fR, \FC\-\-del\F[] \fIname\fR
+.RS 4
+create or delete the directories and links needed to access shared folders\&. See below for more information\&.
+.RE
+.SS "FOLDERS"
+.PP
+This
+\fBmaildirmake\fR
+command supports enhanced maildirs that contain folders\&.
+.PP
+By itself,
+\fBmaildirmake\fR
+makes a new subdirectory
+\fImaildir\fR, and creates all the necessary structures\&. The
+\fB\-f\fR
+option creates a new "folder" within an existing
+\fImaildir\fR\&.
+\fImaildir\fR
+must already exist, and the
+\fBmaildirmake\fR
+command will create a new folder in the maildir\&.
+.PP
+Folders are simply subdirectories inside the main maildir whose names start with a period, and which are themselves maildirs\&. For example, the command "\fBmaildirmake \-f Drafts mail/Maildir\fR" creates
+\FCmail/Maildir/\&.Drafts\F[], that has the usual
+\FCtmp\F[],
+\FCnew\F[]
+and
+\FCcur\F[]\&. You MUST use the
+\fB\-f\fR
+option, instead of specifying
+\FCmail/Maildir/\&.Drafts\F[]
+directly, in order to correctly initialize certain enhanced maildir features\&.
+.PP
+Folders cannot be created directly within other folders\&. Running
+\fBmaildirmake \-f Urgent mail/Maildir/\&.Drafts\fR
+will not work\&. Instead, the period character is designated as a hierarchy separator, run
+\fBmaildirmake \-f Drafts\&.Urgent mail/Maildir\fR
+instead\&. This creates
+\FCmail/Maildir/\&.Drafts\&.Urgent\F[], and all mail software that supports enhanced maildirs will interpret it as a subfolder Urgent of the Drafts folder\&.
+.SS "SHARED FOLDERS"
+.PP
+This is another extension to the Maildir format that allows folders to be shared between multiple clients\&.
+.if n \{\
+.sp
+.\}
+.RS 4
+.BM yellow
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBNote\fR
+.ps -1
+.br
+.PP
+The
+Courier
+IMAP server implements two types of shared folders: filesystem permission\-based shared folders, as well as virtual shared folders based on IMAP access control lists\&. Use the
+\fBmaildirmake\fR
+command to implement shared folders based on filesystem permissions\&. The
+\m[blue]\fB\fBmaildiracl\fR(1)\fR\m[]\&\s-2\u[2]\d\s+2
+command manages access control lists, which are used by virtual shared folders\&.
+.PP
+See the
+Courier
+IMAP server documentation for more information\&.
+.sp .5v
+.EM yellow
+.RE
+.PP
+First, you need to create a collection of sharable folders, as a separate maildir:
+.sp .if n \{\ .RS 4 .\} .fam C .ps -1 .nf .BB lightgray \fBmaildirmake \-S /usr/local/share/maildirs/notices\fR .EB lightgray .fi .fam .ps +1 .if n \{\ .RE .\}
+.PP
+Then, create individuals folders that will be accessed in shared mode:
+.sp .if n \{\ .RS 4 .\} .fam C .ps -1 .nf .BB lightgray \fBmaildirmake \-s write \-f Weekly /usr/local/share/maildirs/notices\fR .EB lightgray .fi .fam .ps +1 .if n \{\ .RE .\}
+.PP
+In this example, the "Weekly" folder is created, with read/write access to everyone\&. Multiple folders can be created in the same maildir, with different access permissions\&. Everyone can create a sharable maildir\&. The access privileges for individual folders are set by the
+\fB\-s\fR
+option, and are implemented using traditional filesystem permissions\&.
+.PP
+Use the
+\fB\-\-add\fR
+and
+\fB\-\-del\fR
+options to add a sharable maildir to an existing maildir\&. Client software that implements this extension will now know where to find sharable folders:
+.sp .if n \{\ .RS 4 .\} .fam C .ps -1 .nf .BB lightgray \fBmaildirmake \-\-add notices=/usr/local/share/maildirs/notices $HOME/Maildir\fR .EB lightgray .fi .fam .ps +1 .if n \{\ .RE .\}
+.PP
+
+\FC$HOME/Maildir\F[]
+is your main maildir\&. The argument to
+\fB\-add\fR
+is
+\fInick\fR=\fIpath\fR\&.
+\fInick\fR
+is a nickname for this collection of sharable folders, and
+\fIpath\fR
+is the location of the sharable maildir\&. All folders in the sharable maildir that you have access to \-\- such as "Weekly", in this case, will now be accessible\&. Multiple sharable maildirs can be added, by giving each one a unique
+\fInick\fR\&.
+.PP
+The
+\fB\-\-del\fR
+option "disconnects" the sharable maildir from the main maildir\&.
+.SS "GLOBAL SHARED FOLDERS"
+.PP
+Normally
+\fB\-add\fR
+command must be run for every maildir which needs to access the sharable maildir\&. Alternatively the file
+\FC@sysconfdir@/maildirshared\F[]
+can be created, to specify a default set of sharable maildirs\&. Each line in this file takes the following format:
+.sp .if n \{\ .RS 4 .\} .fam C .ps -1 .nf .BB lightgray \fInick\fR<tab>\fIpath\fR .EB lightgray .fi .fam .ps +1 .if n \{\ .RE .\}
+.PP
+\fInick\fR
+is a short nickname for the sharable maildir,
+<tab>
+is a single tab character,
+\fIpath\fR
+is the pathname to the sharable maildir\&.
+.SS "ACCESSING SHARED FOLDERS"
+.PP
+You may have read or write access to a shared folder\&. If you have write access, you can add messages to the shared folder\&. You can also delete messages that you\'ve added\&.
+.PP
+Anyone can create a sharable maildir, so if the sharable maildir is actually created by you, can can delete any message, not just your own\&.
+.SH "SEE ALSO"
+.PP
+
+\m[blue]\fB\fBmaildir\fR(5)\fR\m[]\&\s-2\u[3]\d\s+2,
+\m[blue]\fB\fBmaildiracl\fR(1)\fR\m[]\&\s-2\u[2]\d\s+2,
+\m[blue]\fB\fBmaildirkw\fR(1)\fR\m[]\&\s-2\u[4]\d\s+2,
+\m[blue]\fB\fBmaildrop\fR(1)\fR\m[]\&\s-2\u[5]\d\s+2,
+\m[blue]\fB\fBmaildirquota\fR(7)\fR\m[]\&\s-2\u[1]\d\s+2,
+\m[blue]\fB\fBdeliverquota\fR(8)\fR\m[]\&\s-2\u[6]\d\s+2,
+\m[blue]\fB\fBmaildropfilter\fR(7)\fR\m[]\&\s-2\u[7]\d\s+2,
+\m[blue]\fBhttp://www\&.qmail\&.org/man/man5/maildir\&.html\fR\m[]\&.
+.SH "Notes"
+.IP " 1." 4
+\fBmaildirquota\fR(7)
+.RS 4
+\%[set $man.base.url.for.relative.links]/maildirquota.html
+.RE
+.IP " 2." 4
+\fBmaildiracl\fR(1)
+.RS 4
+\%[set $man.base.url.for.relative.links]/maildiracl.html
+.RE
+.IP " 3." 4
+\fBmaildir\fR(5)
+.RS 4
+\%[set $man.base.url.for.relative.links]/maildir.html
+.RE
+.IP " 4." 4
+\fBmaildirkw\fR(1)
+.RS 4
+\%[set $man.base.url.for.relative.links]/maildirkw.html
+.RE
+.IP " 5." 4
+\fBmaildrop\fR(1)
+.RS 4
+\%[set $man.base.url.for.relative.links]/maildrop.html
+.RE
+.IP " 6." 4
+\fBdeliverquota\fR(8)
+.RS 4
+\%[set $man.base.url.for.relative.links]/deliverquota.html
+.RE
+.IP " 7." 4
+\fBmaildropfilter\fR(7)
+.RS 4
+\%[set $man.base.url.for.relative.links]/maildropfilter.html
+.RE

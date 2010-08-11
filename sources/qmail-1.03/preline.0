@@ -1,0 +1,35 @@
+preline(1)                                                          preline(1)
+
+
+
+NNAAMMEE
+       preline - prepend lines to message
+
+SSYYNNOOPPSSIISS
+       in ..qqmmaaiill_e_x_t: || pprreelliinnee _c_o_m_m_a_n_d
+
+DDEESSCCRRIIPPTTIIOONN
+       pprreelliinnee  feeds  each incoming mail message through _c_o_m_m_a_n_d.  At the top
+       of each message it inserts a UUCP-style FFrroomm__ line, a RReettuurrnn--PPaatthh line,
+       and a DDeelliivveerreedd--TToo line.
+
+       pprreelliinnee  is  useful  for pprrooccmmaaiill and ELM’s ffiilltteerr, which do not under‐
+       stand the qqmmaaiill--ccoommmmaanndd environment variables.
+
+OOPPTTIIOONNSS
+       --dd     Do not include the DDeelliivveerreedd--TToo line. You should use this option
+              when  the  recipient  of  the  incoming mail message is actually
+              under remote control, but was sent here through ccoonnttrrooll//vviirrttuuaall‐‐
+              ddoommaaiinnss for manual routing.
+
+       --ff     Do not include the FFrroomm__ line. You should use this option except
+              for _c_o_m_m_a_n_ds that create _m_b_o_x files.
+
+       --rr     Do not include the RReettuurrnn--PPaatthh line.
+
+SSEEEE AALLSSOO
+       mbox(5), qmail-command(8)
+
+
+
+                                                                    preline(1)

@@ -1,0 +1,23 @@
+ezmlm-accept(1)                                                ezmlm-accept(1)
+
+
+
+NNAAMMEE
+       ezmlm-accept - accept messages in moderation queue
+
+SSYYNNOOPPSSIISS
+       eezzmmllmm--aacccceepptt _d_i_r _f_i_l_e [ _f_i_l_e_1 _._._.  ]
+
+DDEESSCCRRIIPPTTIIOONN
+       eezzmmllmm--aacccceepptt  copies _f_i_l_e, _f_i_l_e_1, ...  to eezzmmllmm--sseenndd _d_i_r.  eezzmmllmm--aacccceepptt
+       removes each file that was successfully processed by eezzmmllmm--sseenndd.
+
+       This can be used to manually ‘‘accept’’ messages in a _e_z_m_l_m  moderation
+       queue.
+
+SSEEEE AALLSSOO
+       ezmlm(5), ezmlm-moderate(1), ezmlm-send(1), ezmlm-store(1)
+
+
+
+                                                               ezmlm-accept(1)

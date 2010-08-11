@@ -1,0 +1,73 @@
+ezmlm-tstdig(1)                                                ezmlm-tstdig(1)
+
+
+
+NNAAMMEE
+       ezmlm-tstdig - Tests if a digest should be created
+
+SSYYNNOOPPSSIISS
+       eezzmmllmm--ttssttddiigg [ --kk _k_b_y_t_e_s ] [ --mm _m_s_g ] [ --tt _t_i_m_e ] _d_i_r
+
+       eezzmmllmm--ttssttddiigg  reads  files  in the list directory _d_i_r and determines if
+       any of the criteria specified by the options are met.  If they are,  or
+       if  all  options  specified are 0, eezzmmllmm--ttssttddiigg exits with success (0).
+       Otherwise, eezzmmllmm--ttssttddiigg exits (99), or in case  of  errors,  (100)  for
+       permanent and (111) for temporary errors.
+
+       The  normal  use  of  eezzmmllmm--ttssttddiigg  is  to place it in a script so that
+       eezzmmllmm--ggeett((11)) is executed if eezzmmllmm--ttssttddiigg exits 0,  but  skipped  other‐
+       wise.
+
+       eezzmmllmm--ttssttddiigg  uses  LOCAL  to adapt its behavior so that it can be used
+       from the command line, a script, or from within _d_i_r//eeddiittoorr, or _d_i_r//mmaann‐‐
+       aaggeerr.   If invoked from _d_i_r//eeddiittoorr, the eezzmmllmm--ttssttddiigg line should end in
+       ’|| exit 99’.  When used here, eezzmmllmm--ttssttddiigg if digest generation crite‐
+       ria  are  met  tests  a timestamp in _d_i_r//ttssttddiigg.  If _d_i_r//ttssttddiigg is more
+       than 1 hour old  or  a  digest  has  been  successfully  created  since
+       _d_i_r//ttssttddiigg was written, eezzmmllmm--ttssttddiigg will set the timestamp to the cur‐
+       rent time and exit 0. Otherwise it will  exit  99.  This  is  to  guard
+       against initiating duplicate digests when messages arrive while digest‐
+       ing is in progress.
+
+OOPPTTIIOONNSS
+       --kk     Success if more than _k_b_y_t_e_s  of  message  body  has  accumulated
+              since  the  latest digest.  Defaults to the value in _d_i_r//ddiiggssiizzee
+              if it exists or _6_4 otherwise.
+
+       --mm     Success if more than _m_s_g messages  have  accumulated  since  the
+              latest  digest.   Defaults  to  the  value in _d_i_r//ddiiggccoouunntt if it
+              exists or _3_0 otherwise.
+
+       --tt     Success if more than _t_i_m_e hours have  passed  since  the  latest
+              digest.  Defaults to the value in _d_i_r//ddiiggttiimmee if it exists or _4_8
+              otherwise.
+
+UUSSAAGGEE
+       This is an example script for ezmlm-tstdig usage.
+
+              #!/bin/sh
+              #usage: script dir diglist@host
+              #digest if > 64 kbytes message bodies,
+              #          > 30 messages, or
+              #          > 48 hours since last digest.
+
+              # ezmlm bin path - modify for your setup
+              EZPATH=’/usr/local/bin/ezmlm’
+
+              EZTST="${EZPATH}/ezmlm-tstdig"
+              EZGET="${EZPATH}/ezmlm-get"
+              ${EZTST} -k64 -m30 -t48 "$1" || exit 0
+              ${EZGET} -t "’$2’" "’$1’" < /dev/null
+              # improve by testing exit status
+
+BBUUGGSS
+       Obviously, eezzmmllmm--ttssttddiigg should be integrated into the digesting program
+       so  that  _d_i_r//ttssttddiigg will not be not necessary. This may be done in the
+       next version.
+
+SSEEEE AALLSSOO
+       ezmlm-get(1), ezmlm-make(1), ezmlm-manage(1), ezmlm-send(1), ezmlm(5)
+
+
+
+                                                               ezmlm-tstdig(1)

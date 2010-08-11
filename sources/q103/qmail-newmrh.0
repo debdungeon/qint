@@ -1,0 +1,32 @@
+qmail-newmrh(8)                                                qmail-newmrh(8)
+
+
+
+NNAAMMEE
+       qmail-newmrh - prepare morercpthosts for qmail-smtpd
+
+SSYYNNOOPPSSIISS
+       qqmmaaiill--nneewwmmrrhh
+
+DDEESSCCRRIIPPTTIIOONN
+       qqmmaaiill--nneewwmmrrhh reads the instructions in //vvaarr//qqmmaaiill//ccoonnttrrooll//mmoorreerrccpptthhoossttss
+       and writes them into //vvaarr//qqmmaaiill//ccoonnttrrooll//mmoorreerrccpptthhoossttss..ccddbb in  a  binary
+       format suited for quick access by qqmmaaiill--ssmmttppdd.
+
+       If  there  is  a  problem with ccoonnttrrooll//mmoorreerrccpptthhoossttss, qqmmaaiill--nneewwmmrrhh com‐
+       plains and leaves ccoonnttrrooll//mmoorreerrccpptthhoossttss..ccddbb alone.
+
+       qqmmaaiill--nneewwmmrrhh ensures that ccoonnttrrooll//mmoorreerrccpptthhoossttss..ccddbb is  updated  atomi‐
+       cally,  so  qqmmaaiill--ssmmttppdd  never  has to wait for qqmmaaiill--nneewwmmrrhh to finish.
+       However, qqmmaaiill--nneewwmmrrhh makes no attempt to protect against two  simulta‐
+       neous updates of ccoonnttrrooll//mmoorreerrccpptthhoossttss..ccddbb.
+
+       The   binary   ccoonnttrrooll//mmoorreerrccpptthhoossttss..ccddbb   format  is  portable  across
+       machines.
+
+SSEEEE AALLSSOO
+       qmail-smtpd(8)
+
+
+
+                                                               qmail-newmrh(8)

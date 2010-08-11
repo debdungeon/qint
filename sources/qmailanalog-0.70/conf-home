@@ -1,0 +1,8 @@
+/usr/local/qmailanalog
+
+This is the qmailanalog home directory. Programs will be installed in
+.../bin; man pages will be installed in subdirectories of .../man.
+
+Do not use /usr/local as the qmailanalog home directory. Many of the
+qmailanalog programs have common names that conflict with names in other
+packages.

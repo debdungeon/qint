@@ -1,0 +1,99 @@
+.\"  <!-- $Id: deliverquota.sgml,v 1.6 2007/04/22 15:19:24 mrsam Exp $ -->
+.\"  <!-- Copyright 1998 - 2007 Double Precision, Inc.  See COPYING for -->
+.\"  <!-- distribution information. -->
+.\"     Title: deliverquota
+.\"    Author: 
+.\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
+.\"      Date: 08/24/2008
+.\"    Manual: Double Precision, Inc.
+.\"    Source: Double Precision, Inc.
+.\"
+.TH "DELIVERQUOTA" "8" "08/24/2008" "Double Precision, Inc." "Double Precision, Inc."
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.SH "NAME"
+deliverquota - deliver to a maildir with a quota
+.SH "SYNOPSIS"
+.HP 13
+\fBdeliverquota\fR [\-c] [\-w\ \fIpercent\fR] {\fImaildir\fR} {\fIquota\fR}
+.SH "DESCRIPTION"
+.PP
+
+\fBdeliverquota\fR
+delivers mail to a
+\fImaildir\fR
+taking into account any software\-imposed quota on the maildir\. This manually\-enforced quota mechanism is described in the
+\fI\fBmaildirquota\fR(7)\fR\&[1]
+and
+\fI\fBmaildirmake\fR(1)\fR\&[2]
+manual pages\. Instead of setting up your mail server to deliver the message directly to a maildir, configure the mail server to run the
+\fBdeliverquota\fR
+program in order to deliver the message, and specify the location of the maildir as the argument to
+\fBdeliverquota\fR\.
+.PP
+The second argument to
+\fBdeliverquota\fR
+is optional\. If present,
+\fIquota\fR
+specifies a new quota setting for this maildir\. Specifying
+\fIquota\fR
+is equivalent to running
+\fI\fBmaildirmake\fR(1)\fR\&[2]
+with the
+\fB\-q\fR
+option\. The second argument to
+\fBdeliverquota\fR
+is considered obsolete, and may be removed in the future\.
+.PP
+
+\fBdeliverquota\fR
+reads the message from standard input and delivers it to
+\fImaildir\fR\.
+\fImaildir\fR
+may specify a path directly to a maildir folder, not the main
+\fImaildir\fR
+(as long as the folder was created by the
+\fI\fBmaildirmake\fR(1)\fR\&[2]
+command\.
+.PP
+The
+\fB\-c\fR
+option automatically creates the maildir, and all missing parent subdirectories (as \'\fBmkdir \-p\fR\')\. This option should be used with caution\.
+.PP
+The
+\fB\-w N\fR
+option places a warning message into the maildir if the maildir has a quota setting, and after the message was successfully delivered the maildir was at least
+\fIN\fR
+percent full\. The warning message is copied verbatim from
+\fI/usr/local/etc/quotawarnmsg\fR
+with the addition of the "Date:" and "Message\-Id:" headers\. The warning is repeated every 24 hours (at least), until the maildir drops below
+\fIN\fR
+percent full\.
+.SH "RETURN CODE"
+.PP
+
+\fBdeliverquota\fR
+delivers the message to the maildir and terminates with exit code 0 if the message can be delivered without going over quota\.
+.PP
+If the maildir is over its specified quota,
+\fBdeliverquota\fR
+terminates with exit code 77 (EX_NOPERM)\.
+.SH "SEE ALSO"
+.PP
+
+\fI\fBmaildirquota\fR(7)\fR\&[1],
+\fI\fBmaildirmake\fR(1)\fR\&[2],
+\fIhttp://www\.qmail\.org/man/man5/maildir\.html\fR\.
+.SH "NOTES"
+.IP " 1." 4
+\fBmaildirquota\fR(7)
+.RS 4
+\%maildirquota.html
+.RE
+.IP " 2." 4
+\fBmaildirmake\fR(1)
+.RS 4
+\%maildirmake.html
+.RE

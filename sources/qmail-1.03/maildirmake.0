@@ -1,0 +1,19 @@
+maildirmake(1)                                                  maildirmake(1)
+
+
+
+NNAAMMEE
+       maildirmake - create a maildir for incoming mail
+
+SSYYNNOOPPSSIISS
+       mmaaiillddiirrmmaakkee _d_i_r
+
+DDEESSCCRRIIPPTTIIOONN
+       mmaaiillddiirrmmaakkee makes a new directory, _d_i_r, in mmaaiillddiirr format.
+
+SSEEEE AALLSSOO
+       maildir(5)
+
+
+
+                                                                maildirmake(1)

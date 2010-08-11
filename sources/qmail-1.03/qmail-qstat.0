@@ -1,0 +1,22 @@
+qmail-qstat(8)                                                  qmail-qstat(8)
+
+
+
+NNAAMMEE
+       qmail-qstat - summarize status of mail queue
+
+SSYYNNOOPPSSIISS
+       qqmmaaiill--qqssttaatt
+
+DDEESSCCRRIIPPTTIIOONN
+       qqmmaaiill--qqssttaatt  gives a human-readable breakdown of the number of messages
+       at various spots in the mail queue.
+
+       qqmmaaiill--qqssttaatt must be run either as rroooott or with group id qqmmaaiill.
+
+SSEEEE AALLSSOO
+       qmail-qread(8), qmail-send(8)
+
+
+
+                                                                qmail-qstat(8)

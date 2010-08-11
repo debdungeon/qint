@@ -1,0 +1,4 @@
+#!/bin/sh
+source=$1; shift
+base=`echo "$source" | sed -e s:\\.c$::`
+exec gcc -W -Wall -Wshadow -O -g -I/usr/local/include -I. -I'/usr/local/bglibs/include' -o ${base}.o -c $source ${1+"$@"}

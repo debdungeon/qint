@@ -1,0 +1,65 @@
+ezmlm-idx(1)                                                      ezmlm-idx(1)
+
+
+
+NNAAMMEE
+       ezmlm-idx - create index for mailing list archive
+
+SSYYNNOOPPSSIISS
+       eezzmmllmm--iiddxx [ --ddDDFF ][ --ffII mmssgg ] _d_i_r
+
+DDEESSCCRRIIPPTTIIOONN
+       eezzmmllmm--iiddxx  reads  all  archived  messages  for  the  list  in  _d_i_r from
+       _d_i_r//aarrcchhiivvee// and creates a message index.  The  index  file  format  is
+       identical  to  that  produced  by  eezzmmllmm--sseenndd((11))  (when  _d_i_r//iinnddeexxeedd is
+       present).
+
+       eezzmmllmm--iiddxx will ignore messages that do not have the owner  execute  bit
+       set.
+
+       eezzmmllmm--iiddxx  will  create  the  the index file under a different name and
+       then move it into place.
+
+       If _d_i_r//iinnddeexxeedd does not exist, eezzmmllmm--iiddxx will create it to  enable  the
+       use of the newly created subject and author index.
+
+       eezzmmllmm--iiddxx  will remove reply-indicators and the prefix from the subject
+       before entry into the index, as described for eezzmmllmm--sseenndd((11)).  eezzmmllmm--iiddxx
+       will  decode rfc2047 encoded subject and author headers. When unfolding
+       split lines, eezzmmllmm--iiddxx will remove redundant escape sequences  for  the
+       character set specified in _d_i_r//cchhaarrsseett.
+
+       eezzmmllmm--iiddxx  calculates  a  subject  hash based on the normalized subject
+       header. Normalization removes linear whitespace, case information,  and
+       message reply indicators.  The subject hash is used by eezzmmllmm--ggeett((11)) for
+       message threading.
+
+OOPPTTIIOONNSS
+       --dd     Use the ‘‘Date:’’ header for date information, rather  than  the
+              top  ‘‘Received:’’  header.  This is unreliable, but useful when
+              messages have been transferred from another type of  archive  by
+              mailing  them to ezmlm.  eezzmmllmm--iiddxx converts dates with two-digit
+              years ‘‘xx’’ to 19xx if xx is >= 70. Otherwise, 20xx is assumed.
+
+       --DD     (Default.)   Use  the  ‘‘Received:’’  header,  not the ‘‘Date:’’
+              header. This is more reliable since this is the header added  by
+              the receiving qmail. Also, this results in always correctly for‐
+              matted dates in the same time zone (usually UTC).
+
+       --ff _m_s_g Start indexing with the archive section containing message  _m_s_g.
+              This  is  useful  if you have removed part of the archive and do
+              not want to create  (empty)  directories  and  index  files  for
+              these. It also decreases eezzmmllmm--iiddxx memory use.
+
+       --FF     (Default.)  Start indexing from message 1.
+
+       --vv     Display eezzmmllmm--iiddxx version info.
+
+       --VV     Display eezzmmllmm--iiddxx version info.
+
+SSEEEE AALLSSOO
+       ezmlm-archive(1), ezmlm-get(1), ezmlm-send(1), ezmlm(5)
+
+
+
+                                                                  ezmlm-idx(1)

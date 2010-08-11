@@ -1,0 +1,34 @@
+direntry(3)                                                        direntry(3)
+
+
+
+NNAAMMEE
+       direntry - read directory entries
+
+SSYYNNTTAAXX
+       ##iinncclluuddee <<ddiirreennttrryy..hh>>
+
+       DIR *ooppeennddiirr(_f_n);
+
+       struct direntry *rreeaaddddiirr(_d_i_r);
+
+       void cclloosseeddiirr(_d_i_r);
+
+       DIR *_d_i_r;
+       char *_f_n;
+
+DDEESSCCRRIIPPTTIIOONN
+       The  point  of  ddiirreennttrryy..hh  is  to provide a uniform interface to BSD’s
+       ssyyss//ddiirr..hh and POSIX’s ddiirreenntt..hh.
+
+       The rreeaaddddiirr interface is highly unsatisfactory.  It  does  not  distin‐
+       guish  between  I/O  errors and end-of-directory.  It uses mmaalllloocc.  The
+       return type for cclloosseeddiirr varies: some implementations return the  cclloossee
+       return value.
+
+SSEEEE AALLSSOO
+       readdir(3)
+
+
+
+                                                                   direntry(3)

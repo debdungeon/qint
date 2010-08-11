@@ -1,0 +1,27 @@
+qmail-tcpto(8)                                                  qmail-tcpto(8)
+
+
+
+NNAAMMEE
+       qmail-tcpto - print TCP timeout table
+
+SSYYNNOOPPSSIISS
+       qqmmaaiill--ttccppttoo
+
+DDEESSCCRRIIPPTTIIOONN
+       After  an  SMTP  connection attempt times out, qqmmaaiill--rreemmoottee records the
+       relevant IP address.  If the same address fails again (after  at  least
+       two  minutes  with no intervening successful connections), qqmmaaiill--rreemmoottee
+       assumes that further attempts will fail for at least another hour.
+
+       qqmmaaiill--ttccppttoo prints qqmmaaiill--rreemmoottee’s current list of timeouts.
+
+       qqmmaaiill--ttccppttoo must be run either as rroooott or with user id qqmmaaiillrr and group
+       id qqmmaaiill.
+
+SSEEEE AALLSSOO
+       qmail-qread(8), qmail-remote(8), qmail-tcpok(8)
+
+
+
+                                                                qmail-tcpto(8)

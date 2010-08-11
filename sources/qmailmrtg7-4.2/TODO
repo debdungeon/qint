@@ -1,0 +1,4 @@
+4.1
+  - switch to a getopt setup so the strings to use
+    for searching the log files can be specified as options.
+

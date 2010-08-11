@@ -1,0 +1,60 @@
+substdio_out(3)                                                substdio_out(3)
+
+
+
+NNAAMMEE
+       substdio_out - substdio output routines
+
+SSYYNNTTAAXX
+       ##iinncclluuddee <<ssuubbssttddiioo..hh>>
+
+       int ssuubbssttddiioo__ppuutt(&_s,_f_r_o_m,_l_e_n);
+       int ssuubbssttddiioo__ppuuttss(&_s,_f_r_o_m);
+
+       int ssuubbssttddiioo__bbppuutt(&_s,_f_r_o_m,_l_e_n);
+       int ssuubbssttddiioo__bbppuuttss(&_s,_f_r_o_m);
+
+       int ssuubbssttddiioo__fflluusshh(&_s);
+
+       int ssuubbssttddiioo__ppuuttfflluusshh(&_s,_f_r_o_m,_l_e_n);
+       int ssuubbssttddiioo__ppuuttssfflluusshh(&_s,_f_r_o_m);
+
+       substdio _s;
+       char *_f_r_o_m;
+       int _l_e_n;
+
+DDEESSCCRRIIPPTTIIOONN
+       ssuubbssttddiioo__ppuutt  writes  _l_e_n  characters  to  _s out of the character array
+       _f_r_o_m.  It returns 0 on success, -1 on error.
+
+       ssuubbssttddiioo__bbppuutt has the same function as ssuubbssttddiioo__ppuutt.  The difference is
+       how  the buffer is flushed when there isn’t enough room for _l_e_n charac‐
+       ters: ssuubbssttddiioo__ppuutt flushes the buffered data  before  copying  the  new
+       data,  whereas  ssuubbssttddiioo__bbppuutt  fills  the  buffer  with new data before
+       flushing.
+
+       ssuubbssttddiioo__fflluusshh forces all data to be written from the internal  buffer.
+       It returns 0 on success, -1 on error.
+
+       ssuubbssttddiioo__ppuuttfflluusshh   is  similar  to  ssuubbssttddiioo__ppuutt  followed  by  ssuubbsstt‐‐
+       ddiioo__fflluusshh, but it avoids all internal copies.
+
+       ssuubbssttddiioo__ppuuttss, ssuubbssttddiioo__bbppuuttss, and ssuubbssttddiioo__ppuuttssfflluusshh are the  same  as
+       ssuubbssttddiioo__ppuutt,  ssuubbssttddiioo__bbppuutt,  and  ssuubbssttddiioo__ppuuttfflluusshh  except that _f_r_o_m
+       must be a 0-terminated string of characters.  The string, not including
+       the 0, is written.
+
+       The  SSUUBBSSTTDDIIOO__OOUUTTSSIIZZEE  macro  is  defined  as a reasonably large output
+       buffer size for ssuubbssttddiioo__ffddbbuuff.
+
+IINNTTEERRNNAALLSS
+       When a ssuubbssttddiioo variable _s is used for output, data  is  buffered  from
+       _s..xx to _s..xx + _s..pp; there is free buffer space from to _s..xx + _s..pp to _s..xx +
+       _s..nn; the total buffer length is _s..nn.
+
+SSEEEE AALLSSOO
+       substdio(3)
+
+
+
+                                                               substdio_out(3)

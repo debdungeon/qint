@@ -1,0 +1,76 @@
+substdio_in(3)                                                  substdio_in(3)
+
+
+
+NNAAMMEE
+       substdio_in - substdio input routines
+
+SSYYNNTTAAXX
+       ##iinncclluuddee <<ssuubbssttddiioo..hh>>
+
+       int ssuubbssttddiioo__ggeett(&_s,_t_o,_l_e_n);
+
+       int ssuubbssttddiioo__bbggeett(&_s,_t_o,_l_e_n);
+
+       int ssuubbssttddiioo__ffeeeedd(&_s);
+
+       char *ssuubbssttddiioo__ppeeeekk(&_s);
+
+       void ssuubbssttddiioo__sseeeekk(&_s,_l_e_n);
+
+       substdio _s;
+       char *_t_o;
+       int _l_e_n;
+
+DDEESSCCRRIIPPTTIIOONN
+       ssuubbssttddiioo__ggeett  reads  at  most  _l_e_n characters from _s into the character
+       array _t_o.  It returns the number of characters read, 0 for end of file,
+       or -1 for error, setting eerrrrnnoo appropriately.
+
+       ssuubbssttddiioo__bbggeett has the same function as ssuubbssttddiioo__ggeett.  The difference is
+       what happens when there is no buffered data and _l_e_n exceeds the  buffer
+       size:  ssuubbssttddiioo__ggeett tries to read _l_e_n characters, whereas ssuubbssttddiioo__bbggeett
+       tries to read one buffer of characters.  In  some  cases  ssuubbssttddiioo__bbggeett
+       will be more efficient than ssuubbssttddiioo__ggeett.
+
+       ssuubbssttddiioo__ffeeeedd  makes sure that there is buffered data, so that the next
+       ssuubbssttddiioo__ggeett or ssuubbssttddiioo__bbggeett will succeed.  If the  buffer  is  empty,
+       ssuubbssttddiioo__ffeeeedd  tries  to  fill it; it returns 0 for end of file, -1 for
+       error, or the number of buffered characters on success.  If the  buffer
+       already  had data, ssuubbssttddiioo__ffeeeedd leaves it alone and returns the number
+       of buffered characters.
+
+       ssuubbssttddiioo__ppeeeekk returns a pointer to the buffered data.
+
+       ssuubbssttddiioo__sseeeekk throws away _l_e_n buffered characters, as if they had  been
+       read.   _l_e_n must be at least 0 and at most the amount of buffered data.
+
+       The ssuubbssttddiioo__PPEEEEKK and ssuubbssttddiioo__SSEEEEKK macros behave the same way as  ssuubb‐‐
+       ssttddiioo__ppeeeekk  and  ssuubbssttddiioo__sseeeekk but may evaluate their arguments several
+       times.
+
+       The point of ssuubbssttddiioo__ppeeeekk and ssuubbssttddiioo__sseeeekk is to  read  data  without
+       unnecessary copies.  Sample code:
+
+         for (;;) {
+           n = substdio_feed(s);
+           if (n <= 0) return n;
+           x = substdio_PEEK(s);
+           handle(x,n);
+           substdio_SEEK(s,n);
+         }
+
+       The SSUUBBSSTTDDIIOO__IINNSSIIZZEE macro is defined as a reasonably large input buffer
+       size for ssuubbssttddiioo__ffddbbuuff.
+
+IINNTTEERRNNAALLSS
+       When a ssuubbssttddiioo variable _s is used for  input,  there  is  free  buffer
+       space  from  _s..xx to _s..xx + _s..nn; data is buffered from _s..xx + _s..nn to _s..xx +
+       _s..nn + _s..pp; the total buffer length is _s..nn + _s..pp.
+
+SSEEEE AALLSSOO
+       substdio(3)
+
+
+
+                                                                substdio_in(3)

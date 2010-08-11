@@ -1,0 +1,22 @@
+forward(1)                                                          forward(1)
+
+
+
+NNAAMMEE
+       forward - forward new mail to one or more addresses
+
+SSYYNNOOPPSSIISS
+       in ..qqmmaaiill: ||ffoorrwwaarrdd _a_d_d_r_e_s_s _._._.
+
+DDEESSCCRRIIPPTTIIOONN
+       ffoorrwwaarrdd  forwards  each  new  mail  message  to  the  specified list of
+       addresses.  It is a simple wrapper around qqmmaaiill--qquueeuuee.  It achieves the
+       same  results  as  listing each _a_d_d_r_e_s_s separately in ..qqmmaaiill, but it is
+       more programmable since _a_d_d_r_e_s_s can be constructed on the fly.
+
+SSEEEE AALLSSOO
+       dot-qmail(5), qmail-command(8), qmail-queue(8)
+
+
+
+                                                                    forward(1)

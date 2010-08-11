@@ -1,0 +1,58 @@
+wait(3)                                                                wait(3)
+
+
+
+NNAAMMEE
+       wait - check child process status
+
+SSYYNNTTAAXX
+       ##iinncclluuddee <<wwaaiitt..hh>>
+
+       int wwaaiitt__nnoohhaanngg(&_w_s_t_a_t);
+       int wwaaiitt__ssttoopp(&_w_s_t_a_t);
+       int wwaaiitt__ssttooppnnoohhaanngg(&_w_s_t_a_t);
+       int wwaaiitt__ppiidd(&_w_s_t_a_t,_p_i_d);
+
+       int wwaaiitt__eexxiittccooddee(_w_s_t_a_t);
+       int wwaaiitt__ccrraasshheedd(_w_s_t_a_t);
+       int wwaaiitt__ssttooppppeedd(_w_s_t_a_t);
+       int wwaaiitt__ssttooppssiigg(_w_s_t_a_t);
+
+       int _p_i_d;
+       int _w_s_t_a_t;
+
+DDEESSCCRRIIPPTTIIOONN
+       wwaaiitt__nnoohhaanngg  looks  for zombies (child processes that have exited).  If
+       it sees a zombie, it eliminates the zombie, puts the zombie’s exit sta‐
+       tus into _w_s_t_a_t, and returns the zombie’s process ID.  If there are sev‐
+       eral zombies, wwaaiitt__nnoohhaanngg picks one.  If there are children but no zom‐
+       bies,  wwaaiitt__nnoohhaanngg  returns  0.   If there are no children, wwaaiitt__nnoohhaanngg
+       returns -1, setting eerrrrnnoo appropriately.
+
+       wwaaiitt__ssttooppnnoohhaanngg is similar to wwaaiitt__nnoohhaanngg, but it also looks for  chil‐
+       dren that have stopped.
+
+       wwaaiitt__ssttoopp  is  similar to wwaaiitt__ssttooppnnoohhaanngg, but if there are children it
+       will pause waiting for one of them to stop or exit.
+
+       wwaaiitt__ppiidd waits for child process _p_i_d to exit.  It eliminates any zombie
+       that shows up in the meantime, discarding the exit status.
+
+       wwaaiitt__ssttoopp and wwaaiitt__ppiidd retry upon eerrrroorr__iinnttrr.
+
+SSTTAATTUUSS PPAARRSSIINNGG
+       If the child stopped, wwaaiitt__ssttooppppeedd is nonzero; wwaaiitt__ssttooppssiigg is the sig‐
+       nal that caused the child to stop.
+
+       If the child exited by crashing, wwaaiitt__ssttooppppeedd is zero; wwaaiitt__ccrraasshheedd  is
+       nonzero.
+
+       If  the  child  exited  normally, wwaaiitt__ssttooppppeedd is zero; wwaaiitt__ccrraasshheedd is
+       zero; and wwaaiitt__eexxiittccooddee is the child’s exit code.
+
+SSEEEE AALLSSOO
+       wait(2), error(3)
+
+
+
+                                                                       wait(3)

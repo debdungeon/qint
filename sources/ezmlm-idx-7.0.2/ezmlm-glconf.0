@@ -1,0 +1,41 @@
+ezmlm-glconf(1)                                                ezmlm-glconf(1)
+
+
+
+NNAAMMEE
+       ezmlm-glconf - create config file for global ezmlm-request address
+
+SSYYNNOOPPSSIISS
+       eezzmmllmm--ggllccoonnff [ --nn ] _d_o_t_d_i_r[dotdir1_._._._]> _c_o_n_f_i_g___f_i_l_e
+
+DDEESSCCRRIIPPTTIIOONN
+       eezzmmllmm--ggllccoonnff  scans _d_o_t_d_i_r, usually the users home directory, for files
+       of type ..qqmmaaiill--rreettuurrnn--**--ddeeffaauulltt.  For  normal  ezmlm-lists,  these  are
+       links  to bboouunncceerr files, which on their last line have a call to eezzmmllmm--
+       rreettuurrnn((11)) or eezzmmllmm--wwaarrnn((11))..  eezzmmllmm--ggllccoonnff extracts the  list  directory
+       from  these,  and builds a line for _c_o_n_f_i_g___f_i_l_e from the information in
+       the list directory. The first line of the //tteexxtt//iinnffoo file of  the  list
+       is  assumed  to  contain  a brief description of the list. If not found
+       ‘‘no information available’’ is used.
+
+       eezzmmllmm--ggllccoonnff output is sorted alphabetically by  list  name  and  if  a
+       digest  list exists, the digest list entry immediately follows the list
+       entry.
+
+
+OOPPTTIIOONNSS
+       --nn     Add information on the current number of subscribers to the list
+              information.
+
+CCOONNFFIIGGUURRAATTIIOONN
+       The  descriptive  text  eezzmmllmm--ggllccoonnff uses for digest lists and the text
+       used if //tteexxtt//iinnffoo is not readable/available can be changed by  editing
+       the script.
+
+SSEEEE AALLSSOO
+       ezmlm-glmake(1),   ezmlm-request(1),   ezmlm-return(1),  ezmlm-warn(1),
+       ezmlm(5)
+
+
+
+                                                               ezmlm-glconf(1)

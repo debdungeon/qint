@@ -1,0 +1,25 @@
+qmail-qread(8)                                                  qmail-qread(8)
+
+
+
+NNAAMMEE
+       qmail-qread - list outgoing messages and recipients
+
+SSYYNNOOPPSSIISS
+       qqmmaaiill--qqrreeaadd
+
+DDEESSCCRRIIPPTTIIOONN
+       qqmmaaiill--qqrreeaadd  scans the outgoing queue of messages.  For each message it
+       prints various human-readable information, including the date the  mes‐
+       sage entered the queue, the number of bytes in the message, the message
+       sender, and all the recipients still under consideration.
+
+       qqmmaaiill--qqrreeaadd must be run either as rroooott or with user id qqmmaaiillss and group
+       id qqmmaaiill.
+
+SSEEEE AALLSSOO
+       qmail-qstat(8), qmail-send(8)
+
+
+
+                                                                qmail-qread(8)

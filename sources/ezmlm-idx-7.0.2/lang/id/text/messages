@@ -1,0 +1,165 @@
+ERR_ADDR_AT:alamat tidak ada tanda @
+ERR_ADDR_LONG:alamat terlalu panjang
+ERR_ADDR_NL:alamat terpisah dengan baris-baru
+ERR_ANONYMOUS:Saya tidak bisa membalas ke pengirim tanpa host names (#5.7.2)
+ERR_BADHOST:daftar host tidak diperbolehkan
+ERR_BADLOCAL:daftar local tidak diperbolehkan
+ERR_BADUSER:user tidak diperbolehkan
+ERR_BAD_ADDRESS:Saya tidak menerima pesan dari alamat ini (local tidak cocok) (#5.1.1)
+ERR_BAD_ALL:Maaf, setelah membuang bagian MIME yang tidak dapat diterima dari pesan Anda, tidak ada yang tersisa (#5.7.0)
+ERR_BAD_DIGCODE:kode digest tidak benar (#5.7.1)
+ERR_BAD_INDEX:Format lama atau index rusak. Jalankan ezmlm-idx! (#5.3.0)
+ERR_BAD_NAME:hanya huruf dan garis-bawah yang diperbolehkan dalam file name (#5.6.0)
+ERR_BAD_PART:Maaf, ada bagian pesan terdapat MIME Content-Type: yang tidak dapat diterima '<#1#>' (#5.2.3)
+ERR_BAD_REQUEST:Format permintaan yang tidak boleh (#5.7.1)
+ERR_BAD_RETURN_ADDRESS:Format alamat bounce atau penerima tidak sah (#5.1.1)
+ERR_BAD_TYPE:Maaf, Saya tidak menerima pesan dengan MIME Content-Type '<#1#>' (#5.2.3)
+ERR_BODYCOMMAND:Maaf, pesan yang dimulai dengan ``[un]subscribe'' tampak seperti permintaan adminstratif. Harap kirim email ke alamat -help yang terdapat di header ``Mailing-List:'' untuk info [un]subscribe (#5.7.0)
+ERR_BOUNCE:saya tidak me-reply ke email bounce (#5.7.2)
+ERR_CFHOST:bounce-host diperlukan pada baris pertama dari <#1#>
+ERR_CHDIR:Tidak bisa pindah ke directory <#1#>
+ERR_CHILD_CRASHED:sub-program hancur
+ERR_CHILD_FATAL:kesalahan fatal dari sub-program
+ERR_CHILD_TEMP:kesalahan sementara dari sub-program
+ERR_CHILD_UNKNOWN:kesalahan tak-jelas dari sub-program
+ERR_CHMOD:tidak bisa chmod ke <#1#>
+ERR_CHROOT:gagal chroot ke <#1#>
+ERR_CLOSE:tidak bisa menutup <#1#>
+ERR_COOKIE:pesan tidak terdapat token autentikasi yang sah
+ERR_CREATE:tidak bisa membuat <#1#>
+ERR_CRONTAB:perbaharui crontab gagal. Hubungi sysadmin anda dengan informasi kesalahan di atas
+ERR_DELETE:tidak bisa menghapus <#1#>
+ERR_DONE:pesan sudah diproses oleh system
+ERR_DOW:sebuah separasi-koma hanya untuk hari-dalam-seminggu
+ERR_EDSIZE:Editing melewati batas maksimum file size (#5.6.0)
+ERR_EMPTY_DIGEST:tidak ada yang dirangkum
+ERR_EMPTY_LIST:tidak ada pesan di archive
+ERR_ENDTAG:tag kurang tanda akhir />
+ERR_EUID:user id efektif tidak ditemukan
+ERR_EXCESS_DEFER:kelebihan trafik: menunda
+ERR_EXCESS_MOD:kelebihan trafik: moderating
+ERR_EXCLUSIVE:kontrol-aksi switch adalah terpisah satu dengan lainnya
+ERR_EXECUTE:tidak bisa menjalankan <#1#>
+ERR_EXTRA_SUB:Penambahan SENDER permintaan untuk: <#1#> sudah diproses
+ERR_EXTRA_UNSUB:Pengurangan SENDER permintaan untuk: <#1#> sudah diproses
+ERR_FILENAME:tag lanjutan tanpa file name: <#1#>
+ERR_FLUSH:tidak bisa flush <#1#>
+ERR_FLUSH_STDOUT:tidak bisa flush ke output standar
+ERR_FORK:tidak bisa fork
+ERR_JUNK:Pendahuluan: junk - pesan diabaikan
+ERR_LINKDIR:tag link kurang /dir: <#1#>
+ERR_LISTNO:daftar masukan melebihi jumlah maksimum
+ERR_LOOPING:pesan ini looping: sudah ada dibaris Delivered-To (#5.4.6)
+ERR_MAILING_LIST:pesan ini sudah ada header Mailing-List (mungkin saya seharusnya menjadi sebuah sublist) (#5.7.2)
+ERR_MAX_BOUNCE:jumlah bounce terlampui: bounce tidak akan tersimpan
+ERR_MAX_SIZE:Maaf, Saya tidak terima pesan dengan size melebihi <#1#> bytes (#5.2.3)
+ERR_MIME_QUOTE:batas MIME kurang tanda kutip di akhir
+ERR_MIN_SIZE:Maaf, Saya tidak menerima pesan yang lebih kecil dari <#1#> bytes (#5.2.3)
+ERR_MKTAB:membuat daftar isi pelanggan gagal
+ERR_MOD_ACCEPTED:Maaf, Saya sudah menerima pesan ini
+ERR_MOD_COOKIE:Permintaan moderasi ilegal atau sudah kuno (#5.7.1)
+ERR_MOD_REJECTED:Maaf, Saya sudah menolak pesan ini
+ERR_MOD_TIMEOUT:Maaf, Saya sudah tidak punya pesan ini
+ERR_MOVE:tidak bisa memindahkan <#1#> ke <#2#>
+ERR_NEWLINE:baris-baru tidak diperbolehkan dalam folder
+ERR_NOCMD:perintah tak tersedia
+ERR_NODEFAULT:DEFAULT belum diset
+ERR_NODTLINE:DTLINE belum diset
+ERR_NOEXIST: tidak ada
+ERR_NOINDEX:Maaf, Saya tidak menemukan index dari pesan ini
+ERR_NOLOCAL:LOCAL belum di-set
+ERR_NOMEM:memory habis
+ERR_NOSENDER:SENDER belum diset
+ERR_NOT_ACTIVE:sub-list ini tidak aktif
+ERR_NOT_ALLOWED:Perintah hanya diperbolehkan untuk para moderator (#5.7.1)
+ERR_NOT_ARCHIVED:Maaf, list ini tidak di-arsipkan (#5.1.1)
+ERR_NOT_AVAILABLE:Perintah tak tersedia (#5.1.1)
+ERR_NOT_CLEAN:Karakter jelek di dalam kolom alamat
+ERR_NOT_INDEXED:Maaf, list ini tidak diindex (#5.1.1)
+ERR_NOT_PARENT:pesan ini tidak berasal dari list atasan saya (#5.7.2)
+ERR_NOT_PUBLIC:Maaf, Saya telah diperintahkan untuk menolak semua permintaan (#5.7.2)
+ERR_NO_ABSOLUTE:nama folder secara penuh diluar folder list tidak lagi didukung
+ERR_NO_ADDRESS:Alamat milis harus ada di To: atau Cc: (#5.7.0)
+ERR_NO_LEVELS:daftar pelanggan tidak boleh mengandung garis-miring
+ERR_NO_MARK:awal-teks atau akhir-teks mark tidak ada(#5.6.0)
+ERR_NO_MATCH:tidak ada yang cocok
+ERR_NO_PLUGIN:tidak ada plugin yang ditentukan dalam database konek data
+ERR_NO_POST:Maaf, anda tidak dibolehkan untuk mengirim pesan ke list ini (#5.7.2)
+ERR_NO_SUBJECT:Maaf, Saya tidak menerima pesan dengan Subjek kosong (#5.7.0)
+ERR_OBTAIN_LOCK:tidak bisa mendapat kuncian di <#1#>
+ERR_OPEN:tidak bisa membuka <#1#>
+ERR_OPEN_LISTMSGS:tidak bisa membuka <#1#> di pesan list. Jalankan kembali ezmlm-archive!
+ERR_PERIOD:koma tidak dibolehkan dalam tag
+ERR_QMAIL_QUEUE:tidak bisa menjalankan qmail-queue
+ERR_QUOTE:kutip tidak dibolehkan dalam folder
+ERR_READ:tidak bisa membaca <#1#>
+ERR_READ_INPUT:tidak bisa membaca input
+ERR_READ_NOTHING:tidak bisa membaca <#1#>: tidak ada apa-apa
+ERR_READ_STDIN:tidak bisa membaca pada standar input
+ERR_REJECT:Maaf, Saya telah diberitahu untuk menolak pesan ini (#5.7.0)
+ERR_REQ_LISTNAME:Perintah ini memerlukan nama mailing list (#5.1.1)
+ERR_REQ_LOCAL:bagian lokal dari baris perintah tidak cocok dengan list ini (#5.1.1)
+ERR_SEEK:tidak bisa mencari <#1#>
+ERR_SEEK_INPUT:tidak bisa mencari input
+ERR_SETUID:tidak bisa set uid
+ERR_SLASH:dir dan dot harus dimulai dengan garis-miring
+ERR_STAT:tidak bisa untuk stat <#1#>
+ERR_SUBCOMMAND:Maaf, Saya tidak menerima perintah di baris Subjek. Harap kirim pesan ke alamat -help yang ditampilkan diheader ``Mailing-List:'' untuk keterangan perintah (#5.7.0)
+ERR_SUBLIST:pesan sublist harus punya Mailing-List header (#5.7.2)
+ERR_SUBSCRIBER_CAN:hanya pelanggan yang bisa <#1#> (#5.7.1)
+ERR_SUBST_UNSAFE:Maaf, penggantian alamat target menjadi header dengan #A# atau #t# tidak aman dan tidak diijinkan.
+ERR_SUB_NOP:target sudah menjadi pelanggan
+ERR_SUID:Maaf, Saya tidak akan berjalan sebagai root
+ERR_SYNC:tidak bisa sinkronisasi <#1#>
+ERR_SYNTAX:syntax error di <#1#>
+ERR_SYNTAX_CONFIG:syntax error di file config <#1#>
+ERR_SYNTAX_MISSING_AUTHHASH: syntax error: <#1#>: hash pembuat tak ada.
+ERR_SYNTAX_MISSING_AUTHOR: syntax error: <#1#>: info pembuat tak ada.
+ERR_SYNTAX_MISSING_FIRST: syntax error: <#1#>: baris pertama tak ada
+ERR_SYNTAX_MISSING_SEMIDATE: syntax error: <#1#>: tanda \";\" tak ada setelah tanggal
+ERR_SYNTAX_MISSING_SEPARATOR: syntax error: <#1#>: pemisah subjek tak ada
+ERR_SYNTAX_MISSING_SUBJHASH: syntax error: <#1#>: hash subjek tak ada
+ERR_TMP_QMAIL_QUEUE:qmail-queue error sementara
+ERR_UID:user id tidak ditemukan
+ERR_UNIQUE:tidak bisa membuat nama file yang unik
+ERR_UNSUB_NOP:tujuan bukan pelanggan
+ERR_VERSION:versi ezmlmrc tidak cocok. Kelakuan mungkin tidak sesuai dengan dokumentasi.
+ERR_WRITE:tidak bisa menulis <#1#>
+ERR_WRITE_STDOUT:tidak bisa menulis ke standar output
+SUB_CONFIRM_POST:Konfirm postingan ke <#L#>@<#H#>
+SUB_EDIT_LIST:Daftar text file yang bisa di-edit untuk <#L#>@<#H#>
+SUB_EDIT_REQUEST:Edit <#1#> untuk <#L#>@<#H#>
+SUB_EDIT_SUCCESS:Editing berhasil <#1#> untuk <#L#>@<#H#>
+SUB_FAQ:FAQ untuk <#L#>@<#H#>
+SUB_GET_MSG:Pengambilan arsip dari <#L#>@<#H#>
+SUB_GOODBYE:SELAMAT TINGGAL dari <#L#>@<#H#>
+SUB_HELP:Bantuan untuk <#L#>@<#H#>
+SUB_INFO:Informasi untuk <#L#>@<#H#>
+SUB_LIST:Daftar peserta untuk <#L#>@<#H#>
+SUB_LOG:Log peserta untuk <#L#>@<#H#>
+SUB_LOG_SEARCH:Hasil pencarian Log untuk <#L#>@<#H#>
+SUB_MODERATE:MODERASI untuk <#L#>@<#H#>
+SUB_MOD_HELP:Bantuan Moderator untuk <#L#>@<#H#>
+SUB_MOD_SUBSCRIBE:KONFIRM subscribe ke <#L#>@<#H#>
+SUB_MOD_UNSUBSCRIBE:KONFIRM unsubscribe dari <#L#>@<#H#>
+SUB_PROBE:Test dari <#L#>@<#H#>
+SUB_RESULTS:<#L#> hasil
+SUB_RETURNED_POST:Pengembalian posting untuk <#L#>@<#H#>
+SUB_STATUS:Status peserta di <#L#>@<#H#>
+SUB_SUBSCRIBE_NOP:Sudah terdaftar di <#L#>@<#H#>
+SUB_UNSUBSCRIBE_NOP:Tidak terdaftar di <#L#>@<#H#>
+SUB_USR_SUBSCRIBE:konfirm subscribe ke <#L#>@<#H#>
+SUB_USR_UNSUBSCRIBE:konfirm unsubscribe dari <#L#>@<#H#>
+SUB_WARNING:Peringatan dari <#L#>@<#H#>
+SUB_WELCOME:Selamat Datang di <#L#>@<#H#>
+TXT_ADMINISTRIVIA:Administratif:
+TXT_BY:oleh: <#1#>
+TXT_EDIT_END:%%% AKHIR DARI TEXT FILE
+TXT_EDIT_START:%%% AWAL DARI TEXT FILE
+TXT_LISTMEMBERS:Pelanggan list ini adalah:
+TXT_MAILING_LIST:hubungi <#L#>-help@<#H#>; dijalankan dengan ezmlm
+TXT_NOINDEX:aaaaaaaaaaaaaaaaaaaa <- index subjek tak tersedia untuk pesan ->
+TXT_ONLY_SUBSCRIBERS:Maaf, hanya pelanggan boleh mengirim posting. Jika anda seorang pelanggan, forward mail ini ke <#L#>-owner@<#H#> supaya email baru anda juga dimasukkan.
+TXT_REJECT_POSTS:Maaf, program ini menolak posting anda. Hubungi <#L#>-owner@<#H#> jika anda mempunyai pertanyaan tentang hal ini.
+TXT_SUPPRESSED:Maaf, program ini menolak posting anda. Hubungi <#L#>-owner@<#H#> jika anda mempunyai pertanyaan tentang hal ini.
+TXT_TOP_TOPICS:Topik (pesan <#1#> sampai dengan <#2#>)

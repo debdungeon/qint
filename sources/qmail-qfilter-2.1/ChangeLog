@@ -1,0 +1,676 @@
+------------------------------------------------------------------------
+r89 | bruce | 2005-08-12 17:32:16 -0600 (Fri, 12 Aug 2005) | 2 lines
+Changed paths:
+   M /trunk/MAN
+   M /trunk/spec
+
+Final tweaks to new install mechanism.
+
+------------------------------------------------------------------------
+r88 | bruce | 2005-08-12 17:12:03 -0600 (Fri, 12 Aug 2005) | 2 lines
+Changed paths:
+   A /trunk/BIN
+   A /trunk/MAN
+   M /trunk/README.in
+
+Switched to using new bg-installer program.
+
+------------------------------------------------------------------------
+r87 | bruce | 2005-08-12 16:44:59 -0600 (Fri, 12 Aug 2005) | 21 lines
+Changed paths:
+   M /trunk/NEWS
+   M /trunk/qmail-qfilter.c
+
+Fixed a bug triggered by a filter modifying the envelope data and 
+changing its length.
+
+From: Dale Woolridge <hash-8825ae786a15bd37352a6bff8422776f@woolridge.org>      
+To: L-bgware <bgware@lists.untroubled.org>                                      
+Message-ID: <20050811071108.GU99970@woolridge.ca>                               
+Subject: [bgware] [PATCH] qmail-qfilter bounds issue                            
+ 
+The attached patch addresses two issues encountered recently on a fairly
+heavily loaded mail server.
+ 
+The first issue is really a valgrind problem, but it's still in my
+patch and does no harm.  Valgrind was not reporting correctly when
+the first strlen() in parse_sender() referenced ptr, but I was able
+to shut it up by referencing env instead.
+ 
+In the second case, if a filter modifies the envelope/message, then
+move_unless_empty() will call parse_envelope() before assigning the
+new length to *var, so the mmap() call in parse_envelope() will use
+the unmodified envelope/message length.
+
+------------------------------------------------------------------------
+r86 | bruce | 2005-08-12 16:41:23 -0600 (Fri, 12 Aug 2005) | 2 lines
+Changed paths:
+   M /trunk/NEWS
+   M /trunk/VERSION
+
+Bumped version to 2.1
+
+------------------------------------------------------------------------
+r85 | bruce | 2005-08-12 16:39:21 -0600 (Fri, 12 Aug 2005) | 2 lines
+Changed paths:
+   M /trunk/README.in
+   M /trunk/qmail-qfilter.c
+
+Added 2005 to copyright years.
+
+------------------------------------------------------------------------
+r84 | bruce | 2005-08-12 16:30:22 -0600 (Fri, 12 Aug 2005) | 2 lines
+Changed paths:
+   M /trunk/makedist.py
+
+Copy the ChangeLog to the web site.
+
+------------------------------------------------------------------------
+r82 | bruce | 2004-11-23 22:46:08 -0600 (Tue, 23 Nov 2004) | 2 lines
+Changed paths:
+   M /trunk/samples/deny-filetypes
+   M /trunk/samples/rename-filetypes
+
+Added .DLL to the list of extensions to handle in the sample filters.
+
+------------------------------------------------------------------------
+r81 | bruce | 2004-11-23 22:42:13 -0600 (Tue, 23 Nov 2004) | 2 lines
+Changed paths:
+   M /trunk/NEWS
+
+Tidied up awkward line break.
+
+------------------------------------------------------------------------
+r80 | bruce | 2004-10-20 09:57:39 -0600 (Wed, 20 Oct 2004) | 2 lines
+Changed paths:
+   M /trunk/NEWS
+
+Added NEWS note about $ENVSIZE, $MSGSIZE, and $NUMRCPTS.
+
+------------------------------------------------------------------------
+r79 | bruce | 2004-10-20 09:56:19 -0600 (Wed, 20 Oct 2004) | 3 lines
+Changed paths:
+   M /trunk/qmail-qfilter.c
+
+Remove the "env" global variable, and unmap the envelope data after
+using it.
+
+------------------------------------------------------------------------
+r78 | bruce | 2004-10-18 23:07:01 -0600 (Mon, 18 Oct 2004) | 2 lines
+Changed paths:
+   M /trunk/README.in
+
+Updated to reflect that qmail-qfilter can now modify the envelope too.
+
+------------------------------------------------------------------------
+r77 | bruce | 2004-10-18 23:06:08 -0600 (Mon, 18 Oct 2004) | 2 lines
+Changed paths:
+   M /trunk/qmail-qfilter.1
+
+Documented $ENVSIZE, $MSGSIZE, and $NUMRCPTS.
+
+------------------------------------------------------------------------
+r76 | bruce | 2004-10-18 23:05:44 -0600 (Mon, 18 Oct 2004) | 2 lines
+Changed paths:
+   M /trunk/qmail-qfilter.1
+
+Added warning about overwriting on file descriptor 5.
+
+------------------------------------------------------------------------
+r75 | bruce | 2004-10-18 23:04:31 -0600 (Mon, 18 Oct 2004) | 2 lines
+Changed paths:
+   M /trunk/qmail-qfilter.c
+
+Recalculate the number of recipients in move_unless_empty if necessary.
+
+------------------------------------------------------------------------
+r74 | bruce | 2004-10-18 22:56:07 -0600 (Mon, 18 Oct 2004) | 2 lines
+Changed paths:
+   M /trunk/qmail-qfilter.c
+
+Merge read_envelope() and parse_envelope()
+
+------------------------------------------------------------------------
+r73 | bruce | 2004-10-18 22:54:49 -0600 (Mon, 18 Oct 2004) | 2 lines
+Changed paths:
+   M /trunk/qmail-qfilter.c
+
+Reorganized the code to allow the use of mmap to "read" the envelope.
+
+------------------------------------------------------------------------
+r72 | bruce | 2004-10-18 22:18:40 -0600 (Mon, 18 Oct 2004) | 3 lines
+Changed paths:
+   M /trunk/qmail-qfilter.c
+
+Set $ENVSIZE and $MSGSIZE to the envelope and message size respectively,
+and update them when the sizes change.
+
+------------------------------------------------------------------------
+r71 | bruce | 2004-10-18 22:02:15 -0600 (Mon, 18 Oct 2004) | 2 lines
+Changed paths:
+   M /trunk/qmail-qfilter.c
+
+Removed the bool defines.
+
+------------------------------------------------------------------------
+r70 | bruce | 2004-10-18 22:01:20 -0600 (Mon, 18 Oct 2004) | 3 lines
+Changed paths:
+   M /trunk/qmail-qfilter.c
+
+Modify memory allocating functions to exit on failure instead of
+returning error codes to the calling functions.
+
+------------------------------------------------------------------------
+r69 | bruce | 2004-09-04 22:38:57 -0600 (Sat, 04 Sep 2004) | 2 lines
+Changed paths:
+   M /trunk/qmail-qfilter.c
+
+Make sure to NUL terminate the qmail-queue program name internally.
+
+------------------------------------------------------------------------
+r68 | bruce | 2004-09-04 18:14:48 -0600 (Sat, 04 Sep 2004) | 3 lines
+Changed paths:
+   M /trunk/qmail-qfilter.c
+
+Always rewind the destination file to cover the case where it was read
+but not nothing was written to the corresponding output file.
+
+------------------------------------------------------------------------
+r67 | bruce | 2004-09-04 17:52:15 -0600 (Sat, 04 Sep 2004) | 3 lines
+Changed paths:
+   M /trunk/qmail-qfilter.1
+   M /trunk/qmail-qfilter.c
+
+Allow filters to override the program to execute in place of
+qmail-queue.
+
+------------------------------------------------------------------------
+r66 | bruce | 2004-09-04 17:34:46 -0600 (Sat, 04 Sep 2004) | 3 lines
+Changed paths:
+   M /trunk/qmail-qfilter.1
+   M /trunk/qmail-qfilter.c
+
+Allow the execution of qmail-queue to be overridden by setting
+$QQF_QMAILQUEUE.
+
+------------------------------------------------------------------------
+r65 | bruce | 2004-08-26 17:22:55 -0600 (Thu, 26 Aug 2004) | 3 lines
+Changed paths:
+   M /trunk/qmail-qfilter.c
+
+Fixed the order of operations between rewinding the file and opening a
+new file: the rewind always needs to happen if the file was not empty.
+
+------------------------------------------------------------------------
+r64 | bruce | 2004-07-02 08:56:29 -0600 (Fri, 02 Jul 2004) | 2 lines
+Changed paths:
+   M /trunk/qmail-qfilter.c
+
+Updated copyright year to 2004.
+
+------------------------------------------------------------------------
+r63 | bruce | 2004-07-02 08:52:44 -0600 (Fri, 02 Jul 2004) | 4 lines
+Changed paths:
+   M /trunk/NEWS
+   M /trunk/VERSION
+   M /trunk/qmail-qfilter.1
+   M /trunk/qmail-qfilter.c
+
+Added support for modifying the envelope, and handle empty outputs as if
+they were unchanged.  Bumped version to 2.0 due to the major nature of
+this change.
+
+------------------------------------------------------------------------
+r62 | bruce | 2004-07-01 16:35:18 -0600 (Thu, 01 Jul 2004) | 3 lines
+Changed paths:
+   M /trunk/qmail-qfilter.c
+
+Since most errors are fatal, don't bother propagating them through
+return codes, just exit immediately.
+
+------------------------------------------------------------------------
+r61 | bruce | 2004-07-01 16:16:34 -0600 (Thu, 01 Jul 2004) | 4 lines
+Changed paths:
+   M /trunk/qmail-qfilter.c
+
+Move the file descriptors around before using.  This saves a step when
+execing the filters, and will save steps later when handling the
+environment.
+
+------------------------------------------------------------------------
+r60 | bruce | 2004-07-01 15:50:53 -0600 (Thu, 01 Jul 2004) | 2 lines
+Changed paths:
+   M /trunk/qmail-qfilter.c
+
+Merge all the dup2+close calls into a common function.
+
+------------------------------------------------------------------------
+r59 | bruce | 2004-07-01 00:57:23 -0600 (Thu, 01 Jul 2004) | 2 lines
+Changed paths:
+   M /trunk/qmail-qfilter.c
+
+Do error checking on both returns from copy_fd.
+
+------------------------------------------------------------------------
+r58 | bruce | 2004-06-30 23:32:11 -0600 (Wed, 30 Jun 2004) | 2 lines
+Changed paths:
+   M /trunk/qmail-qfilter.c
+
+Use a temporary file for the envelope, and exec qmail-queue without forking.
+
+------------------------------------------------------------------------
+r57 | bruce | 2004-06-30 23:20:15 -0600 (Wed, 30 Jun 2004) | 2 lines
+Changed paths:
+   M /trunk/qmail-qfilter.c
+
+Make the message copy function generic to any FD.
+
+------------------------------------------------------------------------
+r56 | bruce | 2004-06-30 00:36:51 -0600 (Wed, 30 Jun 2004) | 2 lines
+Changed paths:
+   M /trunk/qmail-qfilter.c
+
+Switch from tempnam to the more secure mkstemp function.
+
+------------------------------------------------------------------------
+r55 | bruce | 2004-06-29 23:38:32 -0600 (Tue, 29 Jun 2004) | 2 lines
+Changed paths:
+   M /trunk/qmail-qfilter.c
+   M /trunk/qmail-qfilter=x
+
+Switched to new bglibs includes.
+
+------------------------------------------------------------------------
+r54 | bruce | 2004-06-29 23:34:38 -0600 (Tue, 29 Jun 2004) | 2 lines
+Changed paths:
+   M /trunk/spec
+
+Added bglibs requirement.
+
+------------------------------------------------------------------------
+r53 | bruce | 2004-06-29 23:33:13 -0600 (Tue, 29 Jun 2004) | 2 lines
+Changed paths:
+   D /trunk/README
+   A /trunk/README.in (from /trunk/README:52)
+
+Switched to templated README file.
+
+------------------------------------------------------------------------
+r52 | bruce | 2004-06-29 23:11:54 -0600 (Tue, 29 Jun 2004) | 2 lines
+Changed paths:
+   M /trunk/samples/deny-filetypes
+   M /trunk/samples/rename-filetypes
+
+Added several new executable extensions: BAT, CMD, COM, CPL, LNK.
+
+------------------------------------------------------------------------
+r51 | bruce | 2004-06-29 23:05:57 -0600 (Tue, 29 Jun 2004) | 2 lines
+Changed paths:
+   M /trunk/makedist.py
+
+Fixed up mailing list addresses.
+
+------------------------------------------------------------------------
+r50 | bruce | 2004-06-29 23:05:02 -0600 (Tue, 29 Jun 2004) | 2 lines
+Changed paths:
+   M /trunk/README
+
+Bumped version to 1.6
+
+------------------------------------------------------------------------
+r49 | bruce | 2002-10-09 11:58:31 -0600 (Wed, 09 Oct 2002) | 2 lines
+Changed paths:
+   M /trunk/NEWS
+   M /trunk/qmail-qfilter.c
+
+Fixed off-by-one bug.
+
+------------------------------------------------------------------------
+r48 | bruce | 2001-09-21 14:06:21 -0600 (Fri, 21 Sep 2001) | 2 lines
+Changed paths:
+   M /trunk/NEWS
+   M /trunk/VERSION
+   M /trunk/makedist.py
+
+*** empty log message ***
+
+------------------------------------------------------------------------
+r47 | bruce | 2001-09-21 14:06:16 -0600 (Fri, 21 Sep 2001) | 2 lines
+Changed paths:
+   M /trunk/qmail-qfilter.c
+   A /trunk/qmail-qfilter=x
+
+Added unsetenv.[ch] auto dependancy.
+
+------------------------------------------------------------------------
+r45 | bruce | 2001-06-12 13:30:40 -0600 (Tue, 12 Jun 2001) | 2 lines
+Changed paths:
+   M /trunk/spec
+
+Add NEWS to the documentation.
+
+------------------------------------------------------------------------
+r44 | bruce | 2001-06-12 13:22:48 -0600 (Tue, 12 Jun 2001) | 2 lines
+Changed paths:
+   M /trunk/NEWS
+   M /trunk/README
+
+*** empty log message ***
+
+------------------------------------------------------------------------
+r43 | bruce | 2001-06-12 13:22:43 -0600 (Tue, 12 Jun 2001) | 2 lines
+Changed paths:
+   D /trunk/makedist.in
+   A /trunk/makedist.py
+
+Adapted to the new spac-makedist.
+
+------------------------------------------------------------------------
+r42 | bruce | 2001-06-12 13:21:49 -0600 (Tue, 12 Jun 2001) | 3 lines
+Changed paths:
+   M /trunk/qmail-qfilter.c
+
+Don't close stderr when executing filters.
+Added the definitions to this file.
+
+------------------------------------------------------------------------
+r41 | bruce | 2001-06-12 13:21:18 -0600 (Tue, 12 Jun 2001) | 2 lines
+Changed paths:
+   M /trunk/spec
+
+Fixed a variety of old usage flaws.
+
+------------------------------------------------------------------------
+r40 | bruce | 2001-04-20 11:44:52 -0600 (Fri, 20 Apr 2001) | 2 lines
+Changed paths:
+   D /trunk/Makefile
+   M /trunk/NEWS
+   M /trunk/README
+   A /trunk/VERSION
+
+*** empty log message ***
+
+------------------------------------------------------------------------
+r39 | bruce | 2001-04-20 11:39:30 -0600 (Fri, 20 Apr 2001) | 2 lines
+Changed paths:
+   M /trunk/samples/deny-filetypes
+   M /trunk/samples/rename-filetypes
+
+*** empty log message ***
+
+------------------------------------------------------------------------
+r38 | bruce | 2001-04-20 11:33:41 -0600 (Fri, 20 Apr 2001) | 2 lines
+Changed paths:
+   M /trunk/samples/deny-filetypes
+
+Also block out .PIF files.
+
+------------------------------------------------------------------------
+r37 | bruce | 2001-04-20 11:33:27 -0600 (Fri, 20 Apr 2001) | 2 lines
+Changed paths:
+   M /trunk/makedist.in
+
+Added mailing list URL.
+
+------------------------------------------------------------------------
+r36 | bruce | 2001-04-20 11:33:10 -0600 (Fri, 20 Apr 2001) | 2 lines
+Changed paths:
+   M /trunk/spec
+
+Allow for compressed man pages.
+
+------------------------------------------------------------------------
+r35 | bruce | 2001-03-26 22:21:12 -0600 (Mon, 26 Mar 2001) | 2 lines
+Changed paths:
+   M /trunk/qmail-qfilter.c
+
+Fail reading the envelope if zero bytes are read in.
+
+------------------------------------------------------------------------
+r34 | bruce | 2001-02-15 16:16:52 -0600 (Thu, 15 Feb 2001) | 2 lines
+Changed paths:
+   A /trunk/samples/rename-filetypes
+
+Added a filter.
+
+------------------------------------------------------------------------
+r33 | bruce | 2001-02-15 16:12:13 -0600 (Thu, 15 Feb 2001) | 2 lines
+Changed paths:
+   M /trunk/qmail-qfilter.c
+
+Allow for envelope senders without a domain name.
+
+------------------------------------------------------------------------
+r32 | bruce | 2001-02-15 11:56:16 -0600 (Thu, 15 Feb 2001) | 2 lines
+Changed paths:
+   M /trunk/qmail-qfilter.c
+
+Fixed a bug in parsing empty envelope senders.
+
+------------------------------------------------------------------------
+r31 | bruce | 2000-12-19 17:04:07 -0600 (Tue, 19 Dec 2000) | 2 lines
+Changed paths:
+   M /trunk/samples/deny-filetypes
+
+Added the SCR extension to the blocking list.
+
+------------------------------------------------------------------------
+r30 | bruce | 2000-08-24 14:05:03 -0600 (Thu, 24 Aug 2000) | 3 lines
+Changed paths:
+   M /trunk/README
+
+Added note regarding non-readable scripts; re-releasing the same
+version.
+
+------------------------------------------------------------------------
+r28 | bruce | 2000-08-23 22:48:43 -0600 (Wed, 23 Aug 2000) | 2 lines
+Changed paths:
+   M /trunk/spec
+
+Fixed up release number.
+
+------------------------------------------------------------------------
+r27 | bruce | 2000-08-23 22:33:57 -0600 (Wed, 23 Aug 2000) | 2 lines
+Changed paths:
+   M /trunk/Makefile
+
+Removed the moved scripts from the makefile.
+
+------------------------------------------------------------------------
+r26 | bruce | 2000-08-23 22:31:46 -0600 (Wed, 23 Aug 2000) | 2 lines
+Changed paths:
+   A /trunk/samples
+   A /trunk/samples/README
+   A /trunk/samples/block-long-dates
+   A /trunk/samples/deny-filetypes
+
+Moved the sample scripts into a subdirectory.
+
+------------------------------------------------------------------------
+r25 | bruce | 2000-08-23 22:31:43 -0600 (Wed, 23 Aug 2000) | 3 lines
+Changed paths:
+   M /trunk/NEWS
+   M /trunk/README
+   D /trunk/block-long-dates
+   D /trunk/deny-filetypes
+   M /trunk/makedist.in
+   M /trunk/spec
+
+Moved the sample scripts into a subdirectory.
+Updated documentation and release files.
+
+------------------------------------------------------------------------
+r24 | bruce | 2000-08-23 22:30:43 -0600 (Wed, 23 Aug 2000) | 2 lines
+Changed paths:
+   M /trunk/qmail-qfilter.1
+
+Tidied up the notes regarding the 99 exit code.
+
+------------------------------------------------------------------------
+r23 | bruce | 2000-08-23 10:14:56 -0600 (Wed, 23 Aug 2000) | 2 lines
+Changed paths:
+   M /trunk/README
+
+Fixed up the note regarding changing CFLAGS in the README.
+
+------------------------------------------------------------------------
+r22 | bruce | 2000-07-30 22:26:07 -0600 (Sun, 30 Jul 2000) | 3 lines
+Changed paths:
+   M /trunk/Makefile
+   M /trunk/README
+   A /trunk/block-long-dates
+   M /trunk/makedist.in
+   M /trunk/spec
+
+Added another filter program.
+Fixed spec file.
+
+------------------------------------------------------------------------
+r21 | bruce | 2000-07-20 12:42:48 -0600 (Thu, 20 Jul 2000) | 2 lines
+Changed paths:
+   M /trunk/NEWS
+   M /trunk/README
+   M /trunk/qmail-qfilter.c
+
+Added a method of silently dropping messages (do not call qmail-queue).
+
+------------------------------------------------------------------------
+r20 | bruce | 2000-07-20 11:10:37 -0600 (Thu, 20 Jul 2000) | 2 lines
+Changed paths:
+   M /trunk/Makefile
+   M /trunk/makedist.in
+
+*** empty log message ***
+
+------------------------------------------------------------------------
+r19 | bruce | 2000-07-20 11:09:04 -0600 (Thu, 20 Jul 2000) | 2 lines
+Changed paths:
+   D /trunk/qmail-qfilter.spec
+   A /trunk/spec
+
+Renamed spec file.
+
+------------------------------------------------------------------------
+r18 | bruce | 2000-07-20 11:07:48 -0600 (Thu, 20 Jul 2000) | 2 lines
+Changed paths:
+   M /trunk/COPYING
+   M /trunk/Makefile
+   M /trunk/README
+   M /trunk/makedist.in
+
+Added some notes to README, fixed up Makefile and makedist.in.
+
+------------------------------------------------------------------------
+r17 | bruce | 2000-06-02 13:31:33 -0600 (Fri, 02 Jun 2000) | 2 lines
+Changed paths:
+   M /trunk/Makefile
+
+Added deny-filetypes to list of distributed files.
+
+------------------------------------------------------------------------
+r16 | bruce | 2000-06-02 13:30:28 -0600 (Fri, 02 Jun 2000) | 2 lines
+Changed paths:
+   M /trunk/qmail-qfilter.spec
+
+Added deny-filetypes to %doc.
+
+------------------------------------------------------------------------
+r14 | bruce | 2000-06-02 12:33:58 -0600 (Fri, 02 Jun 2000) | 2 lines
+Changed paths:
+   M /trunk/qmail-qfilter.spec
+
+Fixed version number in RPM spec file.
+
+------------------------------------------------------------------------
+r13 | bruce | 2000-06-02 12:33:15 -0600 (Fri, 02 Jun 2000) | 2 lines
+Changed paths:
+   M /trunk/NEWS
+   A /trunk/deny-filetypes
+
+Added the scanning script.
+
+------------------------------------------------------------------------
+r12 | bruce | 2000-06-02 12:29:36 -0600 (Fri, 02 Jun 2000) | 2 lines
+Changed paths:
+   M /trunk/Makefile
+   M /trunk/NEWS
+   M /trunk/qmail-qfilter.1
+   M /trunk/qmail-qfilter.c
+
+Added QMAILRCPTS feature, updated documentation.
+
+------------------------------------------------------------------------
+r11 | bruce | 2000-05-11 10:31:52 -0600 (Thu, 11 May 2000) | 2 lines
+Changed paths:
+   M /trunk/Makefile
+   A /trunk/NEWS
+   M /trunk/README
+   A /trunk/makedist.in
+   M /trunk/qmail-qfilter.spec
+
+Set up package to use makedist.
+
+------------------------------------------------------------------------
+r10 | bruce | 2000-05-11 09:22:24 -0600 (Thu, 11 May 2000) | 3 lines
+Changed paths:
+   M /trunk/README
+
+Added an extra note on how to use qmail-qfilter without the QMAILQUEUE
+patch to qmail.
+
+------------------------------------------------------------------------
+r9 | bruce | 2000-05-11 08:48:41 -0600 (Thu, 11 May 2000) | 2 lines
+Changed paths:
+   M /trunk/README
+   M /trunk/qmail-qfilter.c
+   M /trunk/qmail-qfilter.spec
+
+Fixed a couple of minor error handling bugs in run_filters.
+
+------------------------------------------------------------------------
+r8 | bruce | 2000-04-26 14:23:03 -0600 (Wed, 26 Apr 2000) | 2 lines
+Changed paths:
+   M /trunk/README
+   M /trunk/qmail-qfilter.spec
+
+Changed version number.
+
+------------------------------------------------------------------------
+r7 | bruce | 2000-04-26 14:20:47 -0600 (Wed, 26 Apr 2000) | 4 lines
+Changed paths:
+   M /trunk/README
+   M /trunk/qmail-qfilter.c
+
+Modified the list tail fix.
+Replaced the paragraph in the README referring to relay-ctrl with a more
+appropriate one.
+
+------------------------------------------------------------------------
+r6 | bruce | 2000-04-26 10:34:08 -0600 (Wed, 26 Apr 2000) | 2 lines
+Changed paths:
+   M /trunk/qmail-qfilter.c
+
+Fixed missing assignment to terminate the list.
+
+------------------------------------------------------------------------
+r2 | bruce | 2000-02-15 17:16:42 -0600 (Tue, 15 Feb 2000) | 2 lines
+Changed paths:
+   A /trunk/.cvsignore
+   A /trunk/COPYING
+   A /trunk/Makefile
+   A /trunk/README
+   A /trunk/qmail-qfilter.1
+   A /trunk/qmail-qfilter.c
+   A /trunk/qmail-qfilter.spec
+
+Initial revision
+
+------------------------------------------------------------------------
+r1 | (no author) | 2000-02-15 17:16:42 -0600 (Tue, 15 Feb 2000) | 1 line
+Changed paths:
+   A /branches
+   A /tags
+   A /trunk
+
+New repository initialized by cvs2svn.
+------------------------------------------------------------------------

@@ -1,0 +1,60 @@
+            maildrop - mail delivery agent with filtering abilities
+
+   Copyright 1998-2005, Double Precision Inc.
+
+   This program is distributed under the terms of the GNU General Public
+   License. See COPYING for additional information.
+
+   [1]http://www.courier-mta.org/maildrop/
+
+Building RPMs
+
+   Starting with version 0.99, it is possible to build binary RPMs directly
+   from the source tarball, so there's no longer a need to provide a separate
+   set of source and binary RPMs. You will need RPM 3.0 or higher in order to
+   build a binary RPM. Execute the following command:
+
+    rpm -ta maildrop-2.2.0.tar.bz2
+
+   The binary RPM will be built with a customized configuration (userdb,
+   GDBM, and quota enhancements enabled). Afterwards, simply execute rpm -i
+   to install it. That's it.
+
+   With RPM 4.1 (Red Hat 8.0) use the 'rpmbuild' command instead of rpm:
+   rpmbuild -ta maildrop-2.2.0.tar.bz2
+
+   If you would like to change the RPM build options, move
+   maildrop-2.2.0.tar.gz to your SOURCES directory, extract the file
+   maildrop.spec, move it to your SPECS directory, customize it if necessary,
+   then build from the spec file.
+
+   maildrop includes documentation in HTML, as well as traditional man pages.
+   The HTML versions may also be found at
+   [2]http://www.courier-mta.org/maildrop/maildrop.html.
+    
+
+Installation
+
+   See [3]INSTALL for installation information. If you are using an RPM-based
+   Linux distribution, you can install build a binary RPM directly from the
+   source code.
+
+Using maildrop with sendmail
+
+   Maildrop can be easily used as sendmail's local delivery agent, instead of
+   procmail. Here is the suggested entry for sendmail.cf, courtesy of Eric J.
+   Schwertfeger <ejs@bfd.com>:
+
+  
+ Mlocal,         P=/usr/local/bin/maildrop, F=lsAw5:/|@SPfhn, S=10/30, R=20/40,
+                 T=DNS/RFC822/X-Unix,
+                 A=maildrop -d $u
+
+   You may also consider including the D, F, and M flags as well.
+
+References
+
+   Visible links
+   1. http://www.courier-mta.org/maildrop/
+   2. file:///home/mrsam/src/maildrop/maildrop.html
+   3. file:///home/mrsam/src/maildrop/INSTALL.html

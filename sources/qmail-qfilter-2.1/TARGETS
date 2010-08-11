@@ -1,0 +1,12 @@
+all
+clean
+clean-spac
+compile
+docs
+install
+libraries
+load
+programs
+qmail-qfilter
+qmail-qfilter.1.html
+qmail-qfilter.o

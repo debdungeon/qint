@@ -1,0 +1,55 @@
+qmail-getpw(8)                                                  qmail-getpw(8)
+
+
+
+NNAAMMEE
+       qmail-getpw - give addresses to users
+
+SSYYNNOOPPSSIISS
+       qqmmaaiill--ggeettppww _l_o_c_a_l
+
+DDEESSCCRRIIPPTTIIOONN
+       In  qqmmaaiill,  each user controls a vast array of local addresses.  qqmmaaiill--
+       ggeettppww finds the user that controls a  particular  address,  _l_o_c_a_l.   It
+       prints  six  pieces  of information, each terminated by NUL: _u_s_e_r; _u_i_d;
+       _g_i_d; _h_o_m_e_d_i_r; _d_a_s_h; and _e_x_t.  The user’s  account  name  is  _u_s_e_r;  the
+       user’s  uid  and gid in decimal are _u_i_d and _g_i_d; the user’s home direc‐
+       tory is _h_o_m_e_d_i_r; and  messages  to  _l_o_c_a_l  will  be  handled  by  _h_o_m_e_‐
+       _d_i_r//..qqmmaaiill_d_a_s_h_e_x_t.
+
+       In  case  of  trouble,  qqmmaaiill--ggeettppww exits nonzero without printing any‐
+       thing.
+
+       WWAARRNNIINNGG:: The operating system’s ggeettppwwnnaamm  function,  which  is  at  the
+       heart of qqmmaaiill--ggeettppww, is inherently unreliable: it fails to distinguish
+       between temporary errors and nonexistent  users.   Future  versions  of
+       ggeettppwwnnaamm  should  return ETXTBSY to indicate temporary errors and ESRCH
+       to indicate nonexistent users.
+
+RRUULLEESS
+       qqmmaaiill--ggeettppww considers an account in //eettcc//ppaasssswwdd to be a user if (1) the
+       account has a nonzero uid, (2) the account’s home directory exists (and
+       is visible to qqmmaaiill--ggeettppww), and (3) the account owns  its  home  direc‐
+       tory.   qqmmaaiill--ggeettppww ignores account names containing uppercase letters.
+       qqmmaaiill--ggeettppww also assumes that all account names  are  shorter  than  32
+       characters.
+
+       qqmmaaiill--ggeettppww gives each user control over the basic _u_s_e_r address and all
+       addresses of the form _u_s_e_r--_a_n_y_t_h_i_n_g.  When _l_o_c_a_l is _u_s_e_r, _d_a_s_h and  _e_x_t
+       are  both empty.  When _l_o_c_a_l is _u_s_e_r--_a_n_y_t_h_i_n_g, _d_a_s_h is a hyphen and _e_x_t
+       is _a_n_y_t_h_i_n_g.  _u_s_e_r may appear in any combination of uppercase and  low‐
+       ercase letters at the front of _l_o_c_a_l.
+
+       A  catch-all  user,  aalliiaass, controls all other addresses.  In this case
+       _e_x_t is _l_o_c_a_l and _d_a_s_h is a hyphen.
+
+       You can override all of qqmmaaiill--ggeettppww’s decisions  with  the  qqmmaaiill--uusseerrss
+       mechanism, which is reliable, highly configurable, and much faster than
+       qqmmaaiill--ggeettppww.
+
+SSEEEE AALLSSOO
+       qmail-users(5), qmail-lspawn(8)
+
+
+
+                                                                qmail-getpw(8)

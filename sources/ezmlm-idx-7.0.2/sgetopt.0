@@ -1,0 +1,28 @@
+sgetopt(3)                                                          sgetopt(3)
+
+
+
+NNAAMMEE
+       sgetopt - get option character from command line
+
+SSYYNNTTAAXX
+       ##iinncclluuddee <<ssggeettoopptt..hh>>
+
+DDEESSCCRRIIPPTTIIOONN
+       The  ssggeettoopptt  library  is  just like the ggeettoopptt library, except that it
+       prints errors using ssuubbssttddiioo rather than ssttddiioo.
+
+       See ggeettoopptt((33)) for interface details.
+
+VVEERRSSIIOONN
+       sgetopt version 1.9, 931201.
+
+AAUUTTHHOORR
+       Placed into the public domain by Daniel J. Bernstein.
+
+SSEEEE AALLSSOO
+       getopt(3), subgetopt(3), subfd(3), substdio(3)
+
+
+
+                                                                    sgetopt(3)

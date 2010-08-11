@@ -1,0 +1,316 @@
+ezmlm-manage(1)                                                ezmlm-manage(1)
+
+
+
+NNAAMMEE
+       ezmlm-manage - automatically manage a mailing list
+
+SSYYNNOOPPSSIISS
+       eezzmmllmm--mmaannaaggee [[--bbBBccCCddDDeeEEffFFllLLmmMMssSSqqQQuuUUvvVV]] _d_i_r
+
+DDEESSCCRRIIPPTTIIOONN
+       eezzmmllmm--mmaannaaggee  handles  administrative  requests  for  the  mailing list
+       stored in _d_i_r, as well as for the associated digest list.
+
+       eezzmmllmm--mmaannaaggee is normally invoked from a ..qqmmaaiill file.  It reads  a  mail
+       message  from  its standard input, and a mail envelope from the SSEENNDDEERR,
+       LLOOCCAALL, DDEEFFAAUULLTT, and HHOOSSTT environment variables.
+
+       eezzmmllmm--mmaannaaggee expects DDEEFFAAUULLTT to be of the form _a_c_t_i_o_n--_b_o_x==_d_o_m_a_i_n.  Here
+       _a_c_t_i_o_n  is  a  request,  and  _b_o_x@@_d_o_m_a_i_n  is the target of the request.
+       eezzmmllmm--mmaannaaggee sends a response to the target.  It attaches the  original
+       message to the end of its response.
+
+       DDEEFFAAUULLTT  may instead be of the (simple) form _a_c_t_i_o_n.  Then the envelope
+       sender is used as the target.
+
+       If _a_c_t_i_o_n starts with ‘‘digest’’, the request is assumed to be for  the
+       associated digest list.  eezzmmllmm--mmaannaaggee handles these requests similarly,
+       except  that  digest  list   subscriber   addresses   are   stored   in
+       _d_i_r//ddiiggeesstt//ssuubbssccrriibbeerrss, rather than in _d_i_r//ssuubbssccrriibbeerrss.
+
+       If  _a_c_t_i_o_n  starts with ‘‘allow’’, the request is assumed to be for the
+       associated _d_i_r//aallllooww// database. This database is used to store  aliases
+       of  subscribers  for  lists  allowing  only  posts only if the envelope
+       sender is a subscriber.  Actions on the _d_i_r//aallllooww// database follow  the
+       same  rules  as  for  the main list. The ezmlm messages are the same as
+       those used for normal subscription, but refer  to  the  _l_i_s_t--aallllooww@@_h_o_s_t
+       list. As this feature is designed for advanced uses and remote adminis‐
+       trators only, this is not a problem.  NNOOTTEE:: No message is sent  out  to
+       confirm  additions to or removals from this database. However, the user
+       can verify the change using the _q_u_e_r_y action.  If  _a_c_t_i_o_n  starts  with
+       ‘‘deny’’,  the  command  is applied simiparly to the _d_i_r//ddeennyy// database
+       for blocking posts with certain envelope  senders.   This  database  is
+       available  to remote administrators only, and only if the list has been
+       set up with this feature (see eezzmmllmm--mmaannaaggee((11))).  NNOOTTEE::  No  message  is
+       sent  out to confirm additions to or removals from this database.  How‐
+       ever, the remote admin can verify the change using the _q_u_e_r_y action.
+
+       eezzmmllmm--mmaannaaggee copies the _T_X_T___M_A_I_L_I_N_G___L_I_S_T message  into  a  MMaaiilliinngg--LLiisstt
+       field  in  its  response.   If  the incoming message has a MMaaiilliinngg--LLiisstt
+       field, eezzmmllmm--mmaannaaggee refuses to respond.  eezzmmllmm--mmaannaaggee also  refuses  to
+       respond to bounce messages.
+
+       eezzmmllmm--mmaannaaggee  reads  _d_i_r//ccooppyylliinneess  to  determine how many lines of the
+       original message to copy into the outgoing message.  If  this  file  is
+       empty  or  not present, a value of _0 is presumed, meaning that only the
+       header is copied.
+
+OOPPTTIIOONNSS
+       --bb   (Default.)  eezzmmllmm--mmaannaaggee will add  general  instructions  and  the
+            request to the outgoing message.
+
+       --BB   eezzmmllmm--mmaannaaggee  will not add general instructions and the request to
+            the outgoing message.  This information gives the recipient  of  a
+            confirmation  request some information about the inciting message.
+            Use of this switch will deny the recipient that information.
+
+       --cc   (Default.)  eezzmmllmm--mmaannaaggee will reply to _-_g_e_t commands.
+
+       --CC   eezzmmllmm--mmaannaaggee will not reply to _-_g_e_t commands. This is  useful  for
+            closed  lists,  where  the  owner for some reason wants to keep an
+            archive, without making it available.
+
+       --dd   Alias for the --ee switch for backwards compatibility.
+
+       --DD   Alias for the --EE switch for backwards compatibility.
+
+       --ee   eezzmmllmm--mmaannaaggee  allows  remote  administrators  to  edit  files   in
+            _d_i_r//tteexxtt// via E-mail.
+
+       --EE   (Default.)   Text  file  editing not allowed.  This is the default
+            unless the _d_i_r//mmooddccaanneeddiitt file exists.
+
+       --ff   (Default.)  The information in the  ‘‘From:’’  is  extracted  from
+            subscribe  confirm messages and added to _d_i_r//LLoogg together with the
+            subscriber address. This makes it easier for  the  list  owner  to
+            help  a  subscriber  who  cannot  determine  his/her  subscription
+            address. If the --SS switch is  used,  the  information  is  instead
+            extracted from the subscribe request.
+
+       --FF   Ignore ‘‘From:’’ headers.
+
+       --ll   eezzmmllmm--mmaannaaggee  will  send  a  subscriber list in reply to the _-_l_i_s_t
+            command and the number of subscribers in reply to the _-_l_i_s_t_n  com‐
+            man  if _d_i_r//mmooddssuubb or _d_i_r//rreemmoottee exist and target (the address the
+            reply is to be sent to) is a moderator.
+
+       --LL   (Default.)  eezzmmllmm--mmaannaaggee will ignore the  _-_l_i_s_t  and  _-_l_i_s_t_n  com‐
+            mands.  This is the default unless the _d_i_r//mmooddccaannlliisstt file exists.
+
+       --mm   For lists with moderated subscription, require moderator  approval
+            also for unsubscribe requests. Remote admins are normally informed
+            about unsuccessful unsubscribes. This creates problems when  there
+            is more than one moderator. Therefore, when the --mm switch is used,
+            the notification is suppressed. Moderators can still determine the
+            result by using the _-_q_u_e_r_y command.
+
+       --MM   (Default.)   Requests  to  unsubscribe from moderated lists do not
+            require moderator approval.
+
+       --nn   (Default.)  Target addresses will be notified if the are added  or
+            removed from the subscriber list.
+
+       --NN   Target  addresses  will  not be notified if they are added/removed
+            from the subscriber list by  remote  admin  or  moderator  action.
+            Also,  the  target  will not be notified if they were successfully
+            added/removed when the --SS and --UU switches, respectively, are used.
+
+       --qq   (Default.)   Quiet. The list-owner is not notified of subscription
+            events.
+
+       --QQ   The list-owner is notified about failed unsubscribe attempts. Usu‐
+            ally,  these  are from subscribers that do not remember their sub‐
+            scription address and require  administrative  assistance.  Remote
+            admins  are  notified when a unsubscribe request initiated by them
+            fails. Thus, the owner is not notified about these events even  if
+            the --QQ switch is used.
+
+       --QQQQ  As  for  --QQ, and in addition, the list-owner is notified about all
+            additions to or removals from the  subscriber  database.  This  is
+            sometimes desired by owners of small lists.
+
+       --ss   (Default.)  eezzmmllmm--mmaannaaggee will handle subscriptions with the normal
+            target handshake.  This is the default unless the _d_i_r//nnoossuubbccoonnffiirrmm
+            file exists.
+
+       --SS   eezzmmllmm--mmaannaaggee  will  eliminate  the  target handshake from the sub‐
+            scription process. This allows anyone to subscribe  anybody  else.
+            DO  NOT  use this option, unless you know what you are doing. This
+            option may be useful for some moderated lists.
+
+       --uu   (Default.)  eezzmmllmm--mmaannaaggee will handle unsubscribe requests with the
+            normal target handshake.  This is the default unless the _d_i_r//nnoouunn‐‐
+            ssuubbccoonnffiirrmm file exists.
+
+       --UU   eezzmmllmm--mmaannaaggee will eliminate the target handshake from  the  unsub‐
+            scription process. This allows anyone to unsubscribe anybody else.
+            DO NOT use this option, unless you know what you are doing.
+
+       --vv   Display eezzmmllmm--mmaannaaggee version information.
+
+       --VV   Display eezzmmllmm--mmaannaaggee version information.
+
+CCHHAARRAACCTTEERR SSEETTSS
+       If _d_i_r//cchhaarrsseett exists, eezzmmllmm--mmaannaaggee will use the character  set  listed
+       for all messages. Otherwise, the default ‘‘us-ascii’’ will be used. The
+       character set can be suffixed by ‘‘:’’ followed by a code. If the  code
+       is  ‘‘Q’’, outgoing messages are sent as ‘‘Quoted-Printable’’, if it is
+       ‘‘B’’ they are sent ‘‘base64’’ encoded.  Otherwise, text is sent as is.
+
+       Incoming text for the _-_e_d_i_t is accepted unencoded or in either of these
+       encodings.
+
+SSUUBBSSCCRRIIPPTTIIOONNSS
+       If _a_c_t_i_o_n is sscc.._c_o_o_k_i_e, where _c_o_o_k_i_e is an appropriate code  (depending
+       on  the  target, the approximate time, and other factors), eezzmmllmm--mmaannaaggee
+       adds the target to the mailing list if subscriptions are not moderated.
+       For  subscription  moderated  lists,  eezzmmllmm--mmaannaaggee sends a confirmation
+       request to the moderators with  the  right  ttcc.._c_o_o_k_i_e  address  in  its
+       response.
+
+       If  _a_c_t_i_o_n  is  rrcc.._c_o_o_k_i_e  or ttcc.._c_o_o_k_i_e, where _c_o_o_k_i_e is an appropriate
+       code (depending on the target, the approximate  time,  and  other  fac‐
+       tors),  eezzmmllmm--mmaannaaggee adds the target to the mailing list. If the target
+       was not already a subscriber, a welcome message is sent to the  target.
+
+       If _a_c_t_i_o_n is ssuubbssccrriibbee, eezzmmllmm--mmaannaaggee does not subscribe the target, but
+       it identifies the right sscc.._c_o_o_k_i_e address in its response.
+
+       This confirmation mechanism (1) verifies that the target  is  reachable
+       and (2) protects the target against forged subscription requests.
+
+       Actions of uucc.._c_o_o_k_i_e and uunnssuubbssccrriibbee are used in the same way to delete
+       the target from the mailing list.  Unsubscribes do not require  modera‐
+       tor  confirmation  unless the --mm option is given.  Actions of vvcc.._c_o_o_k_i_e
+       are used for moderator confirmation of unsubscribes.
+
+       Actions of rrcc.._c_o_o_k_i_e are used to confirm  moderator-iniated  subscribes
+       for lists configured with remote administration (see MODERATION).
+
+       Actions  of  wwcc.._c_o_o_k_i_e  are  used to confirm moderator-initiated unsub‐
+       scribes for lists configured with remote  administration  (see  MODERA‐
+       TION).
+
+       If  _a_c_t_i_o_n is qquueerryy, eezzmmllmm--mmaannaaggee returns a message to the target indi‐
+       cating whether or not the target address is a subscriber.
+
+       If _a_c_t_i_o_n  is  iinnffoo  or  ffaaqq,  eezzmmllmm--mmaannaaggee  returns  the  contents  of
+       _d_i_r//tteexxtt//iinnffoo or _d_i_r//tteexxtt//ffaaqq, respectively.
+
+       If _d_i_r//ppuubblliicc does not exist, eezzmmllmm--mmaannaaggee rejects all subscription and
+       unsubscription attempts.  However,  if  the  list  is  configured  with
+       remote  administration,  moderator-initiated  subscribe and unsubscribe
+       requests will still be honored. Also, if _a_c_t_i_o_n is  _h_e_l_p,  eezzmmllmm--mmaannaaggee
+       will still send help.
+
+TTEEXXTT FFIILLEE EEDDIITTIINNGG
+       If  _a_c_t_i_o_n  is eeddiitt, either the --ee switch is used or the _d_i_r//mmooddccaanneeddiitt
+       file exists, and the target address is that of a remote  administrator,
+       eezzmmllmm--mmaannaaggee  will  reply with a list of editable file in _d_i_r//tteexxtt// and
+       instructions for editing. Cookies for editing expire approximately 27.8
+       hours after they are issued, or when a file has been changed, whichever
+       is sooner. The size of the updated file is limited to 5120 bytes.
+
+       If _a_c_t_i_o_n is eeddiitt.._f_i_l_e, the --ee switch is used, and the  target  address
+       is that of a remote administrator, eezzmmllmm--mmaannaaggee will return an editable
+       copy of _f_i_l_e.
+
+       If _a_c_t_i_o_n is eedd.._c_o_o_k_i_e, eezzmmllmm--mmaannaaggee will verify that the  edit  cookie
+       is still valid and that the file has not been modified since the cookie
+       was issued. If the cookie passes these tests, eezzmmllmm--mmaannaaggee will  update
+       _d_i_r//tteexxtt_/_f_i_l_e.
+
+AARRCCHHIIVVEE RREETTRRIIEEVVAALLSS
+       If  _a_c_t_i_o_n  is  ggeett.._n_u_m,  eezzmmllmm--mmaannaaggee  sends  back  message  _n_u_m  from
+       _d_i_r//aarrcchhiivvee//.  This can be disabled with the --CC command line switch.
+
+       If  _d_i_r//ppuubblliicc  does  not  exist,  eezzmmllmm--mmaannaaggee  rejects  all   archive
+       retrieval attempts.
+
+MMOODDEERRAATTIIOONN
+       If  _d_i_r//mmooddssuubb  exists,  subscriptions  are moderated. Users can unsub‐
+       scribe without moderator action, but moderator confirmation is required
+       for subscriptions.
+
+       If  _d_i_r//mmooddssuubb is not empty, it is assumed that the content this is the
+       base directory for the moderator database ( _m_o_d_d_i_r).  Otherwise, _m_o_d_d_i_r
+       is assumed to be _d_i_r//mmoodd//.  The given path must either be within _d_i_r or
+       a relative directory name.
+
+       The moderator names are assumed to be stored in a set of files in  _m_o_d_‐
+       _d_i_r//ssuubbssccrriibbeerrss//.
+
+       To add, remove, and list moderators, use respectively:
+
+       eezzmmllmm--ssuubb _m_o_d_d_i_r _u_s_e_r_@_h_o_s_t
+
+       eezzmmllmm--uunnssuubb _m_o_d_d_i_r _u_s_e_r_@_h_o_s_t
+
+       eezzmmllmm--lliisstt _m_o_d_d_i_r
+
+       Subscription  requests  from  potential  subscribers will be sent for a
+       second round of confirmation to all the  moderators.   If  a  moderator
+       approves  the  request,  a  message confirming the subscription will be
+       sent to the subscriber. The subscriber will not  know  which  moderator
+       approved the subscription.
+
+       If  more  than  one  moderator replies to the confirmation request, the
+       subscriber will not receive duplicate messages about being on  (or  not
+       on) the mailing list.
+
+       Unsubscribe requests from users are handled as for non-moderated lists.
+
+       All subscribe confirmation requests requiring moderator action  have  a
+       subject of CCOONNFFIIRRMM ssuubbssccrriibbee ttoo _l_i_s_t_n_a_m_e_@_h_o_s_t_.  All unsubscribe confir‐
+       mation requests in reply  to  moderator-initiated  unsubscribe  dialogs
+       have a subject of CCOONNFFIIRRMM uunnssuubbssccrriibbee ffrroomm _l_i_s_t_n_a_m_e_@_h_o_s_t_.
+
+       If _d_i_r//rreemmoottee exists (remote administration), moderators can initiate a
+       request to subscribe a user  ’username@userhost’  by  sending  mail  to
+       _l_i_s_t_n_a_m_e_-_s_u_b_s_c_r_i_b_e--uusseerrnnaammee==uusseerrhhoosstt_@_h_o_s_t.  The moderator (not the sub‐
+       scriber) will receive the confirmation request, and  can  complete  the
+       transaction. Moderators’ request to unsubscribe users are handled anal‐
+       ogously. Once an address is successfully added to or removed  from  the
+       subscriber  database  by a moderator or remote admin, the user is noti‐
+       fied of the action. If a moderator or remote admin’s subscribe  confir‐
+       mation  does  not result in a change, i.e. if the address already was a
+       subscriber, no notification is sent. If a  remote  admin’s  unsubscribe
+       confirmation  does  not  result in a change, i.e. the address was not a
+       subscriber, a notification is sent to the remote admin. This is to make
+       the remote admin aware that the address unsubscribed most likely is not
+       the subscriber’s subscription address.
+
+       _d_i_r//rreemmoottee is not empty, it is assumed that the  content  this  is  the
+       base  directory  for  the  moderator database ( _m_o_d_d_i_r).  The moderator
+       names are assumed to be  stored  in  a  set  of  files  in  _m_o_d_d_i_r//ssuubb‐‐
+       ssccrriibbeerrss//.   The  given  path  must  either be within _d_i_r or a relative
+       directory name.  If both _d_i_r//mmooddssuubb and _d_i_r//rreemmoottee exist, and both con‐
+       tain directory names, the directory name in _d_i_r//mmooddssuubb is used, and the
+       _d_i_r//rreemmoottee entry is ignored.
+
+       It is possible to set up a mailinglist for  moderators  only  by  using
+       _d_i_r//mmoodd//  as the list directory. Make sure that such a list is not pub‐
+       lic! Otherwise, anyone can become a moderator by  subscribing  to  this
+       list.
+
+       If  action  is  --hheellpp  and  target is a moderator, eezzmmllmm--mmaannaaggee will in
+       addition to the usual help send _d_i_r//tteexxtt//mmoodd--hheellpp  containing  instruc‐
+       tions for moderators.
+
+       If  action  is  --lliisstt and target is a moderator, the list is set up for
+       subscription moderation or remote administration, and  the  _-_l  command
+       line  switch  is  used  or the _d_i_r//mmooddccaannlliisstt file exists, eezzmmllmm--mmaannaaggee
+       will reply with an unsorted subscriber list. Extensions for digest sub‐
+       scribers and auxillary databases are supported (see above).
+
+       If action is --lloogg, eezzmmllmm--mmaannaaggee will reply with the contents of the _L_o_g
+       file with the same access restrictions as for the --lliisstt action.
+
+SSEEEE AALLSSOO
+       ezmlm-make(1),  ezmlm-return(1),  ezmlm-send(1),  ezmlm-sub(1),  ezmlm-
+       unsub(1), ezmlm-list(1), ezmlm(5), qmail-command(8)
+
+
+
+                                                               ezmlm-manage(1)

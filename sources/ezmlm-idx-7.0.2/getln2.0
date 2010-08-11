@@ -1,0 +1,39 @@
+getln2(3)                                                            getln2(3)
+
+
+
+NNAAMMEE
+       getln2 - read one line of data
+
+SSYYNNTTAAXX
+       ##iinncclluuddee <<ggeettllnn..hh>>
+
+       int ggeettllnn22(&_s_s,&_s_a,&_c_o_n_t,&_c_l_e_n,_s_e_p);
+
+       substdio _s_s;
+       stralloc _s_a;
+       char *_c_o_n_t;
+       unsigned int _c_l_e_n;
+       int _s_e_p;
+
+DDEESSCCRRIIPPTTIIOONN
+       ggeettllnn22  reads a line of characters, terminated by a _s_e_p character, from
+       _s_s.
+
+       The line is returned in two pieces.  The first piece is stored  in  _s_a.
+       The  second  piece  is _c_o_n_t, a pointer to _c_l_e_n characters inside the _s_s
+       buffer.  The second piece must be copied somewhere else  before  _s_s  is
+       used again.
+
+       If  ggeettllnn22  sees end-of-input before it sees _s_e_p, it sets _c_l_e_n to 0 and
+       does not set _c_o_n_t.  It puts the partial line into _s_a.
+
+       ggeettllnn22 normally returns 0.  If it runs out of memory, or encounters  an
+       error from _s_s, it returns -1, setting eerrrrnnoo appropriately.
+
+SSEEEE AALLSSOO
+       stralloc(3), substdio(3), getln(3)
+
+
+
+                                                                     getln2(3)

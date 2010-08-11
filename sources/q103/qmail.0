@@ -1,0 +1,34 @@
+qmail(7)                                                              qmail(7)
+
+
+
+NNAAMMEE
+       qmail - overview of qmail documentation
+
+IINNTTRROODDUUCCTTIIOONN
+       qqmmaaiill  is a secure, reliable, efficient, simple message transfer agent.
+
+       Users who want to control incoming messages should  read  ddoott--qqmmaaiill(5).
+       Available  commands  for the ..qqmmaaiill file include qqbbiiffff(1), qqrreecceeiipptt(1),
+       ffoorrwwaarrdd(1), bboouunncceessaayyiinngg(1), and ccoonnddrreeddiirreecctt(1).  Other  helpful  com‐
+       mands include mmaaiillddiirrmmaakkee(1), mmaaiillddiirr22mmbbooxx(1), and mmaaiillddiirrwwaattcchh(1).
+
+       System  administrators  who  want  to  control  the entire qqmmaaiill system
+       should start with qqmmaaiill--ccoonnttrrooll(5) and qqmmaaiill--ssttaarrtt(8).  There are three
+       queue-monitoring  tools:  qqmmaaiill--qqrreeaadd(8),  qqmmaaiill--qqssttaatt(8),  and  qqmmaaiill--
+       ttccppttoo(8).  Incoming SMTP connections are handled by qqmmaaiill--ssmmttppdd(8).
+
+       qqmmaaiill  offers  two  command-line  message-sending  interfaces:   qqmmaaiill--
+       iinnjjeecctt(8) and mmaaiillssuubbjj(1).  For background information on Internet mail
+       messages, see aaddddrreesssseess(5), eennvveellooppeess(5),  qqmmaaiill--hheeaaddeerr(5),  and  ffoorrgg‐‐
+       eerriieess(7).
+
+       Miscellaneous   documentation   includes   qqmmaaiill--lliimmiittss(7)  and  qqmmaaiill--
+       ppoopp33dd(8).
+
+       This   documentation   describes   version   1.03   of   qqmmaaiill.     See
+       hhttttpp::////ppoobbooxx..ccoomm//~~ddjjbb//qqmmaaiill..hhttmmll for other qqmmaaiill-related software.
+
+
+
+                                                                      qmail(7)

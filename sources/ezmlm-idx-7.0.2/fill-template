@@ -1,0 +1,4 @@
+#!/bin/sh
+# WARNING: This file was auto-generated. Do not edit!
+VERSION=$( sed -e 's/^.*-//' -e q VERSION )
+sed -e "s/@VERSION@/$VERSION/" <$1.template >$1

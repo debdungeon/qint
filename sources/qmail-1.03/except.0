@@ -1,0 +1,22 @@
+except(1)                                                            except(1)
+
+
+
+NNAAMMEE
+       except - reverse the exit code of a program
+
+SSYYNNOOPPSSIISS
+       eexxcceepptt _p_r_o_g_r_a_m [ _a_r_g _._._.  ]
+
+DDEESSCCRRIIPPTTIIOONN
+       eexxcceepptt runs _p_r_o_g_r_a_m with the given arguments.
+
+       If  _p_r_o_g_r_a_m  exits  0,  eexxcceepptt exits 100.  If _p_r_o_g_r_a_m exits 111, eexxcceepptt
+       exits 111.  If _p_r_o_g_r_a_m exits anything else, eexxcceepptt exits 0.
+
+SSEEEE AALLSSOO
+       bouncesaying(1), condredirect(1)
+
+
+
+                                                                     except(1)

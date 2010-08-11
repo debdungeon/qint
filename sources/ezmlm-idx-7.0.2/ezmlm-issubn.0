@@ -1,0 +1,58 @@
+ezmlm-issubn(1)                                                ezmlm-issubn(1)
+
+
+
+NNAAMMEE
+       ezmlm-issubn  -  test  to  see if an address is subscribed to a mailing
+       list
+
+SSYYNNOOPPSSIISS
+       eezzmmllmm--iissssuubbnn [ --nnNN ] _d_i_r _[ _s_u_b_d_i_r_1 _._._. _]
+
+DDEESSCCRRIIPPTTIIOONN
+       eezzmmllmm--iissssuubbnn checks to see if the address obtained from the environment
+       variable _S_E_N_D_E_R is subscribed to the mailing list stored in _d_i_r_/_s_u_b_d_i_r_1
+       or the mailing list in _d_i_r_/_s_u_b_d_i_r_2 or ...
+
+       If _S_E_N_D_E_R is not defined eezzmmllmm--iissssuubbnn exits with an error.
+
+       If _S_E_N_D_E_R is on [any of] the mailing list[s], eezzmmllmm--iissssuubbnn exits with a
+       zero exit code.
+
+       If  _b_o_x@@_d_o_m_a_i_n  is not on the mailing list, eezzmmllmm--iissssuubbnn exits 99. This
+       exit code is non-success from a shell point of view, but  to  qmail  it
+       means  "success"  and  skip remaining lines in the .qmail file. Thus, a
+       simple way to execute a delivery if the criteria are met  is  to  place
+       the  eezzmmllmm--iissssuubbnn line first, followed by the action line(s). If SENDER
+       is a subscriber, the action line is  executed,  if  not,  the  line  is
+       ignored  without  the  generation  of an error condition. To generate a
+       fatal error, just:
+
+       |/path/ezmlm-issubn _d_i_r _._._.  || (echo "err msg"; exit 100)
+
+       |/path/action_for_subscribers |/path/more_for_subscribers
+
+       eezzmmllmm--iissssuubbnn exits 100 on permanent and 111 on temporary errors.
+
+OOPPTTIIOONNSS
+       --nn     Negate exit code. Exit 99 if SENDER is a subscriber and  exit  0
+              if not.  This is useful when trying to exclude SENDERs.
+
+       --NN     (Default.)  Normal exit codes: 0 is the address is in any of the
+              lists, 99 if not.
+
+NNOOTTEESS
+       The use of eezzmmllmm--iissssuubbnn is deprecated.  Use eezzmmllmm--cchheecckkssuubb instead.
+
+       To maintain backwards compatibility, if _d_i_r_1 (or more) are  present  on
+       the command line and are all absolute paths, eezzmmllmm--iissssuubbnn examines each
+       of the directories for the sender.  Otherwise,  it  only  examines  the
+       named subdirectories within _d_i_r.
+
+SSEEEE AALLSSOO
+       ezmlm-checksub(1),   ezmlm-list(1),   ezmlm-manage(1),   ezmlm-make(1),
+       ezmlm-send(1), ezmlm-sub(1), ezmlm-unsub(1), ezmlm(5)
+
+
+
+                                                               ezmlm-issubn(1)

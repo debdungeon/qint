@@ -1,0 +1,146 @@
+autorespond
+Copyright 1998 Eric Huss
+Copyright 2000 Matthias Henze  matthias@mhcsoftware.de
+Copyright 2001 Brad Dameron <bdameron@tscnet.com>
+
+EH 02/13/98 - First release.
+EH 02/14/98 - Fixed file descriptor bug (wouldn't work on BSD/Linux)
+MH  07/2000	1.1.0	added message handling
+MH  07/2000	1.1.0	added from adrees commandline option
+MH  07/2000	1.1.0a	changed back to 1.0.0 compatibility
+			the new commandline options are optional by now
+MH  08/2000	1.1.0b	if DEFAUTL_FROM is set to $ the addres in the To:
+			header will be used as From: of the autoreply.
+MH  03/2001     1.1.0b  switched * to + in DEFAULT_FROM syntax
+                        fixed from header
+
+BD  06/12/2001  2.0.0   Removed some of Matthias's additional command lines
+                        and cleaned up some code.
+BD  11/24/2001  2.0.1   Removed binary and added a Makefile
+			Cleaned up README
+BD  11/30/2001  2.0.2   Fixed segfault with no command line options
+KJ  08/24/2003  2.0.4   From Woody Security team 
+  * Non-maintainer upload by the Security Team
+  * Fix buffer overflow with EXT and HOST environment variables
+    (CAN-2003-0654)
+JK  09/18/2003	2.0.5	fixed invalid exit codes in several places that
+			cause qmail to bounce messages wrongly.
+			Thanks to Flavio Curti fcu-autoresp@no-way.org for
+			identifying further invalid exit situations.
+
+
+download at: http://www.inter7.com/devel/autorespond-2.0.2.tar.gz
+
+
+Simple autoresponder for qmail.
+
+==============================================
+
+Mail is sent to help@my-company.com. An automatically generated response
+is sent back to the user with an address of "help@my-company.com".  You
+can set the envelope sender to an empty string.  However, some programs
+will parse the message for the "From:"  field and send an autoresponse
+back to it.  It is received at your autoresponder, and you now have a mail
+loop. 
+
+This autoresponder also catches some other simple situations such as mail
+from a mailer-daemon, empty envelope sender, bulk precedence headers, etc. 
+
+
+
+INSTALL:
+=============
+
+First thing, if your qmail distribution is not in /var/qmail, then edit
+autorespond.c and change QMAIL_LOCATION to point to the correct directory. 
+If you do not want to make use of the 2 optional commandline options edit 
+the 2 defines:
+
+DEFAULT_MH    -> corresponds to the "flag" optional parameter
+DEFAULT_FROM  -> connesponds to the "arsender" optional parameter
+
+
+There shouldn't be anything else to configure.  Compile: 
+
+make
+make install
+
+
+
+Usage:
+=============
+
+Usage is as follows:
+
+autorespond time num message dir [ flag arsender ]
+
+     time - amount of time to consider a message (in seconds)
+     num - maximum number of messages to allow within time seconds
+     message - the filename of the message to send
+     dir - the directory to hold the log of messages
+
+     optional parameters:
+
+     flag - handling of original message:
+
+       0 - append nothing
+       1 - append quoted original message without attachments <default>
+
+     arsender - from address in generated message, or:
+
+       + = blank from envelope ! 
+       $ = To: address will be used
+
+
+For example, in your ~alias directory, create a .qmail-help file with
+the following:
+
+
+|autorespond 10000 5 help_message help_autorespond 1
+&your-email-address@company.com
+
+
+This will allow up to five messages from the sender within about 3 hours 
+and include the original message as a quote.
+
+|autorespond 10000 10 help_message help_autorespond 0 +
+&your-email-address@company.com
+
+
+This will allow up to ten messages from the sender within about 3 hours and
+will NOT include the original message as a quote and will leave the from
+field blank.
+
+
+Create a file in your ~alias directory called help_message.  It should say
+something like this: 
+
+
+From: Support <help@company.com>
+Subject: Help Response
+
+This is a response to your help request.
+
+
+Below is a copy of the message we received.
+
+--------
+
+Make sure that "From:" is the first line of the file.  You should probably
+include the dashes to separate your help message from the user's message. 
+An example is included with this package. 
+
+Create a directory called help_autorespond in your ~alias directory.  This
+is where the log of messages goes. 
+
+That should be it.
+
+
+Notes
+=====
+9/18/2003
+- If the maximum count has been reached, the autoresponse doesn't 
+  get shipped out, but the message is still processed as usual.
+  This is a change from older versions because it didn't make
+  sense before.
+

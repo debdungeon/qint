@@ -1,0 +1,81 @@
+stralloc(3)                                                        stralloc(3)
+
+
+
+NNAAMMEE
+       stralloc - dynamically allocated strings
+
+SSYYNNTTAAXX
+       ##iinncclluuddee <<ssttrraalllloocc..hh>>
+
+       int ssttrraalllloocc__rreeaaddyy(&_s_a,_l_e_n);
+       int ssttrraalllloocc__rreeaaddyypplluuss(&_s_a,_l_e_n);
+
+       int ssttrraalllloocc__ccooppyy(&_s_a,&_s_a_2);
+       int ssttrraalllloocc__ccooppyyss(&_s_a,_b_u_f);
+       int ssttrraalllloocc__ccooppyybb(&_s_a,_b_u_f,_l_e_n);
+
+       int ssttrraalllloocc__ccaatt(&_s_a,&_s_a_2);
+       int ssttrraalllloocc__ccaattss(&_s_a,_b_u_f);
+       int ssttrraalllloocc__ccaattbb(&_s_a,_b_u_f,_l_e_n);
+
+       int ssttrraalllloocc__aappppeenndd(&_s_a,_b_u_f);
+       int ssttrraalllloocc__00(&_s_a);
+
+       int ssttrraalllloocc__ssttaarrttss(&_s_a,_b_u_f);
+
+       stralloc _s_a = {0};
+       stralloc _s_a_2 = {0};
+       unsigned int _l_e_n;
+       char *_b_u_f;
+
+DDEESSCCRRIIPPTTIIOONN
+       A  ssttrraalllloocc  variable  holds  a  string in dynamically allocated space.
+       String length is limited only by memory.   String  contents  are  unre‐
+       stricted.
+
+       The  ssttrraalllloocc  structure has three components: _s_a..ss is a pointer to the
+       string, or 0 if it is not allocated; _s_a..lleenn is the number of  bytes  in
+       the  string,  if it is allocated; _s_a..aa is the number of bytes allocated
+       for the string, if it is allocated.  A ssttrraalllloocc variable should be ini‐
+       tialized to {0}, meaning unallocated.
+
+       ssttrraalllloocc__rreeaaddyy  makes  sure  that _s_a has enough space allocated for _l_e_n
+       characters.  It allocates extra space if necessary.
+
+       ssttrraalllloocc__rreeaaddyypplluuss makes sure that _s_a has enough  space  allocated  for
+       _l_e_n  characters  more  than  its current length.  If _s_a is unallocated,
+       ssttrraalllloocc__rreeaaddyypplluuss is the same as ssttrraalllloocc__rreeaaddyy.
+
+       ssttrraalllloocc__ccooppyy copies _s_a_2 to _s_a, allocating space  if  necessary.   Here
+       _s_a_2 is an allocated ssttrraalllloocc variable.
+
+       ssttrraalllloocc__ccooppyyss copies a 0-terminated string, _b_u_f, to _s_a, without the 0.
+
+       ssttrraalllloocc__ccooppyybb copies _l_e_n characters from _b_u_f to _s_a.
+
+       ssttrraalllloocc__ccaatt  appends  _s_a_2 to _s_a, allocating space if necessary.  If _s_a
+       is unallocated, ssttrraalllloocc__ccaatt is the same as ssttrraalllloocc__ccooppyy.
+
+       ssttrraalllloocc__ccaattss and ssttrraalllloocc__ccaattbb are  analogous  to  ssttrraalllloocc__ccooppyyss  and
+       ssttrraalllloocc__ccooppyybb.
+
+       ssttrraalllloocc__aappppeenndd  adds a single character, _*_b_u_f, to _s_a, allocating space
+       if necessary.
+
+       ssttrraalllloocc__00 adds a single 0 character to _s_a.
+
+       ssttrraalllloocc__ssttaarrttss returns 1 if the 0-terminated string _b_u_f,  without  the
+       0, is a prefix of _s_a.
+
+EERRRROORR HHAANNDDLLIINNGG
+       If  a  ssttrraalllloocc  routine  runs  out  of  memory, it leaves _s_a alone and
+       returns 0, setting eerrrrnnoo appropriately.  On success it returns 1;  this
+       guarantees that _s_a is allocated.
+
+SSEEEE AALLSSOO
+       alloc(3), error(3)
+
+
+
+                                                                   stralloc(3)

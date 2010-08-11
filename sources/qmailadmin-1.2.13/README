@@ -1,0 +1,34 @@
+What is it?
+~~~~~~~~~~~
+QmailAdmin is a cgi program for administering Qmail with vchkpw.
+
+Requirements:
+~~~~~~~~~~~~~
+- A UNIX computer (Linux/Solaris/BSD) and C compiler (gcc)
+
+- A web server (Apache, Zeus)
+    http://www.apache.org/
+
+- Qmail 1.03 
+    http://cr.yp.to/qmail.html 
+    http://www.qmail.org/
+
+- vpopmail (a virtual domain addon for qmail) 
+    http://www.inter7.com/vpopmail/
+
+- ezmlm installed in /usr/local/bin/ezmlm 
+    http://cr.yp.to/ezmlm.html
+    http://www.ezmlm.org/
+
+- autorespond installed in /usr/local/bin/autorespond 
+    http://www.inter7.com/qmailadmin look for autoresponder link
+
+Updates?
+~~~~~~~~
+ Latest version is available at:
+
+ http://sourceforge.net/projects/qmailadmin/
+
+ Please refer your suggestions/bug reports to info@inter7.com
+
+

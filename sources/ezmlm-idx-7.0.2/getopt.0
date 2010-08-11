@@ -1,0 +1,103 @@
+getopt(3)                                                            getopt(3)
+
+
+
+NNAAMMEE
+       getopt - get option character from command line
+
+SSYYNNTTAAXX
+       ##iinncclluuddee <<ggeettoopptt..hh>>
+
+       char *ooppttaarrgg;
+       int ooppttiinndd;
+       int ooppttppooss;
+       int oopptteeooff;
+       int ooppttpprroobblleemm;
+       char *ooppttpprrooggnnaammee;
+       int oopptteerrrr;
+
+       int ggeettoopptt((_a_r_g_c_,_a_r_g_v_,_o_p_t_s));
+
+       int _a_r_g_c;
+       char **_a_r_g_v;
+       char *_o_p_t_s;
+
+DDEESSCCRRIIPPTTIIOONN
+       This is a clone version of the standard ggeettoopptt library, built on top of
+       ssuubbggeettoopptt((33)).
+
+       See ssuubbggeettoopptt((33)) for a detailed description of ggeettoopptt processing.   The
+       main  difference  between  ggeettoopptt  and  ssuubbggeettoopptt is that ggeettoopptt prints
+       error messages in case of problems.  To turn off these error  messages,
+       set oopptteerrrr (default nonzero) to zero.
+
+       This  clone  version  of  ggeettoopptt also provides an ooppttpprrooggnnaammee variable.
+       There are two uses for this variable:
+
+       (1) By default ooppttpprrooggnnaammee is null.  When ggeettoopptt sees this, it attempts
+       to  initialize  ooppttpprrooggnnaammee from _a_r_g_v[[00]], stripping the directory name.
+       The calling program can use ooppttpprrooggnnaammee after calling ggeettoopptt  at  least
+       once.   This is appropriate if the name of the program should be deter‐
+       mined from its command line.
+
+       (2) ggeettoopptt prints ooppttpprrooggnnaammee at the beginning of any  error  messages.
+       So  the calling program can, before calling ggeettoopptt, initialize ooppttpprroogg‐‐
+       nnaammee as desired.  This is appropriate if the name of the program should
+       not be determined from its command line.
+
+CCOOMMPPAATTIIBBIILLIITTYY
+       Old versions of ggeettoopptt do not include oopptteerrrr.  ooppttppooss, oopptteeooff, ooppttpprroobb‐‐
+       lleemm, and ooppttpprrooggnnaammee are specific to this clone version of ggeettoopptt.
+
+       Many features of this clone version of ggeettoopptt are  poorly  defined,  if
+       available  at  all, in most versions of ggeettoopptt.  For example, the stan‐
+       dard ggeettoopptt interface does not define  ooppttiinndd  until  the  end  of  the
+       option list.  And ooppttaarrgg is not defined unless ggeettoopptt has just returned
+       an option which takes an argument.  In this clone version,  ooppttiinndd  and
+       ooppttppooss  always  indicate  the  next character to be read, and ooppttaarrgg is
+       null whenever the current option does not take an argument.  See ssuubbggee‐‐
+       ttoopptt((33)) for precise definitions of the parsing procedure.
+
+       When  it  reaches  the  end  of the option list, this version of ggeettoopptt
+       always returns oopptteeooff, which is the same  as  ssuubbggeettooppttddoonnee,  which  is
+       initialized  to  SSUUBBGGEETTOOPPTTDDOONNEE,  which  is defined as -1.  The standard
+       behavior is to return EOF from ssttddiioo((33))..  This is incompatible  on  any
+       weird  machine  where  EOF  is  different from -1.  The calling program
+       could set oopptteeooff to EOF to imitate the standard behavior.
+
+       Like most versions of ggeettoopptt, this clone version allows, but  does  not
+       demand,  that  option arguments be separated from the option by whites‐
+       pace, i.e., be in the next command-line argument.
+
+       Some versions of ggeettoopptt provide an ooppttoopptt variable.  ooppttoopptt  is  incom‐
+       patible  across  systems:  for example, GNU ggeettoopptt uses it the same way
+       that this clone version uses ooppttpprroobblleemm, while BSD ggeettoopptt  uses  it  to
+       indicate the last option character returned by ggeettoopptt.  This clone ver‐
+       sion does not provide ooppttoopptt.  The use of ooppttoopptt is  strongly  discour‐
+       aged.
+
+       Some  versions of ggeettoopptt do not recognize a double hyphen as the end of
+       arguments.  This version allows a double hyphen, or in fact  any  argu‐
+       ment beginning with two hyphens.
+
+       A  lone hyphen is always recognized as the end of arguments.  Some ver‐
+       sions of ggeettoopptt allow lone hyphens as options.  This practice is  wrong
+       and is strongly discouraged.
+
+SSYYNNTTAAXX NNOOTTEE
+       ggeettoopptt  is  actually a macro abbreviation for ggeettooppttmmiinnee.  The external
+       oopptteerrrr and ooppttpprrooggnnaammee variables are macros for ggeettoopptteerrrr  and  ggeettoopptt‐‐
+       pprrooggnnaammee.  All the other oopptt variables are macros for ssuubbggeettoopptt.  These
+       macros are defined in  <<ggeettoopptt..hh>>,  unless  GGEETTOOPPTTNNOOSSHHOORRTT  is  defined.
+       Further  macros  are  defined  in  <<ssuubbggeettoopptt..hh>>,  which is included by
+       <<ggeettoopptt..hh>>, unless SSUUBBGGEETTOOPPTTNNOOSSHHOORRTT is defined.
+
+VVEERRSSIIOONN
+       getopt version 1.9, 931129.
+
+AAUUTTHHOORR
+       Placed into the public domain by Daniel J. Bernstein.
+
+
+
+                                                                     getopt(3)

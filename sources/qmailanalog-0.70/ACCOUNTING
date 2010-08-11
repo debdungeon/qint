@@ -1,0 +1,5 @@
+See doc/MATCHUP for basic information on using qmailanalog.
+
+To see who is generating outgoing mail you can use bin/zsuids, which
+provides one line of statistics for each uid. Incoming mail is shown
+under the qmaild uid.

@@ -1,0 +1,66 @@
+matchup(1)                                                          matchup(1)
+
+
+
+NNAAMMEE
+       matchup - collect information on messages and deliveries
+
+SSYYNNTTAAXX
+       mmaattcchhuupp
+
+DDEESSCCRRIIPPTTIIOONN
+       mmaattcchhuupp  reads  a series of lines from qqmmaaiill--sseenndd, with a numeric time‐
+       stamp in front of each line.  mmaattcchhuupp matches the end of each  delivery
+       attempt  with  the  start of the delivery attempt and with the relevant
+       message information;  it  replaces  qqmmaaiill--sseenndd's  message  reports  and
+       delivery  reports  with  message lines and delivery lines in the format
+       described below.
+
+       mmaattcchhuupp exits after it sees end of file.  It  prints  pending  messages
+       and  deliveries  on  descriptor  5, in a format suitable for input to a
+       future invocation of mmaattcchhuupp:
+
+          <log.1 matchup >out.1 5>pending.2
+          cat pending.2 log.2 | matchup >out.2 5>pending.3
+          cat pending.3 log.3 | matchup >out.3 5>pending.4
+
+       Note that the 5> notation does not work with csh.
+
+MMEESSSSAAGGEE LLIINNEESS
+       A message line summarizes the delivery results for a message  that  has
+       left the queue:
+
+          m _b_i_r_t_h _d_o_n_e _b_y_t_e_s _n_k _n_z _n_d <_s_e_n_d_e_r> _q_p _u_i_d
+
+       Here _b_i_r_t_h and _d_o_n_e are timestamps, _b_y_t_e_s is the number of bytes in the
+       message, _n_k is the number of successful deliveries, _n_z is the number of
+       deferred  delivery  attempts,  _n_d  is  the  number  of  failed delivery
+       attempts, _s_e_n_d_e_r is the message's return  path,  _q_p  is  the  message's
+       long-term  queue  identifier,  and  _u_i_d  is the userid of the user that
+       queued the message.
+
+       Note that mmaattcchhuupp converts _s_e_n_d_e_r to lowercase.  This can lose informa‐
+       tion, since a few hosts pay attention to the case in the box part of an
+       address.
+
+DDEELLIIVVEERRYY LLIINNEESS
+       A delivery line shows the result of a single delivery attempt:
+
+          d _r_e_s_u_l_t _b_i_r_t_h _d_s_t_a_r_t _d_d_o_n_e _b_y_t_e_s
+          <_s_e_n_d_e_r> _c_h_a_n._r_e_c_i_p _q_p _u_i_d _r_e_a_s_o_n
+
+       Here _b_i_r_t_h, _b_y_t_e_s, _s_e_n_d_e_r, _q_p,  and  _u_i_d  are  message  information  as
+       above;  _c_h_a_n  is  the channel for this delivery; _r_e_c_i_p is the recipient
+       address for this delivery; _d_s_t_a_r_t and _d_d_o_n_e are timestamps;  _r_e_s_u_l_t  is
+       the  letter k for success, z for deferral, d for failure; and _r_e_a_s_o_n is
+       a more detailed explanation of the delivery result.
+
+       mmaattcchhuupp converts _r_e_c_i_p to lowercase.
+
+SSEEEE AALLSSOO
+       xqp(1), xrecipient(1), xsender(1), accustamp(1),  qmail-log(5),  splog‐
+       ger(8)
+
+
+
+                                                                    matchup(1)

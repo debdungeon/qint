@@ -1,0 +1,71 @@
+ezmlmsubrc(5)                                                    ezmlmsubrc(5)
+
+
+
+NNAAMMEE
+       ezmlmsubrc - set up a minimal sublist
+
+SSYYNNOOPPSSIISS
+       eezzmmllmm--mmaakkee --CC eezzmmllmmssuubbrrcc --ooppttiioonnss _d_i_r _d_o_t _l_o_c_a_l _h_o_s_t
+
+DDEESSCCRRIIPPTTIIOONN
+       eezzmmllmmggllrrcc  instructs eezzmmllmm--mmaakkee((11)) to create _d_i_r and files within it to
+       support the _l_o_c_a_l@@_h_o_s_t sublist. The sublist handles  bounces,  but  not
+       subscriptions. It is intended for creation of sublists that are part of
+       an SQL database supported distributed ezmlm list. For creation of regu‐
+       lar sublists, use eezzmmllmm--mmaakkee((11)) with eezzmmllmmrrcc((55)).
+
+RREEQQUUIIRREEDD SSWWIITTCCHHEESS
+       While  these switches can be omitted, the list will not function unless
+       they are specified.
+
+       --33 _m_a_i_n_l_o_c_a_l
+              Local name of the main list for which this list is a sublist. If
+              the  sublist is a sublist for digests, _m_a_i_n_l_o_c_a_l should refer to
+              the mail list, i.e. stripped of ‘‘-digest’’. This is required in
+              order  for the bounce texts to refer to the correct archive. Use
+              the --dd switch!
+
+       --44 _m_a_i_n_h_o_s_t
+              Host name of the main list for which this list is a sublist.
+
+       --66 _h_o_s_t_:_p_o_r_t_:_u_s_e_r_:_p_a_s_s_:_d_b_:_t_a_b_l_e
+              SQL connect info. Specifies the host and port to connect to, the
+              user/password  to  use,  the  database  name, and the root table
+              name.  The host defaults to ‘‘localhost’’, the database and  ta‐
+              ble  to  ‘‘ezmlm’’. The port default is the default for the par‐
+              ticular SQL server  type  used.  For  sublists  disseminating  a
+              digest, ‘‘table’’ will end in ‘‘_digest’’.
+
+OOPPTTIIOONNSS
+       --dd     This sublist is a sublist of a digest list.  The --33 argment used
+              should be the local name of  the  main  list,  rather  than  the
+              digest list, i.e. the terminal ‘‘-digest’’ should be stripped.
+
+       --55 _o_w_n_e_r
+              The  address to which to redirect mail send to _l_o_c_a_l_-oowwnneerr@@_h_o_s_t.
+              The default is the owner address for the main list.
+
+UUSSAAGGEE
+       A common task is to create both a sublist for the main list and a  sub‐
+       list  for  the corresponding digest. Note that the local list names are
+       given as is, whereas the main list name always refers to the main  list
+       itself  (and  not  its digest). The main list is  ‘‘mainloc@mainhost’’,
+       the local sublist is ‘‘me-sub1@myhost’’; the main digest is  ‘‘mainloc-
+       digest@mainhost’’    and    the   local   digest   sublist   is   ‘‘me-
+       sub1-digest@myhost’’.
+
+       ezmlm-make   -Cezmlmsubrc   -3   mainloc   -4   mainhost    -6    main‐
+       host::user:pw:db:tab ~/DIR ~me/.qmail-sub1 me-sub1 myhost
+
+       ezmlm-make   -Cezmlmsubrc   -d   -3   mainloc   -4  mainhost  -6  main‐
+       host::user:pw:db:tab  -d  ~/DIR  ~me/.qmail-sub1-digest  me-sub1-digest
+       myhost
+
+SSEEEE AALLSSOO
+       ezmlm-make(1), ezmlm(5), ezmlmrc(5)
+
+
+
+
+                                                                 ezmlmsubrc(5)

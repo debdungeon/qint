@@ -1,0 +1,39 @@
+1. How should I start qmail, smtp and pop to create the right kind
+   of logs?
+
+First make sure you have the log directories:
+mkdir /var/log/qmail
+mkdir /var/log/pop3
+mkdir /var/log/smtp
+chown qmaill /var/log/qmail
+chown qmaill /var/log/pop3
+chown qmaill /var/log/smtp
+
+Then start up qmail
+
+        env - PATH="/var/qmail/bin:/usr/local/bin" \
+        qmail-start ./Maildir/ | /usr/local/bin/setuidgid qmaill \
+        /usr/local/bin/multilog t n100 s1000000 /var/log/qmail &
+
+        env - PATH="/var/qmail/bin:/usr/local/bin" \
+        tcpserver -v -H -R -l$HOSTNAME -c200 0 110 /var/qmail/bin/qmail-popup \
+        $HOSTNAME \
+        /home/vpopmail/bin/vchkpw /var/qmail/bin/qmail-pop3d Maildir 2>&1 |  \
+         /usr/local/bin/setuidgid qmaill \
+        /usr/local/bin/multilog t n100 s1000000 /var/log/pop3 &
+
+        env - PATH="/var/qmail/bin:/usr/local/bin" \
+        tcpserver -v -H -R -l$HOSTNAME -x /home/vpopmail/etc/tcp.smtp.cdb \
+        -c200 -u8002 -g8001 0 25 fixcrio /var/qmail/bin/qmail-smtpd 2>&1 | \
+        /usr/local/bin/setuidgid qmaill \
+        /usr/local/bin/multilog t n100 s1000000 /var/log/smtp &
+ 
+2. My logs are not in the places above, what should I do?
+
+Edit qmail.mrtg.cfg and changes the lines like:
+
+Target[messages]: `/usr/local/bin/qmailmrtg7 m /var/log/qmail`
+
+To point to your log directory. In the above line the log
+is in /var/log/qmail, you might have it in /var/log/qmail/qmail-send.
+

@@ -1,0 +1,70 @@
+#!/usr/bin/perl
+#
+# This is a fairly simple filter that rejects all email messages that
+# appear to have a MIME attachment with one of the following filename
+# extensions.
+#
+# Uncomment the line marked "UUENCODE" if you want to scan for uuencoded
+# attachments as well.  This is not enabled by default as it can be
+# triggered too easily, and automatic decoding of uuencoded attachments
+# is not common for mail clients.
+#
+# Notes on the list of extensions:
+# BAT - Batch file
+# CHM - Compiled HTML help file, can contain scripts
+# CMD - Windows NT command script?
+# COM - "Command" executable
+# CPL - Control Panel Extension
+# DLL - Dynamically Loadable Library
+# EXE - executable
+# HLP - Windows help files, can contain auto-executing VBScript
+# HTA - HTML application, can contain VBScript, JavaScript, etc.
+# LNK - Windows shortcut, may contain program instructions.
+# PIF - Program Information File
+# REG - Regedit will inject its contents into the registry
+# SCR - Screen capture, interpreted as an executable binary
+# SHS - Shell automation code
+# VBE - VisualBasic Enterprise ?
+# VBS - VisualBasic Script
+# WSF - Windows Scripting File (same as VBS)
+# WSH - Windows Script Host property settings file
+#
+sub check_filename {
+    local($_) = @_;
+    print "filename: $_\n" if $test;
+    if(/\.(bat|chm|cmd|com|cpl|dll|exe|hlp|hta|lnk|pif|reg|scr|shs|vbe|vbs|wsf|wsh)$/oi) {
+      print "Filenamed matched a banned extension!\n" if $test;
+      exit(31);
+    }
+}
+
+sub parse_content_td {
+    local($_) = @_;
+    chomp;
+    s/\s+/ /go;
+    print "parse: $_\n" if $test;
+    &check_filename($1)
+	if /[;\s]name\s*=\s*"([^\"]+)"/i || /[;\s]name\s*=\s*(\S+)/i ||
+	    /[;\s]filename\s*=\s*"([^\"]+)"/i || /[;\s]filename\s*=\s*(\S+)/i;
+}
+
+if($ARGV[0] eq '-t') {
+  $test = 1;
+  shift @ARGV;
+}
+
+while(<>) {
+    print unless $test;
+    if($content_td) {
+	if(/^\s*$/o || /^\S/o) {
+	    &parse_content_td($content_td);
+	    undef $content_td;
+	} else {
+	    $content_td .= $_;
+	    next;
+	}
+    }
+    $content_td = $_ if /^Content-(Type|Disposition):\s*(.*)$/oi;
+    #UUENCODE &check_filename($1) if /^begin\s+\d+\s+(.*)\s*$/oi;
+}
+exit(0);

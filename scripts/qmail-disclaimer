@@ -1,0 +1,19 @@
+#!/bin/sh
+INSPECT_DIR=/var/tmp/qmail-qfilter
+if [ ! -f /var/qmail/control/disclaimer/$QMAILHOST.txt ]
+then
+cat
+exit 0
+fi
+EX_TEMPFAIL=31
+EX_UNAVAILABLE=31
+trap "rm -f /var/tmp/qmail-qfilter/in.$$" 0 1 2 3 15
+cd $INSPECT_DIR || { echo Error: $INSPECT_DIR does not exist; exit $EX_TEMPFAIL; }
+cat >$INSPECT_DIR/in.$$ || { echo Error: Cannot write to disk; exit $EX_TEMPFAIL; }
+/usr/local/bin/altermime --input=$INSPECT_DIR/in.$$ \
+--xheader="X-Disclaimer: $QMAILHOST" \
+--disclaimer=/var/qmail/control/disclaimer/$QMAILHOST.txt \
+--disclaimer-html=/var/qmail/control/disclaimer/$QMAILHOST.html || { echo Error: message rejected; exit $EX_UNAVAILABLE; }
+cat $INSPECT_DIR/in.$$
+rm in.$$
+exit $?

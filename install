@@ -1,0 +1,1054 @@
+#!/bin/bash
+#
+# QFD installer
+# 
+
+# TODO fixcrio, mkcert dovecot
+
+DEFAULT_DOMAIN_NAME="test.com"
+MYSQL_USER=root
+MYSQL_PASS=
+WWW_DIR=/var/www/qmailadmin
+WWW_IMGDIR=/var/www/qmailadmin/images
+WWW_CGIDIR=/usr/lib/cgi-bin
+
+# vpopmail database, user, pass to create
+VPOPMAIL_DB=vpopmail
+VPOPMAIL_USER=vpopmailuser
+VPOPMAIL_PASS=vpop83748
+
+# openssl params
+COUNTRY=IN
+STATE=Maharashtra
+LOCALITY=Mumbai
+ORGANIZATION="Qmail for dummies"
+UNIT=IT
+CN="test.com"
+
+# dovecot options
+DOVECOT_MSG="IMAP ready"
+
+function usage 
+{
+   echo -e "Usage: $0 [-i] [OPTION VALUE] [OPTION VALUE] ...\n"
+   echo "Configuration: "
+   echo -e "   -i,   --interactive\t\tturn on interactive mode, will prompt for variables"
+   echo -e "   -y,   --yes\t\t\tAssume yes to all prompts"
+   echo -e "   -h,   --help\t\t\tprint this help and exit"
+   echo -e "   -v,   --version\t\t\tprint version"
+   echo -e "   -dn,  --default-domain-name\tDefault domain name to be created"
+   echo -e "   -dm,  --disable-maildrop\tDisable maildrop compilation"
+   echo -e "Mysql options:"
+   echo -e "   -mu,  --mysql-user\t\tMysql user which is allowed to create database, users"
+   echo -e "   -mp,  --mysql-pass\t\tMysql passwd for above user"
+   echo -e "   -vd,  --vpopmail-db\t\tVpopmail database to be created in mysql"
+   echo -e "   -vu,  --vpopmail-user\tVpopmail user to be created in mysql"
+   echo -e "   -vp,  --vpopmail-pass\tVpopmail passwd to be created in mysql"
+   echo -e "Qmailadmin options:"
+   echo -e "   -qwd, --qmailadmin-www-dir\tQmailadmin web path to www"
+   echo -e "   -qid, --qmailadmin-image-dir\tQmailadmin images path"
+   echo -e "   -qcd, --qmailadmin-cgi-dir\tQmailadmin cgi-bin path"
+   echo -e "Openssl options:"
+   echo -e "   -oc,  --openssl-country\tCountry, enter 2 characters only"
+   echo -e "   -os,  --openssl-state\tState"
+   echo -e "   -ol,  --openssl-locality\tLocality"
+   echo -e "   -oo,  --openssl-organization\tOrganization name, can have spaces"
+   echo -e "   -ou,  --openssl-unit\t\tOrganization unit"
+   echo -e "   -ocn, --openssl-common-name\tCommon name, very important enter domain name"
+   echo -e "Dovecot options:"
+   echo -e "   -dmsg,--dovecot-message\tDovecot greeting message"
+   echo 
+}
+
+function version
+{
+   echo -e "Qint - Qint is not toaster\nVersion: 0.1.2"
+   exit 1
+}
+
+if [ $# -lt 1 ]; then
+   usage
+   exit 1
+fi
+
+interactive=0
+yes=0
+disable_maildrop=0
+while [ "$1" != "" ]; do
+   case $1 in
+      -i | --interactive ) 	
+	  interactive=1
+	  ;;
+      -y | --yes ) 	
+	  yes=1
+	  ;;
+      -dm | --disable-maildrop ) 	
+	  disable_maildrop=1
+	  ;;
+      -dn | --default-domain-name ) 
+	  shift
+	  DEFAULT_DOMAIN_NAME=$1
+	  ;;
+      -mu | --mysql-user ) 
+	  shift
+	  MYSQL_USER=$1
+	  ;;
+      -mp | --mysql-pass ) 
+	  shift
+	  MYSQL_PASS=$1
+	  ;;
+      -qwd | --qadmin-www-dir ) 
+	  shift
+	  WWW_DIR=$1
+	  ;;
+      -qid | --qadmin-image-dir ) 
+	  shift
+	  WWW_IMGDIR=$1
+	  ;;
+      -qcd | --qadmin-cgi-dir ) 
+	  shift
+	  WWW_CGIDIR=$1
+	  ;;
+      -vd | --vpopmail-db ) 
+	  shift
+	  VPOPMAIL_DB=$1
+	  ;;
+      -vu | --vpopmail-user ) 
+	  shift
+	  VPOPMAIL_USER=$1
+	  ;;
+      -vp | --vpopmail-passwd ) 
+	  shift
+	  VPOPMAIL_PASS=$1
+	  ;;
+      -oc | --openssl-country ) 
+	  shift
+	  COUNTRY=$1
+	  ;;
+      -os | --openssl-state ) 
+	  shift
+	  STATE=$1
+	  ;;
+      -ol | --openssl-locality ) 
+	  shift
+	  LOCALITY=$1
+	  ;;
+      -oo | --openssl-organization ) 
+	  shift
+	  ORGANIZATION=$1
+	  ;;
+      -ou | --openssl-unit ) 
+	  shift
+	  UNIT=$1
+	  ;;
+      -ocn | --openssl-common-name ) 
+	  shift
+	  CN=$1
+	  ;;
+      -dmsg | --dovecot-message ) 
+	  shift
+	  DOVECOT_MSG=$1
+	  ;;
+      -h | --help ) 	
+	  usage
+	  exit
+	  ;;
+      -v | --version ) 	
+	  version
+	  exit
+	  ;;
+	* ) 
+	  usage 
+	  exit 1      
+   esac
+   shift
+done
+
+if [ $interactive -eq 1 ]; then
+   echo "Press enter to accept defaults"
+   echo -n "Enter default domain name [$DEFAULT_DOMAIN_NAME]: "
+   read input
+   if [ -n "$input" ]; then
+     DEFAULT_DOMAIN_NAME=$input
+   fi
+
+   echo -n "Enter mysql user [$MYSQL_USER]: "
+   read input
+   if [ -n "$input" ]; then
+     MYSQL_USER=$input
+   fi
+
+   echo -n "Enter mysql pass [$MYSQL_PASS]: "
+   read input
+   if [ -n "$input" ]; then
+     MYSQL_PASS=$input
+   fi
+
+   echo -n "Enter vpopmail db [$VPOPMAIL_DB]: "
+   read input
+   if [ -n "$input" ]; then
+     VPOPMAIL_DB=$input
+   fi
+
+   echo -n "Enter vpopmail user [$VPOPMAIL_USER]: "
+   read input
+   if [ -n "$input" ]; then
+     VPOPMAIL_USER=$input
+   fi
+
+   echo -n "Enter vpopmail passwd [$VPOPMAIL_PASS]: "
+   read input
+   if [ -n "$input" ]; then
+     VPOPMAIL_PASS=$input
+   fi
+
+   echo -n "Enter country (2 chars) [$COUNTRY]: "
+   read input
+   if [ -n "$input" ]; then
+     COUNTRY=$input
+   fi
+
+   echo -n "Enter state [$STATE]: "
+   read input
+   if [ -n "$input" ]; then
+     STATE=$input
+   fi
+
+   echo -n "Enter locality [$LOCALITY]: "
+   read input
+   if [ -n "$input" ]; then
+     LOCALITY=$input
+   fi
+
+   echo -n "Enter organization name [$ORGANIZATION]: "
+   read input
+   if [ -n "$input" ]; then
+     ORGANIZATION=$input
+   fi
+
+   echo -n "Enter organization unit [$UNIT]: "
+   read input
+   if [ -n "$input" ]; then
+     UNIT=$input
+   fi
+
+   echo -n "Enter common name [$CN]: "
+   read input
+   if [ -n "$input" ]; then
+     CN=$input
+   fi
+
+   echo -n "Enter qmailadmin www dir [$WWW_DIR]: "
+   read input
+   if [ -n "$input" ]; then
+     WWW_DIR=$input
+   fi
+
+   echo -n "Enter qmailadmin images dir [$WWW_IMGDIR]: "
+   read input
+   if [ -n "$input" ]; then
+     WWW_IMGDIR=$input
+   fi
+
+   echo -n "Enter qmailadmin cgi-bin dir [$WWW_CGIDIR]: "
+   read input
+   if [ -n "$input" ]; then
+     WWW_CGIDIR=$input
+   fi
+
+   echo -n "Enter dovecot greeting msg [$DOVECOT_MSG]: "
+   read input
+   if [ -n "$input" ]; then
+     DOVECOT_MSG=$input
+   fi
+
+fi
+
+if [ -z "$MYSQL_PASS" ]; then
+   echo "Mysql password for $MYSQL_USER needed!!"
+   exit 1
+fi
+
+maildrop_status="enabled"
+if [ $disable_maildrop -eq 1 ]; then
+   maildrop_status="disabled"
+fi
+
+echo -e "\n"
+echo -e "Summary of options specified:\n"
+echo "GENERAL OPTIONS"
+echo "---------------"
+echo -e "Maildrop:\t\t$maildrop_status"
+echo -e "Default domain name:\t$DEFAULT_DOMAIN_NAME"
+echo -e "\nMYSQL OPTIONS"
+echo "---------------"
+echo -e "Mysql user:\t\t$MYSQL_USER"
+echo -e "Mysql pass:\t\t$MYSQL_PASS"
+echo -e "Vpopmail database:\t$VPOPMAIL_DB"
+echo -e "Vpopmail user:\t\t$VPOPMAIL_USER"
+echo -e "Vpopmail pass:\t\t$VPOPMAIL_PASS"
+echo -e "\nOPENSSL OPTIONS"
+echo "---------------"
+echo -e "Openssl country:\t$COUNTRY"
+echo -e "Openssl state:\t\t$STATE"
+echo -e "Openssl locality:\t$LOCALITY"
+echo -e "Openssl organization:\t$ORGANIZATION"
+echo -e "Openssl unit:\t\t$UNIT"
+echo -e "Openssl common name:\t$CN"
+echo -e "\nQMAILADMIN OPTIONS"
+echo "------------------"
+echo -e "Qmailadmin www dir:\t$WWW_DIR"
+echo -e "Qmailadmin images dir:\t$WWW_IMGDIR"
+echo -e "\nDOVECOT OPTIONS"
+echo "------------------"
+echo -e "Dovecot greeting msg:\t$DOVECOT_MSG"
+
+if [ $yes -eq 0 ]; then
+   echo -n "Ok to continue installation (y|n): "
+   read confirm
+   if [ "$confirm" != "y" ]; then
+     echo "Installation aborted"
+     exit 1
+   fi
+fi
+echo 
+CERT_PARAMS="/C=$COUNTRY/ST=$STATE/L=$LOCALITY/O=$ORGANIZATION/OU=$UNIT/CN=$CN"
+#echo $CERT_PARAMS
+
+SUPERVISE_BASE=/var/qmail/supervise
+SMTP_RUN=$SUPERVISE_BASE/qmail-smtpd/run
+SMTP_RUN_LOG=$SUPERVISE_BASE/qmail-smtpd/log/run
+SMTPS_RUN=$SUPERVISE_BASE/qmail-smtpds/run
+SMTPS_RUN_LOG=$SUPERVISE_BASE/qmail-smtpds/log/run
+SEND_RUN=$SUPERVISE_BASE/qmail-send/run
+SEND_RUN_LOG=$SUPERVISE_BASE/qmail-send/log/run
+POP3_RUN=$SUPERVISE_BASE/qmail-pop3d/run
+POP3_RUN_LOG=$SUPERVISE_BASE/qmail-pop3d/log/run
+
+LOG=/var/log/qfd.log
+APT_OPTIONS=" -q=2 -y "
+
+# check sources dir
+if [ ! -d sources ]; then
+   echo "No sources dir found!"
+   exit 1
+fi
+
+for i in qmail qmailanalog ucspi maildrop daemontools ezmlm ripmime altermime simscan qmhandle autorespond altermime qfilter qmailmrtg isoqlog; do
+   if [ ! -d sources/$i ]; then
+        echo "No $i found in sources dir"
+	exit 1;
+   fi
+done
+
+
+# Check for apt-get
+printf "%50s" "Checking for apt ..... "
+apt=`which apt-get`
+if [ $? -ne 0 ]; then
+   echo "Failed"
+   echo "QFD needs apt-get to continue"
+   exit 1
+fi
+echo "OK"
+
+# Check for build-essential
+printf "%50s" "Installing prerequsites ..... "
+
+# Check if mysql is installed
+my=`dpkg -l | grep mysql-server| wc -l`
+if [ $my -le 0 ]; then
+   apt-get $APT_OPTIONS install mysql-server
+fi
+
+# Get mysql-client version
+mycli=`apt-cache search libmysqlclient*-dev | head -n 1|awk '{ print $1 }'`
+if [ $? -ne 0 ]; then
+    echo -e "Failed\nCould not determine mysqlclient-dev version"
+    exit 1
+fi
+
+# install libev-dev
+
+apt-get $APT_OPTIONS install build-essential libssl-dev openssl libgdbm-dev $mycli libpcre3 \
+	 libpcre3-dev libpcrecpp0 spamassassin spamc clamav clamav-daemon clamav-freshclam \
+	 squirrelmail  dovecot-imapd csh libevent-dev bglibs-dev man2html mrtg tinycdb
+if [ $? -ne 0 ]; then
+    echo -e "Failed\nSee $LOG for details :("
+    exit 1
+fi
+
+echo "OK"
+
+# create users, groups, dirs
+printf "%50s" "Creating users, groups ..... "
+mkdir -p /var/qmail
+groupadd nofiles
+useradd -g nofiles -d /var/qmail/alias -s /sbin/nologin -p'*' alias
+useradd -g nofiles -d /var/qmail -s /sbin/nologin -p'*' qmaild
+useradd -g nofiles -d /var/qmail -s /sbin/nologin -p'*' qmaill
+useradd -g nofiles -d /var/qmail -s /sbin/nologin -p'*' qmailp
+groupadd qmail
+useradd -g qmail -d /var/qmail -s /sbin/nologin -p'*' qmailq
+useradd -g qmail -d /var/qmail -s /sbin/nologin -p'*' qmailr
+useradd -g qmail -d /var/qmail -s /sbin/nologin -p'*' qmails
+
+# Setting up special logging directories...
+mkdir /var/log/qmail
+mkdir /var/log/qmail/qmail-send /var/log/qmail/qmail-smtpd /var/log/qmail/qmail-pop3d /var/log/qmail/qmail-smtpds
+chown -R qmaill:root /var/log/qmail
+chmod -R 750 /var/log/qmail
+
+# Setting up supervise script directories...
+mkdir /var/qmail/supervise
+mkdir -p /var/qmail/supervise/qmail-smtpd/log /var/qmail/supervise/qmail-send/log /var/qmail/supervise/qmail-pop3d/log /var/qmail/supervise/qmail-smtpds/log
+chmod +t /var/qmail/supervise/qmail-smtpd /var/qmail/supervise/qmail-send /var/qmail/supervise/qmail-pop3d /var/qmail/supervise/qmail-smtpds
+
+# Vpopmail
+groupadd vchkpw
+useradd -g vchkpw -d /home/vpopmail -s /sbin/nologin -p'*' vpopmail
+if [ ! -d /home/vpopmail ] ; then
+   mkdir -p /home/vpopmail/etc
+   chown -R vpopmail:vchkpw /home/vpopmail
+fi
+
+cp misc/local.cf /etc/spamassassin/local.cf
+cp misc/spamassassin /etc/default/
+if [ ! -d /var/log/spamd ]; then
+   mkdir /var/log/spamd
+fi 
+touch /var/log/spamd/spamd.log
+#chown -R spamd /var/log/spamd
+
+echo "OK"
+
+cd sources
+
+# Compile qmail
+printf "%50s" "Compiling qmail ..... "
+cd qmail
+make man >>$LOG 2>&1
+if [ $? -ne 0 ] ; then
+   echo -e "Failed! \nError during make man. See $LOG for details :(";
+   exit 1
+fi
+
+make WITH_QMAILQUEUE_PATCH=yes setup check >> $LOG 2>&1
+if [ $? -ne 0 ] ; then
+   echo -e "Failed! \nError during make setup check. See $LOG for details :(";
+   exit 1
+fi
+
+./config-fast $DEFAULT_DOMAIN_NAME >> $LOG 2>&1
+
+# Generate secure certificate to encrypt TLS SMTP sessions
+echo >> $LOG
+sed -i "s|CERT_PARAMS='.*'|CERT_PARAMS='$CERT_PARAMS'|g" Makefile
+make cert >> $LOG 2>&1
+if [ $? -ne 0 ]; then
+   echo -e "Failed!\nError during make cert.See $LOG for details :("
+   exit 1
+fi
+# chown -R vpopmail:qmail /var/qmail/control/clientcert.pem /var/qmail/control/servercert.pem
+cd ..
+echo "OK"        
+
+# Compile ucspi
+printf "%50s" "Compiling Ucspi-tcp ..... "
+cd ucspi
+make >> $LOG 2>&1
+if [ $? -ne 0 ] ; then
+   echo -e "Failed!\nError during make. See $LOG for details :(";
+   exit 1
+fi
+make setup check >> $LOG 2>&1
+if [ $? -ne 0 ] ; then
+   echo -e "Failed!\nError during make setup check. See $LOG for details :(";
+   exit 1
+fi
+cd ..
+echo "OK"
+
+# compile daemontools
+printf "%50s" "Compiling daemontools ..... "
+cd daemontools
+package/install >> $LOG 2>&1
+if [ $? -ne 0 ] ; then
+   echo -e "Failed!\nError during install. See $LOG for details :(";
+   exit 1
+fi
+cd ..
+echo "OK"
+
+# Compile qmailanalog
+printf "%50s" "Compiling qmailanalog ..... "
+cd qmailanalog
+make >> $LOG 2>&1
+if [ $? -ne 0 ] ; then
+   echo -e "Failed!\nError during make. See $LOG for details :(";
+   exit 1
+fi
+make setup check >> $LOG 2>&1
+if [ $? -ne 0 ] ; then
+   echo -e "Failed!\nError during make setup check. See $LOG for details :(";
+   exit 1
+fi
+cd ..
+echo "OK"
+
+
+# Compile ezmlm
+printf "%50s" "Compiling ezmlm ..... "
+cd ezmlm
+make >> $LOG 2>&1
+if [ $? -ne 0 ] ; then
+   echo -e "Failed!\nError during make. See $LOG for details :(";
+   exit 1
+fi
+make mysql >> $LOG 2>&1
+if [ $? -ne 0 ] ; then
+   echo -e "Failed!\nError during make mysql. See $LOG for details :(";
+   exit 1
+fi
+make setup >> $LOG 2>&1
+if [ $? -ne 0 ] ; then
+   echo -e "Failed!\nError during make setup. See $LOG for details :(";
+   exit 1
+fi
+cd ..
+echo "OK"
+
+
+# compile autoresponder
+printf "%50s" "Compiling autoresponder ..... "
+cd autorespond
+make >> $LOG 2>&1
+if [ $? -ne 0 ] ; then
+   echo -e "Failed!\nError during make. See $LOG for details :(";
+   exit 1
+fi
+make install >> $LOG 2>&1
+if [ $? -ne 0 ] ; then
+   echo -e "Failed!\nError during make install. See $LOG for details :(";
+   exit 1
+fi
+cd ..
+echo "OK"
+
+
+# Compile maildrop
+if [ $disable_maildrop -eq 0 ]; then
+
+  printf "%50s" "Compiling maildrop ..... "
+  cd maildrop
+
+  ./configure --prefix=/usr/local --exec-prefix=/usr/local --enable-maildrop-uid=root --enable-maildrop-gid=vchkpw --enable-maildirquota >> $LOG 2>&1
+
+  if [ $? -ne 0 ]; then
+     echo -e "Failed!\nError during configure. See $LOG for details :("
+     exit 1
+  fi
+
+  make >> $LOG 2>&1
+  if [ $? -ne 0 ] ; then
+     echo -e "Failed!\nError during make. See $LOG for details :(";
+     exit 1
+  fi
+  make install-strip >> $LOG 2>&1  && make install-man >> $LOG 2>&1
+  if [ $? -ne 0 ] ; then
+     echo -e "Failed!\nError during make install. See $LOG for details :(";
+     exit 1
+  fi
+
+  cd ..
+  echo "OK"
+fi
+
+
+# compile vpopmail
+printf "%50s" "Compiling vpopmail ..... "
+TMP_FILE=/tmp/sql.$$
+cat > $TMP_FILE <<SQL
+CREATE DATABASE IF NOT EXISTS $VPOPMAIL_DB;
+GRANT select,insert,update,delete,create,drop ON $VPOPMAIL_DB.* TO $VPOPMAIL_USER@localhost IDENTIFIED BY '$VPOPMAIL_PASS';
+SQL
+mysql -u $MYSQL_USER -p"$MYSQL_PASS" < $TMP_FILE >> $LOG 2>&1
+if [ $? -ne 0 ]; then
+   echo -e "Failed!\nError during mysql create, grant. See $LOG for details"
+   exit 1
+fi
+rm $TMP_FILE
+
+
+cd vpopmail
+./configure --disable-roaming-users --enable-logging=p --disable-passwd --disable-clear-passwd \
+           --enable-auth-module=mysql --enable-auth-logging --enable-sql-logging --enable-valias \
+           --enable-mysql-limits --enable-domain-quotas --enable-spamassassin --enable-onchange-script >> $LOG 2>&1
+
+#./configure --disable-roaming-users --enable-logging=p --disable-passwd --disable-clear-passwd \
+#            --enable-domain-quotas --enable-onchange-script >> $LOG 2>&1
+
+
+if [ $? -ne 0 ]; then
+   echo -e "Failed!\nError during configure. See $LOG for details :("
+   exit 1
+fi
+
+make >> $LOG 2>&1
+if [ $? -ne 0 ] ; then
+   echo -e "Failed!\nError during make. See $LOG for details :(";
+   exit 1
+fi
+make install-strip >> $LOG 2>&1
+if [ $? -ne 0 ] ; then
+   echo -e "Failed!\nError during make install. See $LOG for details :(";
+   exit 1
+fi
+
+
+#mysql -u $MYSQL_USER -p$MYSQL_PASS $VPOPMAIL_DB 'ALTER TABLE  vpopmail ADD pw_allownets VARCHAR( 255 ) NOT NULL'
+echo "$DEFAULT_DOMAIN_NAME" > /home/vpopmail/etc/defaultdomain
+chown vpopmail:vchkpw /home/vpopmail/etc/defaultdomain
+chmod u+s /home/vpopmail/bin/vchkpw
+chmod g+s /home/vpopmail/bin/vchkpw
+
+echo "localhost|0|$VPOPMAIL_USER|$VPOPMAIL_PASS|vpopmail" > /home/vpopmail/etc/vpopmail.mysql
+chown vpopmail:vchkpw /home/vpopmail/etc/vpopmail.mysql
+chmod 644 /home/vpopmail/etc/vpopmail.mysql
+
+
+# echo "Enter some default options for email accounts in your mailserver (20 MB)"
+# echo "default_quota 20971520" > ~vpopmail/etc/vlimits.default
+# Need to include some Quota Warning messages to .quotawarn.msg & .over-quota.msg in /home/vpopmail/domains/
+
+
+#cd vusaged
+#./configure >> $LOG 2>&1
+#make >> $LOG 2>&1
+#cp -f vusaged /home/vpopmail/bin
+#cp -f etc/vusaged.conf /home/vpopmail/etc
+#cp -f ../vusagec.conf /home/vpopmail/etc
+#cp contrib/rc.vusaged /etc/init.d/vusaged
+#update-rc.d vusaged defaults >> $LOG 2>&1
+#/etc/init.d/vusaged start >> $LOG 2>&1
+#cd ..
+
+
+cd ..
+cp ../scripts/onchange /home/vpopmail/etc/
+
+
+echo "OK"
+
+
+# Compile qmailadmin
+printf "%50s" "Compiling qmailadmin ..... "
+cd qmailadmin
+
+./configure --enable-htmldir=$WWW_DIR --enable-imagedir=$WWW_IMGDIR --enable-imageurl=/qmailadmin/images \
+	    --enable-cgibindir=$WWW_CGIDIR --enable-autoresponder-bin=/usr/local/bin --enable-vpopuser=vpopmail \
+	    --enable-ezmlmdir=/usr/local/bin/ezmlm/ --enable-ezmlmidx=y --enable-modify-quota --disable-ipauth >> $LOG 2>&1
+
+if [ $? -ne 0 ]; then
+   echo -e "Failed!\nError during configure. See $LOG for details :("
+   exit 1
+fi
+
+make >> $LOG 2>&1
+if [ $? -ne 0 ] ; then
+   echo -e "Failed!\nError during make. See $LOG for details :(";
+   exit 1
+fi
+make install-strip >> $LOG 2>&1
+if [ $? -ne 0 ] ; then
+   echo -e "Failed!\nError during make install. See $LOG for details :(";
+   exit 1
+fi
+cp ../../misc/index.php $WWW_DIR/
+cp ../../misc/qmailadmin /etc/apache2/conf.d/
+/etc/init.d/apache2 reload >> $LOG 2>&1
+cd ..
+echo "OK"
+
+
+
+# Configure Dovecot 
+printf "%50s" "Configuring dovecot ..... "
+
+cp /etc/dovecot/dovecot.conf /etc/dovecot/dovecot.conf.orig
+VPOPMAIL_UID=`id -u vpopmail`
+VPOPMAIL_GID=`id -g vpopmail`
+cat ../misc/dovecot-sql.conf  | sed -e "s/#VPOPMAIL_DB/$VPOPMAIL_DB/g; \
+	     s/#VPOPMAIL_USER/$VPOPMAIL_USER/g; \
+	     s/#VPOPMAIL_PASS/$VPOPMAIL_PASS/g; \
+	     s/#VPOPMAIL_UID/$VPOPMAIL_UID/g; \
+	     s/#VPOPMAIL_GID/$VPOPMAIL_GID/g;" > /etc/dovecot/dovecot-sql.conf
+
+cat ../misc/dovecot.conf | sed -e "s/#VPOPMAIL_UID/$VPOPMAIL_UID/g; \
+	s/#VPOPMAIL_GID/$VPOPMAIL_GID/g; \
+	s/#DOVECOT_MSG/$DOVECOT_MSG/g" > /etc/dovecot/dovecot.conf
+/etc/init.d/dovecot restart >> $LOG 2>&1
+echo "OK"
+
+
+# compile qmail-qfilter
+printf "%50s" "Compiling qmail-qfilter ..... "
+cd qfilter
+
+make >> $LOG 2>&1
+if [ $? -ne 0 ] ; then
+   echo -e "Failed!\nError during make. See $LOG for details :(";
+   exit 1
+fi
+
+cp qmail-qfilter /var/qmail/bin/
+
+cat > /var/qmail/bin/qmail-tail <<QMAILTAIL
+#!/bin/sh
+exec /var/qmail/bin/qmail-qfilter /var/qmail/bin/qmail-disclaimer
+
+QMAILTAIL
+cp ../../scripts/qmail-disclaimer /var/qmail/bin/
+chmod +x /var/qmail/bin/qmail-tail
+if [ ! -d /var/tmp/qmail-qfilter ]; then
+   mkdir /var/tmp/qmail-qfilter
+fi 
+chown clamav /var/tmp/qmail-qfilter
+cd ..
+echo "OK"
+
+# compile ripmime
+printf "%50s" "Compiling ripmime ..... "
+cd ripmime
+
+make >> $LOG 2>&1
+if [ $? -ne 0 ] ; then
+   echo -e "Failed!\nError during make. See $LOG for details :(";
+   exit 1
+fi
+
+make install >> $LOG 2>&1
+if [ $? -ne 0 ] ; then
+   echo -e "Failed!\nError during make install. See $LOG for details :(";
+   exit 1 
+fi
+
+cd ..
+echo "OK"
+
+# compile altermime
+printf "%50s" "Compiling altermime ..... "
+cd altermime
+
+make >> $LOG 2>&1
+if [ $? -ne 0 ] ; then
+   echo -e "Failed!\nError during make. See $LOG for details :(";
+   exit 1
+fi
+
+make install >> $LOG 2>&1
+if [ $? -ne 0 ] ; then
+   echo -e "Failed!\nError during make install. See $LOG for details :(";
+   exit 1 
+fi
+
+cd ..
+echo "OK"
+
+
+# compile simscan
+printf "%50s" "Compiling simscan ..... "
+cd simscan
+
+useradd -g clamav -s /bin/false -c \
+"Simscan - a qmail-queue substitute" simscan
+
+./configure  --enable-per-domain=y --enable-attach=y --enable-clamav=y --enable-regex --enable-spam-auth-user=n \
+	     --enable-received --enable-clamavdb-path=/usr/local/share/clamav --enable-custom-smtp-reject \
+	     --enable-spam=y  --enable-received=y --enable-spamc=/usr/bin/spamc --enable-user=clamav --enable-qmail-queue=/var/qmail/bin/qmail-tail >> $LOG 2>&1
+
+if [ $? -ne 0 ]; then
+   echo -e "Failed!\nError during configure. See $LOG for details :("
+   exit 1
+fi
+
+make >> $LOG 2>&1
+if [ $? -ne 0 ] ; then
+   echo -e "Failed!\nError during make. See $LOG for details :(";
+   exit 1
+fi
+
+make install-strip >> $LOG 2>&1
+if [ $? -ne 0 ] ; then
+   echo -e "Failed!\nError during make install. See $LOG for details :(";
+   exit 1
+fi
+
+cp ../../misc/simcontrol /var/qmail/control/
+/var/qmail/bin/simscanmk >> $LOG 2>&1
+/var/qmail/bin/simscanmk -g >> $LOG 2>&1
+
+cd ..
+echo "OK"
+
+# compile greylisting
+cd jgreylist
+printf "%50s" "Compiling greylisting ..... "
+gcc -o jgreylist jgreylist.c >> $LOG 2>&1
+if [ $? -ne 0 ]; then
+   echo -e "Failed!\nError during compile. See $LOG for details :("
+   exit 1
+fi
+cp jgreylist /var/qmail/bin/
+cp jgreylist-clean /usr/bin/
+mkdir -m 0700 /var/qmail/jgreylist
+chown qmaild:nofiles /var/qmail/jgreylist
+cd ..
+echo "OK"
+
+
+# compile qmailmrtg
+printf "%50s" "Compiling qmailmrtg ..... "
+cd qmailmrtg
+
+make >> $LOG 2>&1
+make install >> $LOG 2>&1
+if [ ! -d /var/www/qmailmrtg ]; then
+   mkdir /var/www/qmailmrtg
+fi
+cp ../../misc/qmail.mrtg.cfg /var/www/qmailmrtg/
+cp ../../misc/index.html /var/www/qmailmrtg/
+# run thrice
+mrtg /var/www/qmailmrtg >> $LOG 2>&1
+mrtg /var/www/qmailmrtg >> $LOG 2>&1
+mrtg /var/www/qmailmrtg >> $LOG 2>&1
+
+#setup cron
+grep qmailmrtg /etc/crontab >> $LOG 2>&1
+if [ $? -eq 1 ]; then
+   echo "*/5 * * * *  root  /usr/bin/mrtg /var/www/qmailmrtg/qmail.mrtg.cfg 2>&1 > /dev/null" >> /etc/crontab
+fi
+
+cp ../../misc/qmailmrtg /etc/apache2/conf.d/
+/etc/init.d/apache2 reload >> $LOG 2>&1
+
+cd ..
+echo "OK"
+
+
+# compile isoqlog
+printf "%50s" "Compiling isoqlog ..... "
+cd isoqlog
+
+./configure >> $LOG 2>&1
+make >> $LOG 2>&1
+make install >> $LOG 2>&1
+
+if [ ! -d /var/www/isoqlog ]; then
+   mkdir /var/www/isoqlog
+fi
+
+cp -pr ./data/htmltemp/images ./data/htmltemp/library /var/www/isoqlog
+
+cat > /usr/local/etc/isoqlog.conf <<ISOQLOG
+logtype = "qmail-multilog" #log type qmai-multilog, qmail-syslog, sendmail, postfix
+logstore = "/var/log/qmail/qmail-send" #
+domainsfile = "/usr/local/etc/isoqlog.domains" #
+outputdir = "/var/www/isoqlog" #html outpur directory
+htmldir = "/usr/local/share/isoqlog/htmltemp"
+langfile = "/usr/local/share/isoqlog/lang/english"
+hostname = "$DEFAULT_DOMAIN_NAME"
+
+maxsender = 100
+maxreceiver = 100
+maxtotal = 100
+
+maxbyte = 100
+ISOQLOG
+
+if [ ! -h  /usr/local/etc/isoqlog.domains ]; then
+  ln -s /var/qmail/control/rcpthosts /usr/local/etc/isoqlog.domains
+fi
+
+#setup cron
+
+grep isoqlog /etc/crontab >> $LOG 2>&1
+if [ $? -ne 0 ]; then
+  echo "58 * * * * 	root /usr/local/bin/isoqlog 1>/dev/null 2>/dev/null" >> /etc/crontab
+fi
+
+cp ../../misc/isoqlog /etc/apache2/conf.d/
+if [ ! -d /var/htpasswd ]; then
+   mkdir /var/htpasswd
+fi
+htpasswd -bc /var/htpasswd/.htpasswd admin qfdadmin445 >> $LOG 2>&1
+/etc/init.d/apache2 reload >> $LOG 2>&1
+
+cd ..
+echo "OK"
+
+
+# Disable unwanted services 
+printf "%50s" "Disabling other MTAs ..... ";
+update-rc.d -f exim4 remove >> $LOG 2>&1
+update-rc.d -f postfix remove >> $LOG 2>&1
+echo "OK"
+
+printf "%50s" "Setting up sendmail link to qmail ..... "
+if [ -f /usr/lib/sendmail ]; then
+   rm -f /usr/lib/sendmail
+fi
+if [ -f /usr/sbin/sendmail ]; then
+   rm -f /usr/sbin/sendmail
+fi
+ln -s /var/qmail/bin/sendmail /usr/lib/sendmail
+ln -s /var/qmail/bin/sendmail /usr/sbin/sendmail
+echo "OK"
+
+
+printf "%50s" "Creating qmail-pop3d run ..... "
+cat > $POP3_RUN <<POP3RUN
+#!/bin/sh
+PATH=/var/qmail/bin:/usr/local/bin:/usr/bin:/bin
+export PATH
+exec tcpserver -H -R -v -c100 0 110 qmail-popup $DEFAULT_DOMAIN_NAME \
+/home/vpopmail/bin/vchkpw qmail-pop3d Maildir 2>&1
+POP3RUN
+echo "OK"
+
+printf "%50s" "Creating qmail-pop3d log ..... "
+cat > $POP3_RUN_LOG <<POP3LOG
+#!/bin/sh
+PATH=/var/qmail/bin:/usr/local/bin:/usr/bin:/bin
+export PATH
+exec setuidgid qmaill multilog t s100000 n20 /var/log/qmail/qmail-pop3d 2>&1
+POP3LOG
+echo "OK"
+
+printf "%50s" "Creating qmail-smtpd,smtpds run ..... "
+#cat > $SMTP_RUN <<SMTPDRUN
+##!/bin/sh
+#QMAILDUID=\`id -u vpopmail\`
+#NOFILESGID=\`id -g vpopmail\`
+#MAXSMTPD=\`cat /var/qmail/control/concurrencyincoming\`
+#LOCAL=\`head -1 /var/qmail/control/me\`
+#if [ -z "\$QMAILDUID" -o -z "\$NOFILESGID" -o -z "\$MAXSMTPD" -o -z "\$LOCAL" ]; then
+#   echo QMAILDUID, NOFILESGID, MAXSMTPD, or LOCAL is unset in
+#   echo /var/qmail/supervise/qmail-smtpd/run
+#   exit 1
+#fi
+#if [ ! -f /var/qmail/control/rcpthosts ]; then
+#   echo "No /var/qmail/control/rcpthosts!"
+#   echo "Refusing to start SMTP listener because it'll create an open relay"
+#   exit 1
+#fi
+#exec /usr/bin/softlimit -m 18000000 \
+#/usr/local/bin/tcpserver -v -R -l "\$LOCAL" -x /etc/tcp.smtp.cdb -c "\$MAXSMTPD" \
+#-u "\$QMAILDUID" -g "\$NOFILESGID" 0 smtp \
+#/usr/local/bin/rblsmtpd -b -r sbl.spamhaus.org -r xbl.spamhaus.org \
+#/usr/local/bin/fixcrio /var/qmail/bin/qmail-smtpd $DEFAULT_DOMAIN_NAME \
+#/home/vpopmail/bin/vchkpw /bin/true 2>&1
+#SMTPDRUN
+cp ../scripts/qmail-smtpd-run $SMTP_RUN
+cp ../scripts/qmail-smtpds-run $SMTPS_RUN
+echo "OK"
+
+printf "%50s" "Creating qmail-smtpd,qmail-smtpds log ..... "
+cat > $SMTP_RUN_LOG <<SMTPDRUN
+#!/bin/sh
+PATH=/var/qmail/bin:/usr/local/bin:/usr/bin:/bin
+export PATH
+exec setuidgid qmaill multilog t s100000 n20 /var/log/qmail/qmail-smtpd 2>&1
+SMTPDRUN
+
+cat > $SMTPS_RUN_LOG <<SMTPDSRUN
+#!/bin/sh
+PATH=/var/qmail/bin:/usr/local/bin:/usr/bin:/bin
+export PATH
+exec setuidgid qmaill multilog t s100000 n20 /var/log/qmail/qmail-smtpds 2>&1
+SMTPDSRUN
+
+echo "OK"
+
+printf "%50s" "Creating qmail-send run ..... "
+cat > $SEND_RUN <<SENDRUN
+#!/bin/sh
+exec /var/qmail/rc
+SENDRUN
+echo "OK"
+
+printf "%50s" "Creating qmail-send log ..... "
+cat > $SEND_RUN_LOG <<SENDLOGRUN
+#!/bin/sh
+PATH=/var/qmail/bin:/usr/local/bin:/usr/bin:/bin
+export PATH
+exec setuidgid qmaill multilog t s100000 n20 /var/log/qmail/qmail-send 2>&1
+SENDLOGRUN
+echo "OK"
+
+
+printf "%50s" "Copying Qmail rc, qmailctl scripts ..... "
+cp ../scripts/rc /var/qmail/
+if [ -f /usr/bin/qmailctl ]; then
+   rm -f /usr/bin/qmailctl
+fi
+cp ../scripts/qmailctl /var/qmail/bin/
+echo "OK"
+
+printf "%50s" "Setting up permissions ..... "
+
+chmod 755 /var/qmail/rc /var/qmail/bin/qmailctl
+chmod 751 /var/qmail/supervise/qmail-pop3d/run
+chmod 751 /var/qmail/supervise/qmail-pop3d/log/run
+chmod 751 /var/qmail/supervise/qmail-smtpd/run
+chmod 751 /var/qmail/supervise/qmail-smtpd/log/run
+chmod 751 /var/qmail/supervise/qmail-smtpds/run
+chmod 751 /var/qmail/supervise/qmail-smtpds/log/run
+chmod 751 /var/qmail/supervise/qmail-send/run
+chmod 751 /var/qmail/supervise/qmail-send/log/run
+echo ./Maildir > /var/qmail/control/defaultdelivery
+echo 255 > /var/qmail/control/concurrencyremote
+chmod 644 /var/qmail/control/concurrencyremote
+echo 30 > /var/qmail/control/concurrencyincoming
+chmod 644 /var/qmail/control/concurrencyincoming
+ln -s /var/qmail/bin/qmailctl /usr/bin
+ln -s /var/qmail/supervise/qmail-send /var/qmail/supervise/qmail-smtpd /var/qmail/supervise/qmail-smtpds /var/qmail/supervise/qmail-pop3d /service
+
+echo "OK"
+
+
+printf "%50s" "Setting up other tasks ..... "
+echo '127.:allow,RELAYCLIENT=""' >> /etc/tcp.smtp
+qmailctl cdb >> $LOG 2>&1
+echo "admin@$DEFAULT_DOMAIN_NAME" > /var/qmail/alias/.qmail-root
+echo "admin@$DEFAULT_DOMAIN_NAME" > /var/qmail/alias/.qmail-postmaster
+echo "admin@$DEFAULT_DOMAIN_NAME" > /var/qmail/alias/.qmail-mailer-daemon
+ln -s /var/qmail/alias/.qmail-root /var/qmail/alias/.qmail-anonymous
+chmod 644 /var/qmail/alias/.qmail*
+cp qmhandle/qmHandle /usr/bin/
+
+cp ../scripts/mkrcpt /var/qmail/bin/mkrcpt
+#cp ../scripts/mkvalidrcptto /var/qmail/bin/mkvalidrcptto
+#cp ../scripts/CDB_File.pm /var/qmail/bin/
+#cp ../scripts/CDB_File.so /var/qmail/bin/
+#cd /var/qmail/bin && ./mkvalidrcptto -c /var/qmail/control/validrcptto.cdb && cd - >> $LOG 2>&1
+cd /var/qmail/bin && ./mkrcpt -c /var/qmail/control/validrcptto.cdb && cd - >> $LOG 2>&1
+
+
+cp ../scripts/qfixq /var/qmail/bin/
+cp ../misc/smtpplugins /var/qmail/control/
+if [ -d /var/qmail/plugins ]; then
+   mkdir /var/qmail/plugins   
+fi
+if [ -d /etc/init ]; then
+   cp ../misc/svscan /etc/init/
+else
+   cp ../misc/svscan /etc/event.d/
+fi
+initctl start svscan >> $LOG 2>&1
+echo "OK"
+
+
+echo -e "Mail server successfully installed\nRun qmailctl start from command line"
+#qmailctl stop
+#qmailctl start

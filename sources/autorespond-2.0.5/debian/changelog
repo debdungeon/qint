@@ -1,0 +1,35 @@
+autorespond (2.0.2-2woody1) stable-security; urgency=high
+
+  * Non-maintainer upload by the Security Team
+  * Fix buffer overflow with EXT and HOST environment variables
+    (CAN-2003-0654)
+
+ -- Matt Zimmerman <mdz@debian.org>  Sat,  9 Aug 2003 20:39:55 -0400
+
+autorespond (2.0.2-2) stable-security; urgency=high
+
+  * Non-maintainer upload by the Security Team
+
+ -- Matt Zimmerman <mdz@debian.org>  Sat,  9 Aug 2003 20:39:18 -0400
+
+autorespond (2.0.2-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Sam Johnston <samj@debian.org>  Thu, 24 Jan 2002 05:41:45 +1100
+
+autorespond (2.0.1-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Sam Johnston <samj@frodo.infolearn.com.au>  Mon,  3 Dec 2001 14:59:41 +1100
+
+autorespond (1.0.0-1) unstable; urgency=low
+
+  * Initial Release.
+
+ -- Sam Johnston <samj@debian.org>  Wed, 12 Sep 2001 23:00:03 +1000
+
+Local variables:
+mode: debian-changelog
+End:

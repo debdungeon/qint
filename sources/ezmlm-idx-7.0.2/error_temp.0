@@ -1,0 +1,31 @@
+error_temp(3)                                                    error_temp(3)
+
+
+
+NNAAMMEE
+       error_temp - identify soft syscall error codes
+
+SSYYNNTTAAXX
+       ##iinncclluuddee <<eerrrroorr..hh>>
+
+       int eerrrroorr__tteemmpp(_e);
+
+       int _e;
+
+DDEESSCCRRIIPPTTIIOONN
+       eerrrroorr__tteemmpp  returns  1 if syscall error code _e is a soft error, 0 if it
+       is a hard error.  Normally _e is eerrrrnnoo.
+
+       A hard error is persistent: file not found, read-only file system, sym‐
+       bolic link loop, etc.
+
+       A  soft  error  is usually transient: out of memory, out of disk space,
+       I/O error, disk quota exceeded, connection refused,  host  unreachable,
+       etc.
+
+SSEEEE AALLSSOO
+       error(3)
+
+
+
+                                                                 error_temp(3)

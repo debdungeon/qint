@@ -1,0 +1,115 @@
+mbox(5)                                                                mbox(5)
+
+
+
+NNAAMMEE
+       mbox - file containing mail messages
+
+IINNTTRROODDUUCCTTIIOONN
+       The most common format for storage of mail messages is _m_b_o_x format.  An
+       _m_b_o_x is a single file containing zero or more mail messages.
+
+MMEESSSSAAGGEE FFOORRMMAATT
+       A message encoded in _m_b_o_x format begins with a  FFrroomm__  line,  continues
+       with  a series of non-FFrroomm__ lines, and ends with a blank line.  A FFrroomm__
+       line means any line that begins with the characters F, r, o, m, space:
+
+            From god@heaven.af.mil Sat Jan  3 01:05:34 1996
+            Return-Path: <god@heaven.af.mil>
+            Delivered-To: djb@silverton.berkeley.edu
+            Date: 3 Jan 1996 01:05:34 -0000
+            From: God <god@heaven.af.mil>
+            To: djb@silverton.berkeley.edu (D. J. Bernstein)
+
+            How’s that mail system project coming along?
+
+
+       The final line is a completely blank line (no spaces or tabs).   Notice
+       that blank lines may also appear elsewhere in the message.
+
+       The  FFrroomm__  line  always  looks  like  FFrroomm  _e_n_v_s_e_n_d_e_r  _d_a_t_e  _m_o_r_e_i_n_f_o.
+       _e_n_v_s_e_n_d_e_r is one word, without spaces or tabs; it is usually the  enve‐
+       lope  sender of the message.  _d_a_t_e is the delivery date of the message.
+       It always contains exactly 24 characters in aassccttiimmee  format.   _m_o_r_e_i_n_f_o
+       is optional; it may contain arbitrary information.
+
+       Between  the FFrroomm__ line and the blank line is a message in RFC 822 for‐
+       mat, as described in  qqmmaaiill--hheeaaddeerr((55)),  subject  to  >>FFrroomm  qquuoottiinngg  as
+       described below.
+
+HHOOWW AA MMEESSSSAAGGEE IISS DDEELLIIVVEERREEDD
+       Here is how a program appends a message to an _m_b_o_x file.
+
+       It  first  creates a FFrroomm__ line given the message’s envelope sender and
+       the current date.  If the envelope sender is empty (i.e., if this is  a
+       bounce  message), the program uses MMAAIILLEERR--DDAAEEMMOONN instead.  If the enve‐
+       lope sender contains spaces, tabs, or newlines,  the  program  replaces
+       them with hyphens.
+
+       The  program  then  copies  the message, applying >>FFrroomm qquuoottiinngg to each
+       line.  >>FFrroomm qquuoottiinngg ensures that the resulting  lines  are  not  FFrroomm__
+       lines: the program prepends a >> to any FFrroomm__ line, >>FFrroomm__ line, >>>>FFrroomm__
+       line, >>>>>>FFrroomm__ line, etc.
+
+       Finally the program appends a blank line to the message.  If  the  last
+       line  of the message was a partial line, it writes two newlines; other‐
+       wise it writes one.
+
+HHOOWW AA MMEESSSSAAGGEE IISS RREEAADD
+       A reader scans through an _m_b_o_x file looking for FFrroomm__ lines.  Any FFrroomm__
+       line  marks  the beginning of a message.  The reader should not attempt
+       to take advantage of the fact that every FFrroomm__ line (past the beginning
+       of the file) is preceded by a blank line.
+
+       Once  the  reader  finds  a message, it extracts a (possibly corrupted)
+       envelope sender and delivery date out of the FFrroomm__ line.  It then reads
+       until  the  next  FFrroomm__ line or end of file, whichever comes first.  It
+       strips off the final blank line and deletes the quoting of >>FFrroomm__ lines
+       and >>>>FFrroomm__ lines and so on.  The result is an RFC 822 message.
+
+CCOOMMMMOONN MMBBOOXX VVAARRIIAANNTTSS
+       There are many variants of _m_b_o_x format.  The variant described above is
+       _m_b_o_x_r_d format, popularized by Rahul Dhesi in June 1995.
+
+       The original _m_b_o_x_o format quotes only FFrroomm__ lines,  not  >>FFrroomm__  lines.
+       As a result it is impossible to tell whether
+
+            From: djb@silverton.berkeley.edu (D. J. Bernstein)
+            To: god@heaven.af.mil
+
+            >From now through August I’ll be doing beta testing.
+            Thanks for your interest.
+
+       was quoted in the original message.  An _m_b_o_x_r_d reader will always strip
+       off the quoting.
+
+       _m_b_o_x_c_l format is like _m_b_o_x_o format, but includes a Content-Length field
+       with the number of bytes in the message.  _m_b_o_x_c_l_2 format is like _m_b_o_x_c_l
+       but has no >>FFrroomm quoting.  These formats  are  used  by  SVR4  mailers.
+       _m_b_o_x_c_l_2 cannot be read safely by _m_b_o_x_r_d readers.
+
+UUNNSSPPEECCIIFFIIEEDD DDEETTAAIILLSS
+       There  are  many locking mechanisms for _m_b_o_x files.  qqmmaaiill--llooccaall always
+       uses fflloocckk on systems that have it, otherwise lloocckkff.
+
+       The delivery date in a FFrroomm__ line does not specify a time zone.  qqmmaaiill--
+       llooccaall always creates the delivery date in GMT so that _m_b_o_x files can be
+       safely transported from one time zone to another.
+
+       If the mtime on a nonempty _m_b_o_x file is greater  than  the  atime,  the
+       file  has  new  mail.   If the mtime is smaller than the atime, the new
+       mail has been read.  If the atime equals the mtime, there is no way  to
+       tell  whether  the file has new mail, since qqmmaaiill--llooccaall takes much less
+       than a second to run.  One solution is for a  mail  reader  to  artifi‐
+       cially  set  the atime to the mtime plus 1.  Then the file has new mail
+       if and only if the atime is less than or equal to the mtime.
+
+       Some mail readers place SSttaattuuss fields in each message to indicate which
+       messages have been read.
+
+SSEEEE AALLSSOO
+       maildir(5), qmail-header(5), qmail-local(8)
+
+
+
+                                                                       mbox(5)

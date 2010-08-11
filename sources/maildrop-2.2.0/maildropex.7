@@ -1,0 +1,171 @@
+.\"  <!-- $Id: maildropex.sgml,v 1.9 2007/04/22 15:19:24 mrsam Exp $ -->
+.\"  <!-- Copyright 1998 - 2007 Double Precision, Inc.  See COPYING for -->
+.\"  <!-- distribution information. -->
+.\"     Title: maildropex
+.\"    Author: 
+.\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
+.\"      Date: 08/24/2008
+.\"    Manual: Double Precision, Inc.
+.\"    Source: Double Precision, Inc.
+.\"
+.TH "MAILDROPEX" "7" "08/24/2008" "Double Precision, Inc." "Double Precision, Inc."
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.SH "NAME"
+maildropex - maildrop filtering language examples
+.SH "SYNOPSIS"
+\fI$HOME/\.mailfilter\fR, \fI$HOME/\.mailfilters/*\fR
+.sp
+.SH "DESCRIPTION"
+.PP
+If
+\fI$HOME/\.mailfilter\fR
+exists, filtering instructions in this file will be carried out prior to delivering the message\. The filtering instructions may instruct
+\fBmaildrop\fR
+to discard the message, save the message in a different mailbox, or forward the message to another address\. If
+\fI$HOME/\.mailfilter\fR
+does not exist, or does not provide explicit delivery instructions,
+\fBmaildrop\fR
+delivers the message to the user\'s system mailbox\.
+.PP
+The files in
+\fI$HOME/\.mailfilters\fR
+are used when
+\fBmaildrop\fR
+is invoked in embedded mode\.
+.SH "EXAMPLES"
+.PP
+Take all mail that\'s sent to the \'auto\' mailing list, and save it in
+\fIMail/auto\fR\. The \'auto\' mailing list software adds a "Delivered\-To: auto@domain\.com" header to all messages:
+.sp .RS 4 .nf if (/^Delivered\-To: *auto@domain\e\.com$/) to Mail/auto .fi .RE
+After the
+\fBto\fR
+command delivers the message,
+\fBmaildrop\fR
+automatically stops filtering and terminates without executing the subsequent instructions in the
+filter file\.
+.PP
+Take all mail from
+<boss@domain\.com>
+about the current project status, save it in
+\fIMail/project\fR, then forward a copy to John:
+.sp .RS 4 .nf if (/^From: *boss@domain\e\.com/ \e && /^Subject:\.*[:wbreak:]project status[:wbreak:]/) { cc "!john" to Mail/project } .fi .RE
+Note that it is necessary to use a backslash in order to continue the
+\fBif\fR
+statement on the next line\.
+.PP
+Keep copies of the last 50 messages that you received in the
+\fImaildir\fR
+directory \'backup\'\. NOTE: \'backup\' must be a
+\fImaildir\fR
+directory, not a mailbox\. You can create a
+\fImaildir\fR
+using the
+\fBmaildirmake\fR
+command\.
+.sp .RS 4 .nf cc backup `cd backup/new && rm \-f dummy \e`ls \-t | sed \-e 1,50d\e`` .fi .RE
+Put this at the beginning of your filter file, before any other filtering instructions\. This is a good idea to have when you are learning
+\fBmaildrop\fR\. If you make a mistake and accidentally delete a message, you can recover it from the backup/new subdirectory\.
+.PP
+Save messages that are at least 100 lines long (approximately) into
+\fIMail/IN\.Large:\fR:
+.sp .RS 4 .nf if ( $LINES > 100 ) to Mail/IN\.Large .fi .RE
+.PP
+Send messages from the auto mailing list to the program \'archive\', using a lock file to make sure that only one instance of the archive program will be running at the same time:
+.sp .RS 4 .nf if (/^Delivered\-To: *auto@domain\e\.com$/) dotlock "auto\.lock" { to "|archive" } .fi .RE
+.PP
+Check if the
+Message\-ID:
+header in the message is identical to the same header that was recently seen\. Discard the message if it is, otherwise continue to filter the message:
+.sp .RS 4 .nf `reformail \-D 8000 duplicate\.cache` if ( $RETURNCODE == 0 ) exit .fi .RE
+The
+\fIreformail\fR\&[1]
+command maintains a list of recently seen Message\-IDs in the file
+\fIduplicate\.cache\fR\.
+.PP
+Here\'s a more complicated example\. This fragment is intended to go right after the message has been filtered according to your regular rules, and just before the message should be saved in your mailbox:
+.sp .RS 4 .nf cc $DEFAULT xfilter "reformail \-r \-t" /^To:\.*/ getaddr($MATCH) =~ /^\.*/; MATCH=tolower($MATCH) flock "vacation\.lock" { `fgrep \-iqx "$MATCH" vacation\.lst 2>/dev/null || { \e echo "$MATCH" >>vacation\.lst ; \e exit 1 ; \e } ` } if ( $RETURNCODE == 0 ) exit to "| ( cat \- ; echo \'\'; cat vacation\.msg) | $SENDMAIL" .fi .RE
+.PP
+This code maintains a list of everyone who sent you mail in the file called
+\fIvacation\.lst\fR\. When a message is received from anyone that is not already on the list, the address is added to the list, and the contents of the file
+\fIvacation\.msg\fR
+are mailed back to the sender\. This is intended to reply notify people that you will not be answering mail for a short period of time\.
+.PP
+The first statement saves the original message in your regular mailbox\. Then,
+\fI\fBxfilter\fR\fR\&[2]
+is used to generate an autoreply header to the sender\. The
+To:
+header in the autoreply \- which was the sender of the original message \- is extracted, and the
+\fI\fBgetaddr\fR\fR\&[3]
+function is used to strip the person\'s name, leaving the address only\. The file
+\fIvacation\.lst\fR
+is checked, using a lock file to guarantee atomic access and update (overkill, probably)\. Note that the backslashes are required\.
+.PP
+If the address is already in the file,
+\fBmaildrop\fR
+exits, otherwise the contents of
+\fIvacation\.msg\fR
+are appended to the autoreply header, and mailed out\.
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+Note
+.PP
+An easier to make a vacation script is with
+\fI\fBmailbot\fR(1)\fR\&[4]\.
+.PP
+Here\'s a version of the vacation script that uses a GDBM database file instead\. The difference between this script and the previous script is that the previous script will send a vacation message to a given E\-mail address only once\. The following script will store the time that the vacation message was sent in the GDBM file\. If it\'s been at least a week since the vacation message has been sent to the given address, another vacation message will be sent\.
+.PP
+Even though a GDBM database file is used, locking is still necessary because the GDBM library does not allow more than one process to open the same database file for writing:
+.sp .RS 4 .nf cc $DEFAULT xfilter "reformail \-r \-t" /^To:\.*/ getaddr($MATCH) =~ /^\.*/; MATCH=tolower($MATCH) flock "vacation\.lock" { current_time=time; if (gdbmopen("vacation\.dat", "C") == 0) { if ( (prev_time=gdbmfetch($MATCH)) ne "" && \e $prev_time >= $current_time \- 60 * 60 * 24 * 7) { exit } gdbmstore($MATCH, $current_time) gdbmclose } } to "| ( cat \- ; echo \'\'; cat vacation\.msg) | $SENDMAIL" .fi .RE
+.PP
+This script requires that
+\fBmaildrop\fR
+must be compiled with GDBM support enabled, which is done by default if GDBM libraries are present\.
+.PP
+After you return from vacation, you can use a simple Perl script to obtain a list of everyone who sent you mail (of course, that can also be determined by examining your mailbox)\.
+.SH "SEE ALSO"
+.PP
+
+\fI\fBmaildrop\fR(1)\fR\&[5],
+\fI\fBmaildropfilter\fR(7)\fR\&[6],
+\fI\fBreformail\fR(1)\fR\&[1],
+\fI\fBmailbot\fR(1)\fR\&[4],
+\fBegrep\fR(1),
+\fBgrep\fR(1),
+\fBsendmail\fR(8)\.
+.SH "NOTES"
+.IP " 1." 4
+reformail
+.RS 4
+\%reformail.html
+.RE
+.IP " 2." 4
+\fBxfilter\fR
+.RS 4
+\%maildropfilter.html#xfilter
+.RE
+.IP " 3." 4
+\fBgetaddr\fR
+.RS 4
+\%maildropfilter.html#getaddr
+.RE
+.IP " 4." 4
+\fBmailbot\fR(1)
+.RS 4
+\%mailbot.html
+.RE
+.IP " 5." 4
+\fBmaildrop\fR(1)
+.RS 4
+\%maildrop.html
+.RE
+.IP " 6." 4
+\fBmaildropfilter\fR(7)
+.RS 4
+\%maildropfilter.html
+.RE

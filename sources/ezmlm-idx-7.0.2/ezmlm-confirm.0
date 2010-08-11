@@ -1,0 +1,74 @@
+ezmlm-confirm(1)                                              ezmlm-confirm(1)
+
+
+
+NNAAMMEE
+       ezmlm-confirm - process user actions for message confirm and discard
+
+SSYYNNOOPPSSIISS
+       eezzmmllmm--ccoonnffiirrmm [[--ccCCrrRRvvVV]] _d_i_r _[ _/_p_a_t_h_/_p_r_o_g_r_a_m _a_r_g_s _]
+
+
+DDEESSCCRRIIPPTTIIOONN
+       eezzmmllmm--ccoonnffiirrmm reads a mail message, expecting it to contain an _-_c_o_n_f_i_r_m
+       or _-_d_i_s_c_a_r_d action request for the mailing list stored in _d_i_r_.
+
+       eezzmmllmm--ccoonnffiirrmm verifies the cookie sent as part of the  action  request,
+       and   if   correct  attempts  to  find  the  corresponding  message  in
+       _d_i_r//mmoodd//uunnccoonnffiirrmmeedd//.  If the message is found, it is either  discarded
+       or posted to the list, depending on the action request.
+
+       Posts  to  the  list are handled by piping the message to eezzmmllmm--sseenndd((11))
+       located in the ezmlm binary directory, as set at compile time. This  is
+       usually the directory that ezmlm-moderate resides in.  eezzmmllmm--sseenndd((11)) is
+       provided with _d_i_r as the first argument.
+
+       If the optional second argument is given, eezzmmllmm--ccoonnffiirrmm pipes the  mes‐
+       sage to that program.  No additional parameters are supplied.
+
+       _d_i_r  is  passed as an argument to eezzmmllmm--sseenndd((11)), but NOT to any program
+       specified as the optional eezzmmllmm--ccoonnffiirrmm command line argument.
+
+       eezzmmllmm--ccoonnffiirrmm does not bother to correctly set  sender.   eezzmmllmm--sseenndd((11))
+       doesn’t  care,  and  any other program that might be used can parse the
+       sender from the first line of the message, which is always _R_e_t_u_r_n_-_P_a_t_h_:
+       _<_a_d_d_r_e_s_s_@_h_o_s_t_._d_o_m_a_i_n_>  as build from SENDER originally passed to eezzmmllmm--
+       ssttoorree((11)).
+
+       Once the message has been successfully accepted  or  discarded,  it  is
+       removed from _d_i_r//mmoodd//uunnccoonnffiirrmmeedd//.
+
+       If  the  message is not found in _d_i_r//mmoodd//uunnccoonnffiirrmmeedd//, it has timed out
+       and the message or the message stub has been removed by eezzmmllmm--cclleeaann((11)).
+       In  this case, eezzmmllmm--ccoonnffiirrmm notifies the sender of the failure.  Noti‐
+       fication is in the form of a fatal error from qmail.
+
+       At the beginning of the message, eezzmmllmm--ccoonnffiirrmm prints  a  new  MMaaiilliinngg--
+       LLiisstt  field  with  the  contents  of  the _T_X_T___M_A_I_L_I_N_G___L_I_S_T message.  It
+       rejects the message if there is already a MMaaiilliinngg--LLiisstt field.
+
+       eezzmmllmm--ccoonnffiirrmm does not distribute bounce messages: if  the  environment
+       variable  SSEENNDDEERR  is  set,  and  is either empty or ##@@[[]], eezzmmllmm--ccoonnffiirrmm
+       rejects the message.
+
+OOPPTTIIOONNSS
+       --ccCCrrRR  Passed on to ezmlm-send(1).
+
+       --vv     Display eezzmmllmm--ccoonnffiirrmm version information.
+
+       --VV     Display eezzmmllmm--ccoonnffiirrmm version information.
+
+CCHHAARRAACCTTEERR SSEETTSS
+       If _d_i_r//cchhaarrsseett exists, eezzmmllmm--ccoonnffiirrmm will use the character set  listed
+       for all messages. Otherwise, the default ‘‘us-ascii’’ will be used. The
+       character set can be suffixed by ‘‘:’’ followed by a code. If the  code
+       is  ‘‘Q’’, outgoing messages are sent as ‘‘Quoted-Printable’’, if it is
+       ‘‘B’’ they are sent ‘‘base64’’ encoded.  Otherwise, text is sent as is.
+
+SSEEEE AALLSSOO
+       ezmlm-moderate(1), ezmlm-clean(1), ezmlm-make(1), ezmlm-send(1), ezmlm-
+       store(1), ezmlm(5)
+
+
+
+                                                              ezmlm-confirm(1)

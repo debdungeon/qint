@@ -1,0 +1,31 @@
+substdio_copy(3)                                              substdio_copy(3)
+
+
+
+NNAAMMEE
+       substdio_copy - copy an entire input to an output
+
+SSYYNNTTAAXX
+       ##iinncclluuddee <<ssuubbssttddiioo..hh>>
+
+       int ssuubbssttddiioo__ccooppyy(&_s_o_u_t,&_s_i_n);
+
+       substdio _s_o_u_t;
+       substdio _s_i_n;
+
+DDEESSCCRRIIPPTTIIOONN
+       ssuubbssttddiioo__ccooppyy reads characters from _s_i_n until end of file, writing each
+       character to _s_o_u_t.  It then returns 0.  It does not flush _s_o_u_t.
+
+       Upon a _s_i_n error, ssuubbssttddiioo__ccooppyy returns -2, leaving eerrrrnnoo set appropri‐
+       ately.
+
+       Upon  a  _s_o_u_t error, ssuubbssttddiioo__ccooppyy returns -3, leaving eerrrrnnoo set appro‐
+       priately.
+
+SSEEEE AALLSSOO
+       substdio(3)
+
+
+
+                                                              substdio_copy(3)

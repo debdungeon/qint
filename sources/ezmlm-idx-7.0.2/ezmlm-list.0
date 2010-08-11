@@ -1,0 +1,50 @@
+ezmlm-list(1)                                                    ezmlm-list(1)
+
+
+
+NNAAMMEE
+       ezmlm-list - show the addresses on a mailing list
+
+SSYYNNOOPPSSIISS
+       eezzmmllmm--lliisstt [ --nn _m_s_g_n_u_m ] [ --aaAAmmMMnnNNvvVV ] [ --SS ssuubbddbb ] _d_i_r [ _s_u_b_d_i_r ]
+
+DDEESSCCRRIIPPTTIIOONN
+       eezzmmllmm--lliisstt  prints  the  subscriber list for the mailing list stored in
+       _d_i_r (or _d_i_r/_s_u_b_d_i_r if the _s_u_b_d_i_r parameter is present), one address per
+       line.
+
+       WWAARRNNIINNGG::   Unless   you  have  disabled  automatic  subscriptions,  the
+       addresses in a mailing list are under the control of a  possibly  mali‐
+       cious remote user.  eezzmmllmm--lliisstt does not strip control characters.
+
+GGEENNEERRAALL OOPPTTIIOONNSS
+       --mm     (Default.)  Use the normal subscriber database for the list.
+
+       --MM     Use  the  standard subscriber database even if the list was con‐
+              figured to use another plugin.  This is equivalent to specifying
+              --SS _s_t_d.
+
+       --nn     Print only the number of subscribers.
+
+       --NN     (Default.)  List subscriber addresses, one per line.
+
+       --SS _s_u_b_d_b
+              Connect  to  the  given subscriber database plugin.  This option
+              can be used to manipulate alternate subscriber  databases.   The
+              contents  of  the parameter should be the same as would be given
+              to eezzmmllmm--mmaakkee --66.
+
+       --vv     Display eezzmmllmm--lliisstt((11)) version information.
+
+       --VV     Display eezzmmllmm--lliisstt((11)) version information.
+
+SSEEEE AALLSSOO
+       ezmlm-list(1), ezmlm-manage(1),  ezmlm-make(1),  ezmlm-send(1),  ezmlm-
+       sub(1), ezmlm(5)
+
+SSEEEE AALLSSOO
+       ezmlm-sub(1), ezmlm-unsub(1), ezmlm(5)
+
+
+
+                                                                 ezmlm-list(1)

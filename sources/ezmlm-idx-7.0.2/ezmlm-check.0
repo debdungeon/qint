@@ -1,0 +1,36 @@
+ezmlm-check(1)                                                  ezmlm-check(1)
+
+
+
+NNAAMMEE
+       ezmlm-check - Mails back results of ezmlm list check
+
+SSYYNNOOPPSSIISS
+       eezzmmllmm--cchheecckk [ --ssSS ] _[_d_i_r_]
+
+DDEESSCCRRIIPPTTIIOONN
+       eezzmmllmm--cchheecckk  mails  useful  environment  variables to SENDER via qqmmaaiill--
+       iinnjjeecctt.  It is usually invoked for debugging purposes in a _._q_m_a_i_l  file
+       to  determine  the  value of relevant environment variables.  If _d_i_r is
+       specified, eezzmmllmm--cchheecckk attempts to evaluate the _e_z_m_l_m mailing list  set
+       up  in  _d_i_r  and return information about the setup as well as possible
+       errors.
+
+       eezzmmllmm--cchheecckk will flag errors with  ‘‘‘‘?????? EERRRROORR’’’’,  likely  errors  with
+       ‘‘‘‘??????’’’’, and potential errors/problems with ‘‘‘‘!!!!!!’’’’.
+
+       If  eezzmmllmm--cchheecckk is invoked from the shell, it will print to stdout.  In
+       this case, diagnostics are more limited,  since  important  environment
+       variables normally supplied by qmail are not available.
+
+OOPPTTIIOONNSS
+       --ss   (Default.) List subscribers.
+
+       --SS   Do not list subscribers.
+
+SSEEEE AALLSSOO
+       ezmlm(5), qmail(7), qmail-inject(8)
+
+
+
+                                                                ezmlm-check(1)

@@ -1,0 +1,147 @@
+ezmlm-request(1)                                              ezmlm-request(1)
+
+
+
+NNAAMMEE
+       ezmlm-request - Process subject line and body ezmlm commands
+
+SSYYNNOOPPSSIISS
+       eezzmmllmm--rreeqquueesstt [ --ff _c_o_n_f_i_g ] _d_i_r
+
+DDEESSCCRRIIPPTTIIOONN
+       eezzmmllmm--rreeqquueesstt  processes  ezmlm commands in the subject line or message
+       body.   eezzmmllmm--rreeqquueesstt  enables  these  uses  to  send  the  message  to
+       _l_i_s_t--rreeqquueesstt_@_h_o_s_t with the complete command address line in the subject
+       field, or with commands and arguments separated by white space.  eezzmmllmm--
+       rreeqquueesstt uses the text to construct a ezmlm command message to the list.
+       If the subject does not start with a letter, eezzmmllmm--rreeqquueesstt instead uses
+       the first body line that starts with a letter. Processing terminates if
+       a line with a hyphen in the first position is encountered.
+
+       All commands are expected to be in ezmlm command address format or for‐
+       matted as:
+
+       ccoommmmaanndd [lliisstt@@lliisstthhoosstt [uusseerr@@uusseerrhhoosstt]]
+
+       eezzmmllmm--rreeqquueesstt  when invoked with the --ff switch and a configuration file
+       (see below), ignores the subject and processes the first body line (per
+       rules  above)  in conjunction with the configuration file. It also ser‐
+       vices the lliissttss and wwhhiicchh commands. This can be  used  to  construct  a
+       global  list interface, similar to that used by some other mailing list
+       managers.
+
+       Messages at the _l_i_s_t--rreeqquueesstt_@_h_o_s_t are restricted  to  the  local  list.
+       When  eezzmmllmm--rreeqquueesstt  is invoked with the --ff _c_o_n_f_i_g switch, command mes‐
+       sages are limited to lists in _c_o_n_f_i_g or at the local host.
+
+       Invalid requests for an existing ezmlm list will  lead  to  a  ‘‘help’’
+       message from eezzmmllmm--mmaannaaggee((11)).
+
+       eezzmmllmm--rreeqquueesstt  reads  _d_i_r//ccooppyylliinneess  to determine how many lines of the
+       original message to copy into the outgoing message.  If  this  file  is
+       empty  or  not present, a value of _0 is presumed, meaning that only the
+       header is copied.
+
+OOPPTTIIOONNSS
+       --ff _c_o_n_f_i_g
+              Function as a global interface to ezmlm lists in accordance with
+              _c_o_n_f_i_g_.  This file consists of lines starting in the first posi‐
+              tion  with  ‘‘list@host:listdir:description’’.  Lines  that  are
+              blank or start
+               with  ‘‘#’’  are  ignored.  ‘‘listdir’’ and ‘‘description’’ are
+              optional. If only ‘‘list@host’’ is given, the list  is  used  to
+              restrict commands (see below), but not listed. To allow the list
+              to be shown by a ‘‘list’’ command, use ‘‘list@host:’’. To  spec‐
+              ify    only    the    list    name    and    description,    use
+              ‘‘list@host::description’’.   If  ‘‘listdir’’  is  present,  the
+              wwhhiicchh  command attempts to determine if the user is a subscriber
+              of the list.  NNOOTTEE:: this will work  only  if  the  user  running
+              eezzmmllmm--rreeqquueesstt  has read access to the lists subscriber database.
+
+              If ‘‘listhost’’ is not specified,  eezzmmllmm--rreeqquueesstt  will  use  the
+              ‘‘listhost’’ from the first _c_o_n_f_i_g entry matching ‘‘listlocal’’.
+              If ‘‘listhost’’ is specified, but not found in _c_o_n_f_i_g, it is set
+              to the contents of _d_i_r//oouutthhoosstt.
+
+UUSSAAGGEE
+       Place an invocation of eezzmmllmm--rreeqquueesstt in _d_i_r//mmaannaaggeerr anywhere before the
+       eezzmmllmm--mmaannaaggee((11)) line.
+
+       Alternatively, set up _d_i_r//rreeqquueesstt with an invocation of  eezzmmllmm--rreeqquueesstt.
+       Make a link from _~_/_._q_m_a_i_l_-_l_i_s_t_-_r_e_q_u_e_s_t to this file.
+
+       For  the global interface, place //ppaatthh//eezzmmllmm--rreeqquueesstt --ff _c_o_n_f_i_g _d_i_r into
+       a file.  Link _~_/_._q_m_a_i_l_-_e_z_m_l_m and _~_/_._q_m_a_i_l_-_e_z_m_l_m_-_d_e_f_a_u_l_t to  this  file.
+       The latter allows eezzmmllmm--rreeqquueesstt to handle its own bounces as well as to
+       reply  to  messages  to  e.g.   `‘user-ezmlm-lists@listhost’’.   Create
+       _d_i_r//oouuttllooccaall   with   ‘‘user-ezmlm’’,  _d_i_r//oouutthhoosstt  with  ‘‘listhost’’,
+       _d_i_r//hheeaaddeerrkkeeeepp with headers to keep or _d_i_r//hheeaaddeerrrreemmoovvee with headers to
+       be  stripped  (copy  from  a  list),  _d_i_r_/_t_e_x_t//hheellpp,  _d_i_r_/_t_e_x_t//ttoopp, and
+       _d_i_r_/_t_e_x_t//bboottttoomm with the appropriate texts.  Also, create  _c_o_n_f_i_g  with
+       the appropriate contents.
+
+       Mail  to ‘‘user-ezmlm@listhost’’ will now be answered by eezzmmllmm--rreeqquueesstt.
+
+RREECCOOGGNNIIZZEEDD CCOOMMMMAANNDDSS
+       Any command not recognized by eezzmmllmm--rreeqquueesstt is assumed to be valid,  as
+       long  as  it  consists  of  only  letters, numbers, hyphen, underscore,
+       period, and ‘‘+’’. This allows eezzmmllmm--rreeqquueesstt to correctly  handle  com‐
+       mands added by the list owner.
+
+       A number of commands are recognized by eezzmmllmm--rreeqquueesstt but not processed.
+       Instead they are mapped to hheellpp without arguments. These  are:  ssyysstteemm,
+       ppuutt, and sseett.
+
+       eezzmmllmm--rreeqquueesstt  also  handles  a  number  of aliases for ezmlm commands.
+       Since eezzmmllmm--rreeqquueesstt only passes on requests to the list, local restric‐
+       tions  apply.   For  commands  that  have aliases, accepted aliases are
+       listed:
+
+       ssuubbssccrriibbee
+              sub
+
+       uunnssuubbssccrriibbee
+              unsub, signoff, remove.
+
+       iinnddeexx  ind.
+
+       lliisstt   recipients, showdist, review, rev, who.
+
+
+       Some commands are handled differently when used without arguments:
+
+       qquueerryy  Treated like ‘‘which’’.
+
+       lliisstt   Treated like ‘‘lists’’.
+
+BBUUGGSS
+       eezzmmllmm--rreeqquueesstt places stricter requirements on  addresses  than  rfc822.
+       Thus, some addresses that are rfc822-compliant cannot be used as eezzmmllmm--
+       rreeqquueesstt command arguments. If you fix this,  please  send  a  patch  to
+       bruce@untroubled.org. I think qmail has the same restriction, though.
+
+       eezzmmllmm--rreeqquueesstt  uses  NUL as a line terminator internally. Thus, if will
+       fail if NUL is found within the line it tries to interpret  as  a  com‐
+       mand. It is harmless, other than that the remainder of the line will be
+       ignored.
+
+       The eezzmmllmm--rreeqquueesstt `‘which’’ command does not  differentiate  between  a
+       list  for which the command is not available, a list for which the sub‐
+       scriber db is not accessible, and a list for which the address is not a
+       subscriber. This should be considered a feature.
+
+BBUUGGSS
+       eezzmmllmm--rreeqquueesstt  when  used as a global interface and receiving multipart
+       messages assumes that the first line of the fist part is  the  command.
+       Further,  it  assumes  that  the first line starting‘‘--’’ is the first
+       MIME boundary. This is virtually always true, but it is  easy  to  con‐
+       struct legal messages that do not fit these assumptions.  eezzmmllmm--rreeqquueesstt
+       in the global interface role will fail if this first part or the entire
+       message is base64 encoded.
+
+SSEEEE AALLSSOO
+       ezmlm-get(1), ezmlm-manage(1), ezmlm-send(1), ezmlm(5)
+
+
+
+                                                              ezmlm-request(1)

@@ -1,0 +1,941 @@
+.\"  <!-- $Id: maildrop.sgml,v 1.14 2009/05/10 14:48:33 mrsam Exp $ -->
+.\"  <!-- Copyright 1998 - 2009 Double Precision, Inc.  See COPYING for -->
+.\"  <!-- distribution information. -->
+.\"     Title: maildrop
+.\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
+.\" Generator: DocBook XSL Stylesheets v1.74.0 <http://docbook.sf.net/>
+.\"      Date: 05/10/2009
+.\"    Manual: Double Precision, Inc.
+.\"    Source: Double Precision, Inc.
+.\"  Language: English
+.\"
+.TH "MAILDROP" "1" "05/10/2009" "Double Precision, Inc." "Double Precision, Inc."
+.\" -----------------------------------------------------------------
+.\" * (re)Define some macros
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" toupper - uppercase a string (locale-aware)
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.de toupper
+.tr aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ
+\\$*
+.tr aabbccddeeffgghhiijjkkllmmnnooppqqrrssttuuvvwwxxyyzz
+..
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" SH-xref - format a cross-reference to an SH section
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.de SH-xref
+.ie n \{\
+.\}
+.toupper \\$*
+.el \{\
+\\$*
+.\}
+..
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" SH - level-one heading that works better for non-TTY output
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.de1 SH
+.\" put an extra blank line of space above the head in non-TTY output
+.if t \{\
+.sp 1
+.\}
+.sp \\n[PD]u
+.nr an-level 1
+.set-an-margin
+.nr an-prevailing-indent \\n[IN]
+.fi
+.in \\n[an-margin]u
+.ti 0
+.HTML-TAG ".NH \\n[an-level]"
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+\." make the size of the head bigger
+.ps +3
+.ft B
+.ne (2v + 1u)
+.ie n \{\
+.\" if n (TTY output), use uppercase
+.toupper \\$*
+.\}
+.el \{\
+.nr an-break-flag 0
+.\" if not n (not TTY), use normal case (not uppercase)
+\\$1
+.in \\n[an-margin]u
+.ti 0
+.\" if not n (not TTY), put a border/line under subheading
+.sp -.6
+\l'\n(.lu'
+.\}
+..
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" SS - level-two heading that works better for non-TTY output
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.de1 SS
+.sp \\n[PD]u
+.nr an-level 1
+.set-an-margin
+.nr an-prevailing-indent \\n[IN]
+.fi
+.in \\n[IN]u
+.ti \\n[SN]u
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.ps \\n[PS-SS]u
+\." make the size of the head bigger
+.ps +2
+.ft B
+.ne (2v + 1u)
+.if \\n[.$] \&\\$*
+..
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" BB/BE - put background/screen (filled box) around block of text
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.de BB
+.if t \{\
+.sp -.5
+.br
+.in +2n
+.ll -2n
+.gcolor red
+.di BX
+.\}
+..
+.de EB
+.if t \{\
+.if "\\$2"adjust-for-leading-newline" \{\
+.sp -1
+.\}
+.br
+.di
+.in
+.ll
+.gcolor
+.nr BW \\n(.lu-\\n(.i
+.nr BH \\n(dn+.5v
+.ne \\n(BHu+.5v
+.ie "\\$2"adjust-for-leading-newline" \{\
+\M[\\$1]\h'1n'\v'+.5v'\D'P \\n(BWu 0 0 \\n(BHu -\\n(BWu 0 0 -\\n(BHu'\M[]
+.\}
+.el \{\
+\M[\\$1]\h'1n'\v'-.5v'\D'P \\n(BWu 0 0 \\n(BHu -\\n(BWu 0 0 -\\n(BHu'\M[]
+.\}
+.in 0
+.sp -.5v
+.nf
+.BX
+.in
+.sp .5v
+.fi
+.\}
+..
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" BM/EM - put colored marker in margin next to block of text
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.de BM
+.if t \{\
+.br
+.ll -2n
+.gcolor red
+.di BX
+.\}
+..
+.de EM
+.if t \{\
+.br
+.di
+.ll
+.gcolor
+.nr BH \\n(dn
+.ne \\n(BHu
+\M[\\$1]\D'P -.75n 0 0 \\n(BHu -(\\n[.i]u - \\n(INu - .75n) 0 0 -\\n(BHu'\M[]
+.in 0
+.nf
+.BX
+.in
+.fi
+.\}
+..
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "Name"
+maildrop \- mail delivery filter/agent
+.SH "Synopsis"
+.fam C
+.HP \w'\fBmaildrop\fR\ 'u
+\fBmaildrop\fR [option...] [\-d\ \fIuser\fR] [\fIarg\fR...]
+.fam
+.fam C
+.HP \w'\fBmaildrop\fR\ 'u
+\fBmaildrop\fR [option...] [\fIfilename\fR] [\fIarg\fR...]
+.fam
+.SH "DESCRIPTION"
+.PP
+
+\fBmaildrop\fR
+is a replacement local mail delivery agent that includes a mail filtering language\&. The system administrator can either replace the existing mail delivery agent with
+\fBmaildrop\fR, or users may run
+\fBmaildrop\fR
+using the \'forward to program\' mechanism of the existing mail delivery agent\&.
+.PP
+
+\fBmaildrop\fR
+first reads the E\-mail message on standard input\&. Trailing carriage return characters are automatically stripped\&. An E\-mail message consists of header lines, followed by a blank line, followed by the contents of the message\&. The message may contain an mbox\-style
+\FCFrom_\F[]
+line before the first header line\&. If the message does not contain a
+\FCFrom_\F[]
+line,
+\fBmaildrop\fR
+will create one (if needed)\&.
+.PP
+If the file
+\FC@withetcdir@/maildroprc\F[]
+exists, mail delivery or mail filtering instructions are read from that file\&.
+\fBmaildrop\fR\'s delivery/filtering instructions may direct
+\fBmaildrop\fR
+to save the message in specific mailbox, discard it, return it to sender, or forward it to a different E\-mail address\&.
+.PP
+If
+\FC@withetcdir@/maildroprc\F[]
+does not exist, or its mail delivery instructions do not completely dispose of this message,
+\fBmaildrop\fR
+then reads the mail delivery instructions from
+\FC$HOME/\&.mailfilter\F[]\&. If it doesn\'t exist, or its mail delivery instructions do not completely dispose of the message,
+\fBmaildrop\fR
+then saves the E\-mail message in the default mailbox\&.
+.PP
+
+\fBmaildrop\fR
+knows how to deliver mail to an standard mailbox files; it also knows how to deliver to maildirs\&. A
+\FCmaildir\F[]
+is a directory\-based mail format used by the
+\m[blue]\fBCourier\fR\m[]\&\s-2\u[1]\d\s+2
+and
+\m[blue]\fBQmail\fR\m[]\&\s-2\u[2]\d\s+2
+mail servers\&. Many other mail servers also know how to read maildirs\&. When delivering to mailbox files,
+\fBmaildrop\fR
+will lock the mailbox for the duration of the delivery\&.
+.PP
+At least one mail program writes an empty line before a From_ header when saving a message into a file\&.
+\fBmaildrop\fR
+ignores empty lines at the beginning of messages\&. Therefore,
+\fBmaildrop\fR
+requires that every message must have at least one header line\&.
+.PP
+This is the general mail delivery behavior\&. There are minor differences in behavior depending on
+\fBmaildrop\fR
+delivery mode, which is determined based on how
+\fBmaildrop\fR
+was started\&.
+\fBmaildrop\fR
+uses three different primary operating modes:
+.PP
+Manual mode
+.RS 4
+A file containing filtering instructions \-
+\fIfilename\fR
+is specified as an argument to the
+\fBmaildrop\fR
+command\&.
+\fBmaildrop\fR
+reads this
+\fIfilename\fR
+(after
+\FC@withetcdir@/maildroprc\F[]) and follows the instructions in it\&. Unless the message is explicitly forwarded, bounced, deleted, or delivered to a specific mailbox, it will be delivered to the user\'s system mailbox\&.
+.RE
+.PP
+Delivery mode
+.RS 4
+
+\fBmaildrop\fR
+is the mail server\'s mail delivery agent\&.
+\fBmaildrop\fR
+runs in delivery mode when no
+\fIfilename\fR
+is specified on the command line\&.
+\fBmaildrop\fR
+changes the current directory to the user\'s home directory, then reads
+\FC@withetcdir@/maildroprc\F[], then
+\FC$HOME/\&.mailfilter\F[]\&.
+.RE
+.PP
+Embedded mode
+.RS 4
+
+\fBmaildrop\fR
+functions as a part of another application\&. The embedded mode is used by the
+\m[blue]\fBCourier\fR\m[]\&\s-2\u[1]\d\s+2
+mail server to integrate mail filtering directly into the process of receiving mail from a remote mail relay, thus rejecting unwanted mail before it is even accepted for local mail delivery\&. Embedded mode is used when either the \-m, or the \-M, option is specified, and is described below\&. See below for a more extensive description of the embedded mode\&.
+.RE
+.SH "SECURITY"
+.PP
+It is safe to install
+\fBmaildrop\fR
+as a root setuid program\&.
+\m[blue]\fBThe Courier mail server\fR\m[]\&\s-2\u[1]\d\s+2
+installs
+\fBmaildrop\fR
+as a root setuid program by default, in order to be able to use
+\fBmaildrop\fR
+in embedded mode\&. If root runs
+\fBmaildrop\fR
+(or it is setuided to root) the
+\fB\-d\fR
+option may be used to specify the message\'s recipient\&.
+\fBmaildrop\fR
+immediately resets its userid to the one specified by the
+\fB\-d\fR
+option\&. The user\'s
+\FC$HOME/\&.mailfilter\F[]
+is read (if it exists), and the message is delivered to the indicated user\&.
+.PP
+The system administrator can configure
+\fBmaildrop\fR
+to restrict the
+\fB\-d\fR
+option for everyone except the mail system itself\&.
+.PP
+If in delivery mode the user\'s home directory has the sticky bit set,
+\fBmaildrop\fR
+immediately terminates with an exit code of
+\fBEX_TEMPFAIL\fR, without doing anything\&. Mail servers interpret the
+\fBEX_TEMPFAIL\fR
+exit code as a request to reschedule the message for another delivery attempt later\&. Setting the sticky bit allows
+\FC$HOME/\&.mailfilter\F[]
+to be edited while temporarily holding all incoming mail\&.
+.PP
+
+\fBmaildrop\fR
+also terminates with
+\fBEX_TEMPFAIL\fR
+if the user\'s home directory has world write permissions\&.
+.PP
+
+\fBmaildrop\fR
+immediately terminates with
+\fBEX_TEMPFAIL\fR
+if the
+\FCfilename\F[]
+is not owned by the user, or if it has any group or world permissions\&. This includes read permissions\&. The permissions on
+\FC$HOME/\&.mailfilter\F[]
+may only include read and write privileges to the user\&.
+.PP
+When using the special embedded mode (see below)
+\fBmaildrop\fR
+immediately terminates with the exit code set to
+\fBEX_TEMPFAIL\fR
+if
+\FC$HOME/\&.mailfilters\F[]
+is not owned by the user, or if it has any group or world permissions\&.
+.SH "TEMPORARY FILES"
+.PP
+
+\fBmaildrop\fR
+is heavily optimized and tries to use as little resources as possible\&.
+\fBmaildrop\fR
+reads smalle messages into memory, then filters and/or delivers the message directly from memory\&. For larger messages,
+\fBmaildrop\fR
+accesses the message directly from the file\&. If the standard input is not a file,
+\fBmaildrop\fR
+writes the message to a temporary file, then accesses the message from the temporary file\&. The temporary file is automatically removed when the message is delivered\&.
+.SH "OPTIONS"
+.PP
+\-a
+.RS 4
+Makes the
+Courier
+Authentication Library usage mandatory, i\&.e\&. maildrop will throw a temporary error code if the call to the authlib mechanism fails for some reason, such as authdaemon being inaccessible\&.
+.if n \{\
+.sp
+.\}
+.RS 4
+.BM yellow
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBNote\fR
+.ps -1
+.br
+This setting may already be the default, depending on maildrop\'s configuration\&.
+.sp .5v
+.EM yellow
+.RE
+.RE
+.PP
+\-A "\fIHeader: value\fR"
+.RS 4
+Adds an additional header to the message\&. Specifying
+\fI\-A "Foo: Bar"\fR
+effectively adds this header to the message being delivered\&.
+.sp
+The mail transport agent usually adds additional headers when delivering a message to a local mailbox\&. The way it\'s usually done is by the mail transport agent sending the message using a pipe to the local delivery agent \- such as
+\fBmaildrop\fR
+\- and adding some additional headers in the process\&. Because
+\fBmaildrop\fR
+receives the message from a pipe,
+\fBmaildrop\fR
+must either save the message in memory or write the message into a temporary file\&.
+.sp
+The
+\fB\-A\fR
+option enables the file containing the message to be provided to
+\fBmaildrop\fR
+directly, as standard input, and the additional headers specified on the command line\&. Because the standard input is a file,
+\fBmaildrop\fR
+will not need a temporary file\&. Multiple
+\fB\-A\fR
+options may be specified\&.
+.RE
+.PP
+\-d \fIuser\fR
+.RS 4
+Run
+\fBmaildrop\fR
+in delivery mode for this user ID\&.
+.sp
+The system administrator may optionally restrict the
+\fB\-d\fR
+option to be available to the mail system only, so it may not be available to you\&. In all cases, the
+\fB\-d\fR
+option is allowed if
+\fIuser\fR
+is the same user who is running
+\fBmaildrop\fR\&. Also, for the
+\fB\-d\fR
+option to work at all,
+\fBmaildrop\fR
+must be executed by root, or
+\fBmaildrop\fR
+must be a root\-owned program with the setuid bit set\&. Absence of a
+\FCfilename\F[]
+on
+\fBmaildrop\fR\'s command line implies the
+\fB\-d\fR
+option for the user running
+\fBmaildrop\fR\&.
+.sp
+If
+\fB\-d\fR
+is not specified, the first argument following all the options is a name of the file containing filtering instructions\&. The remaining arguments, if any, are assigned to the variables
+\fI$1\fR,
+\fI$2\fR, and so on (see
+\m[blue]\fB"Environment"\fR\m[]\&\s-2\u[3]\d\s+2
+and
+\m[blue]\fB"Variable substitution"\fR\m[]\&\s-2\u[4]\d\s+2)\&.
+.RE
+.PP
+\-f \fIaddress\fR
+.RS 4
+Sets the FROM variable (message envelope sender) to
+\fIaddress\fR\&. The system administrator may optionally disable the
+\fB\-f\fR
+option for users, so it may not be available to you\&.
+.RE
+.PP
+\-m
+.RS 4
+Run
+\fBmaildrop\fR
+in embedded mode\&. It\'s possible to use both the
+\fB\-m\fR, and the
+\fB\-d\fR
+options, but it doesn\'t make much sense to do so\&. Even if you really wanted to run your message through someone else\'s
+\FC\&.mailfilter\F[], that
+\FC\&.mailfilter\F[]
+probably has at least one instruction which is not allowed in the embedded mode\&.
+.sp
+The
+\FCfilename\F[]
+argument to
+\fBmaildrop\fR
+should be specified\&.
+\FCfilename\F[]
+is a file that includes filtering instructions to be processed in embedded mode\&. The
+\FC\-m\F[]
+option is used for debugging filter files which are later placed in
+\FC$HOME/\&.mailfilters\F[], and used with the
+\fB\-M\fR
+option\&.
+.RE
+.PP
+\-M \fIfilterfile\fR
+.RS 4
+Run
+\fBmaildrop\fR
+in a special embedded mode\&. The
+\fB\-d\fR
+option is implied when
+\fB\-M\fR
+is used, and if absent it defaults to the userid running
+\fBmaildrop\fR\&.
+.sp
+All the requirements for the
+\fB\-d\fR
+option apply\&.
+\fBmaildrop\fR
+must either be executed by root, or the
+\fBmaildrop\fR
+program must be owned by root with the setuid bit set\&.
+\fBmaildrop\fR
+immediately gives up root privileges by changing its user ID to the one specified by
+\fB\-d\fR, then reads
+\FC$HOME/\&.mailfilters/\fIfilterfile\fR\F[]\&. For security reasons the name of the file may not begin with a slash or include periods\&.
+\fBmaildrop\fR
+is very paranoid: both
+\FC$HOME/\&.mailfilters\F[], and
+\FC$HOME/\&.mailfilters/\fIfilterfile\fR\F[]
+must be owned by the user, and may not have any group or world permissions\&.
+.sp
+The
+\fB\-M\fR
+option allows for some friendly cooperation between the user running the application, and the user who provides a filter for the embedded mode\&. The user running the application can use someone else\'s canned filter and be assured that the filter is not going to run amok and start sending mail or create files all over the place\&. The user who provides the filter can be assured that the environment variables are clean, and that there are no surprises\&.
+.sp
+
+\fBmaildrop\fR
+supports the concept of "default" filter files\&. If the file specified by the
+\fB\-M\fR
+option cannot be found in
+\FC$HOME/\&.mailfilters\F[],
+\fBmaildrop\fR
+will try to open
+\FC$HOME/\&.mailfilters/\fIfilterfileprefix\fR\-default\F[]\&.
+\fIfilterfileprefix\fR
+is the initial part of
+\fIfilterfile\fR
+up until the last \'\-\' character in
+\fIfilterfile\fR\&.
+.sp
+If
+\FC$HOME/\&.mailfilters/\fIfilterfileprefix\fR\-default\F[]
+does not exist, and there are any other dashes left in
+\fIfilterfileprefix\fR, maildrop removes the last dash and everything following it, then tries again\&.
+.sp
+As a last resort
+\fBmaildrop\fR
+tries to open
+\FC$HOME/\&.mailfilters/default\F[]\&.
+.sp
+For example, if the parameter to the
+\fB\-M\fR
+option is
+\fImailfilter\-lists\-maildrop\fR,
+\fBmaildrop\fR
+will try to open the following files, in order:
+.sp .if n \{\ .RS 4 .\} .fam C .ps -1 .nf .if t \{\ .sp -1 .\} .BB lightgray adjust-for-leading-newline .sp -1 \FC$HOME/\&.mailfilters/mailfilter\-lists\-maildrop\F[] \FC$HOME/\&.mailfilters/mailfilter\-lists\-maildrop\-default\F[] \FC$HOME/\&.mailfilters/mailfilter\-lists\-default\F[] \FC$HOME/\&.mailfilters/mailfilter\-default\F[] \FC$HOME/\&.mailfilters/default\F[] .EB lightgray adjust-for-leading-newline .if t \{\ .sp 1 .\} .fi .fam .ps +1 .if n \{\ .RE .\}
+.sp
+Note that
+\fBmaildrop\fR
+looks for \-default files ONLY if
+\fB\-M\fR
+is used\&.
+.RE
+.PP
+\-D \fIuuu/ggg\fR
+.RS 4
+This option is reserved for use by the version of
+\fBmaildrop\fR
+that comes integrated with the
+\m[blue]\fBCourier mail server\fR\m[]\&\s-2\u[1]\d\s+2\&.
+.RE
+.PP
+\-V \fIlevel\fR
+.RS 4
+Initialize the
+\fIVERBOSE\fR
+variable to
+\fIlevel\fR\&. Because
+\fBmaildrop\fR
+parses the entire before running it, this option is used to produce debugging output in the parsing phase\&. Otherwise, if
+\FCfilename\F[]
+has syntax errors, then no debugging output is possible because the
+\fIVERBOSE\fR
+variable is not yet set\&.
+.sp
+
+\fB\-V\fR
+is ignored when
+\fBmaildrop\fR
+runs in delivery mode\&.
+.RE
+.PP
+\-w \fIN\fR
+.RS 4
+The
+\fB\-w N\fR
+option places a warning message into the maildir if the maildir has a quota setting, and after the message was successfully delivered the maildir was at least
+\fIN\fR
+percent full\&. The warning message is copied verbatim from
+\FC@sysconfdir@/quotawarnmsg\F[]
+with the addition of the "\FCDate:\F[]" and "\FCMessage\-Id:\F[]" headers\&. The warning is repeated every 24 hours (at least), until the maildir drops below
+\fIN\fR
+percent full\&.
+.RE
+.SH "DELIVERY MODE"
+.PP
+If a
+\FCfilename\F[]
+is not specified on the command line, or if the
+\fB\-d\fR
+option is used,
+\fBmaildrop\fR
+will run in delivery mode\&. In delivery mode,
+\fBmaildrop\fR
+changes to the home directory of the user specified by the
+\fB\-d\fR
+option (or the user who is running
+\fBmaildrop\fR
+if the
+\fB\-d\fR
+option was not given) and reads
+\FC$HOME/\&.mailfilter\F[]
+for filtering instructions\&.
+\FC$HOME/\&.mailfilter\F[]
+must be owned by the user, and have no group or global permissions (\fBmaildrop\fR
+terminates if it does)\&.
+.PP
+If
+\FC$HOME/\&.mailfilter\F[]
+does not exist,
+\fBmaildrop\fR
+will simply deliver the message to the user\'s mailbox\&.
+.PP
+If the file
+\FC@withetcdir@/maildroprc\F[]
+exists,
+\fBmaildrop\fR
+reads filtering instructions from this file first, before reading
+\FC$HOME/\&.mailfilter\F[]\&. This allows the system administrator to provide global filtering instructions for all users\&.
+.if n \{\
+.sp
+.\}
+.RS 4
+.BM yellow
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBNote\fR
+.ps -1
+.br
+.PP
+
+\FC@withetcdir@/maildroprc\F[]
+is read only in delivery mode\&.
+.sp .5v
+.EM yellow
+.RE
+.SH "VIRTUAL ACCOUNTS"
+.PP
+The
+\fB\-d\fR
+option can also specify a name of a virtual account or mailbox\&. See the
+\fBmakeuserdb\fR(1)
+manual page in the
+Courier
+Authentication library\'s documentation for more information\&.
+.SH "EMBEDDED MODE"
+.PP
+The embedded mode is used when
+\fBmaildrop\fR\'s filtering abilities are desired, but no actual mail delivery is needed\&. In embedded mode
+\fBmaildrop\fR
+is executed by another application, and
+\m[blue]\fBis passed the \-m or the \-M option\&.\fR\m[]\&\s-2\u[5]\d\s+2
+\fBmaildrop\fR
+reads the message, then runs the filtering rules specified in
+\FCfilename\F[]\&.
+.PP
+
+\FCfilename\F[]
+may contain any filtering instructions EXCEPT the following:
+.PP
+` \&.\&.\&. `
+.RS 4
+Text strings delimited by back\-tick characters (run shell command) are not allowed\&.
+.RE
+.PP
+\m[blue]\fBcc\fR\m[]\&\s-2\u[6]\d\s+2
+.RS 4
+The
+\fBcc\fR
+command is not allowed in embedded mode\&.
+.RE
+.PP
+\m[blue]\fBdotlock\fR\m[]\&\s-2\u[7]\d\s+2
+.RS 4
+The
+\fBdotlock\fR
+command is not allowed in embedded mode\&.
+.RE
+.PP
+\m[blue]\fBflock\fR\m[]\&\s-2\u[8]\d\s+2
+.RS 4
+The
+\fBflock\fR
+command is not allowed in embedded mode\&.
+.RE
+.PP
+\m[blue]\fBgdbmopen\fR\m[]\&\s-2\u[9]\d\s+2
+.RS 4
+In embedded mode, GDBM databases may be opened only for reading\&.
+.RE
+.PP
+\m[blue]\fBlog\fR\m[]\&\s-2\u[10]\d\s+2
+.RS 4
+The
+\fBlog\fR
+command is not allowed in embedded mode\&.
+.RE
+.PP
+\m[blue]\fBlogfile\fR\m[]\&\s-2\u[10]\d\s+2
+.RS 4
+The
+\fBlogfile\fR
+command is not allowed in embedded mode\&.
+.RE
+.PP
+\m[blue]\fBto\fR\m[]\&\s-2\u[11]\d\s+2
+.RS 4
+The
+\fBto\fR
+command is not allowed in embedded mode\&.
+.RE
+.PP
+\m[blue]\fBxfilter\fR\m[]\&\s-2\u[12]\d\s+2
+.RS 4
+The
+\fBxfilter\fR
+command is not allowed in embedded mode\&.
+.RE
+.PP
+Normally when the
+\FCfilename\F[]
+does not explicitly delivers a message,
+\fBmaildrop\fR
+will deliver the message to the user\'s default mailbox\&. This is also disabled in embedded mode\&.
+.PP
+The
+\FCfilename\F[]
+may communicate with the parent application by using the
+\m[blue]\fBecho\fR\m[]\&\s-2\u[13]\d\s+2
+statement and the
+\fIEXITCODE\fR
+environment variable\&.
+.SS "\FC@withetcdir@/maildroprcs\F[]"
+.PP
+If
+\fBmaildrop\fR
+encounters an
+\m[blue]\fBinclude\fR\m[]\&\s-2\u[14]\d\s+2
+statement where the filename starts with
+\FC@withetcdir@/maildroprcs/\F[], the normal restrictions for the embedded mode are suspended while executing the filter file in the
+\FC@withetcdir@/maildroprcs\F[]
+directory\&. The restrictions are also suspended for any additional filter files that are included from
+\FC@withetcdir@/maildroprcs\F[]\&. The restrictions resume once
+\fBmaildrop\fR
+finishes executing the file from
+\FC@withetcdir@/maildroprcs\F[]\&.
+.PP
+This allows the system administrator to have a controlled environment for running external commands (via the backticks, or the
+\m[blue]\fBxfilter\fR\m[]\&\s-2\u[12]\d\s+2
+command)\&.
+.PP
+The name of the file may not contain any periods (so that a creative individual can\'t write
+\fIinclude "@withetcdir@/maildroprcs/\&.\&./\&.\&./home/user/recipe"\fR)\&.
+.PP
+Before executing the commands in the
+\FC@withetcdir@/maildroprcs\F[]
+file,
+\fBmaildrop\fR
+automatically resets the following variables to their initial values:
+\fIDEFAULT\fR,
+\fIHOME\fR,
+\fILOCKEXT\fR,
+\fILOCKSLEEP\fR,
+\fILOCKTIMEOUT\fR,
+\fILOCKREFRESH\fR,
+\fILOGNAME\fR,
+\fIPATH\fR,
+\fISENDMAIL\fR, and
+\fISHELL\fR\&. Please note that the previous values of these variables (if they were changed) will NOT be restored once
+\fBmaildrop\fR
+finishes executing the commands from
+\FC@withetcdir@/maildroprcs\F[]\&.
+.SH "WATCHDOG TIMER"
+.PP
+
+\fBmaildrop\fR
+has a watchdog timer that attempts to abort runaway filtering\&. If filtering is not complete within a predefined time interval (defined by the system administrator, usually five minutes),
+\fBmaildrop\fR
+terminates\&.
+.SH "FILES"
+.PP
+\FC/etc/passwd\F[]
+.RS 4
+Sets user\'s home directory, and related variables\&. If NIS/YP is install, that will be used as well\&.
+.RE
+.PP
+\FC@withetcdir@/maildroprc\F[]
+.RS 4
+Global filtering instructions for delivery mode\&.
+.RE
+.PP
+\FC/var/mail\F[]
+.RS 4
+System mailbox (actual directory defined by the system administrator)\&.
+.RE
+.PP
+\FC/usr/lib/sendmail\F[]
+.RS 4
+Program to forward mail (exact program defined by the system administrator)\&.
+.RE
+.PP
+\FC$HOME/\&.mailfilter\F[]
+.RS 4
+Filtering instructions in delivery mode\&.
+.RE
+.PP
+\FC$HOME/\&.mailfilters\F[]
+.RS 4
+Directory containing files used in special embedded mode\&.
+.RE
+.SH "SEE ALSO"
+.PP
+
+\m[blue]\fB\fBlockmail\fR(1)\fR\m[]\&\s-2\u[15]\d\s+2,
+\m[blue]\fB\fBmaildropfilter\fR(7)\fR\m[]\&\s-2\u[16]\d\s+2,
+\m[blue]\fB\fBmakedat\fR(1)\fR\m[]\&\s-2\u[17]\d\s+2,
+\m[blue]\fB\fBmaildropgdbm\fR(7)\fR\m[]\&\s-2\u[9]\d\s+2,
+\m[blue]\fB\fBmaildropex\fR(7)\fR\m[]\&\s-2\u[18]\d\s+2,
+\m[blue]\fB\fBreformail\fR(1)\fR\m[]\&\s-2\u[19]\d\s+2,
+\m[blue]\fB\fBmakemime\fR(1)\fR\m[]\&\s-2\u[20]\d\s+2,
+\m[blue]\fB\fBreformime\fR(1)\fR\m[]\&\s-2\u[21]\d\s+2,
+\fBegrep\fR(1),
+\fBgrep\fR(1), ,
+\m[blue]\fB\fBcourier\fR(8)\fR\m[]\&\s-2\u[22]\d\s+2,
+\fBsendmail\fR(8),
+\m[blue]\fBhttp://www\&.qmail\&.org\fR\m[]\&.
+.SH "Notes"
+.IP " 1." 4
+Courier
+.RS 4
+\%http://www.courier-mta.org
+.RE
+.IP " 2." 4
+Qmail
+.RS 4
+\%http://www.qmail.org
+.RE
+.IP " 3." 4
+"Environment"
+.RS 4
+\%[set $man.base.url.for.relative.links]/maildropfilter.html#environment
+.RE
+.IP " 4." 4
+"Variable substitution"
+.RS 4
+\%[set $man.base.url.for.relative.links]/maildropfilter.html#varsubst
+.RE
+.IP " 5." 4
+is passed the -m or the -M option.
+.RS 4
+\%[set $man.base.url.for.relative.links]/#options
+.RE
+.IP " 6." 4
+cc
+.RS 4
+\%[set $man.base.url.for.relative.links]/maildropfilter.html#cc
+.RE
+.IP " 7." 4
+dotlock
+.RS 4
+\%[set $man.base.url.for.relative.links]/maildropfilter.html#dotlock
+.RE
+.IP " 8." 4
+flock
+.RS 4
+\%[set $man.base.url.for.relative.links]/maildropfilter.html#flock
+.RE
+.IP " 9." 4
+gdbmopen
+.RS 4
+\%[set $man.base.url.for.relative.links]/maildropgdbm.html
+.RE
+.IP "10." 4
+log
+.RS 4
+\%[set $man.base.url.for.relative.links]/maildropfilter.html#log
+.RE
+.IP "11." 4
+to
+.RS 4
+\%[set $man.base.url.for.relative.links]/maildropfilter.html#to
+.RE
+.IP "12." 4
+xfilter
+.RS 4
+\%[set $man.base.url.for.relative.links]/maildropfilter.html#xfilter
+.RE
+.IP "13." 4
+echo
+.RS 4
+\%[set $man.base.url.for.relative.links]/maildropfilter.html#echo
+.RE
+.IP "14." 4
+include
+.RS 4
+\%[set $man.base.url.for.relative.links]/maildropfilter.html#include
+.RE
+.IP "15." 4
+\fBlockmail\fR(1)
+.RS 4
+\%[set $man.base.url.for.relative.links]/lockmail.html
+.RE
+.IP "16." 4
+\fBmaildropfilter\fR(7)
+.RS 4
+\%[set $man.base.url.for.relative.links]/maildropfilter.html
+.RE
+.IP "17." 4
+\fBmakedat\fR(1)
+.RS 4
+\%[set $man.base.url.for.relative.links]/makedat.html
+.RE
+.IP "18." 4
+\fBmaildropex\fR(7)
+.RS 4
+\%[set $man.base.url.for.relative.links]/maildropex.html
+.RE
+.IP "19." 4
+\fBreformail\fR(1)
+.RS 4
+\%[set $man.base.url.for.relative.links]/reformail.html
+.RE
+.IP "20." 4
+\fBmakemime\fR(1)
+.RS 4
+\%[set $man.base.url.for.relative.links]/makemime.html
+.RE
+.IP "21." 4
+\fBreformime\fR(1)
+.RS 4
+\%[set $man.base.url.for.relative.links]/reformime.html
+.RE
+.IP "22." 4
+\fBcourier\fR(8)
+.RS 4
+\%[set $man.base.url.for.relative.links]/courier.html
+.RE

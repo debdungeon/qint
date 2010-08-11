@@ -1,0 +1,47 @@
+subfd(3)                                                              subfd(3)
+
+
+
+NNAAMMEE
+       subfd - standard input, output, error for substdio
+
+SSYYNNTTAAXX
+       ##iinncclluuddee <<ssuubbffdd..hh>>
+
+       substdio *ssuubbffddiinn;
+       substdio *ssuubbffddoouutt;
+       substdio *ssuubbffddeerrrr;
+
+       int ssuubbffdd__rreeaadd(_f_d,_b_u_f,_l_e_n);
+
+       substdio *ssuubbffddiinnssmmaallll;
+       substdio *ssuubbffddoouuttssmmaallll;
+
+       int ssuubbffdd__rreeaaddssmmaallll(_f_d,_b_u_f,_l_e_n);
+
+       int _f_d;
+       char *_b_u_f;
+       int _l_e_n;
+
+DDEESSCCRRIIPPTTIIOONN
+       ssuubbffddeerrrr writes data to descriptor 2.
+
+       ssuubbffddoouutt writes data to descriptor 1.
+
+       ssuubbffddiinn reads data from descriptor 0.  It coordinates with ssuubbffddoouutt: it
+       flushes ssuubbffddoouutt before refilling its buffer.  This eliminates the need
+       for  ssuubbffddoouutt  flushing  in most programs.  To set up the same flushing
+       mechanism for another input descriptor,  use  ssuubbffdd__rreeaadd  in  place  of
+       rreeaadd.
+
+       ssuubbffddoouuttssmmaallll, ssuubbffdd__rreeaaddssmmaallll, and ssuubbffddiinnssmmaallll behave the same way as
+       ssuubbffddoouutt,  ssuubbffdd__rreeaadd,  and  ssuubbffddiinn,  except  that  they   use   small
+       (256-byte) buffers.  This is appropriate for programs that read data in
+       small chunks.
+
+SSEEEE AALLSSOO
+       substdio(3)
+
+
+
+                                                                      subfd(3)

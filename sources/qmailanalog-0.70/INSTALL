@@ -1,0 +1,25 @@
+Like any other piece of software (and information generally),
+qmailanalog comes with NO WARRANTY.
+
+
+Things you have to decide before starting:
+
+* The qmailanalog home directory, normally /usr/local/qmailanalog. To
+change this directory, edit conf-home now.
+
+
+How to install:
+
+ 1. Compile the programs and create the formatted man pages:
+       % make
+
+ 2. Install the programs and man pages:
+       # make setup check
+
+
+See /usr/local/qmailanalog/doc/* for information on using qmailanalog.
+
+
+That's it! To report success:
+       % ( echo 'First M. Last'; cat `cat SYSDEPS` ) | mail djb-qst@cr.yp.to
+Replace First M. Last with your name.

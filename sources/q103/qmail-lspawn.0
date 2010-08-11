@@ -1,0 +1,34 @@
+qmail-lspawn(8)                                                qmail-lspawn(8)
+
+
+
+NNAAMMEE
+       qmail-lspawn - schedule local deliveries
+
+SSYYNNOOPPSSIISS
+       qqmmaaiill--llssppaawwnn _d_e_f_a_u_l_t_d_e_l_i_v_e_r_y
+
+DDEESSCCRRIIPPTTIIOONN
+       qqmmaaiill--llssppaawwnn  reads a series of local delivery commands from descriptor
+       0, invokes qqmmaaiill--llooccaall  to  perform  the  deliveries,  and  prints  the
+       results  to  descriptor 1.  It passes _d_e_f_a_u_l_t_d_e_l_i_v_e_r_y to qqmmaaiill--llooccaall as
+       the default delivery instruction.
+
+       qqmmaaiill--llssppaawwnn invokes qqmmaaiill--llooccaall asynchronously, so the results may not
+       be in the same order as the commands.
+
+       For  each  recipient  address,  qqmmaaiill--llssppaawwnn finds out which local user
+       controls that address.  It first checks the qqmmaaiill--uusseerrss  mechanism;  if
+       the  address is not listed there, it invokes qqmmaaiill--ggeettppww.  qqmmaaiill--llssppaawwnn
+       then runs qqmmaaiill--llooccaall under the user’s uid and gid.  It does not set up
+       any supplementary groups.
+
+       qqmmaaiill--llssppaawwnn treats an empty mailbox name as a trash address.
+
+SSEEEE AALLSSOO
+       envelopes(5),  qmail-users(5),  qmail-getpw(8),  qmail-send(8),  qmail-
+       local(8)
+
+
+
+                                                               qmail-lspawn(8)

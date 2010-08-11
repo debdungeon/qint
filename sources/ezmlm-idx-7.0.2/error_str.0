@@ -1,0 +1,24 @@
+error_str(3)                                                      error_str(3)
+
+
+
+NNAAMMEE
+       error_str - names for syscall error codes
+
+SSYYNNTTAAXX
+       ##iinncclluuddee <<eerrrroorr..hh>>
+
+       char *eerrrroorr__ssttrr(_e);
+
+       int _e;
+
+DDEESSCCRRIIPPTTIIOONN
+       eerrrroorr__ssttrr  returns  a printable string describing syscall error code _e.
+       Normally _e is eerrrrnnoo.
+
+SSEEEE AALLSSOO
+       error(3)
+
+
+
+                                                                  error_str(3)

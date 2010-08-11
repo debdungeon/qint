@@ -1,0 +1,498 @@
+ezmlm-make(1)                                                    ezmlm-make(1)
+
+
+
+NNAAMMEE
+       ezmlm-make - create a new mailing list
+
+SSYYNNOOPPSSIISS
+       eezzmmllmm--mmaakkee  [  --++  ][ --aa....zzAABBDD....ZZ ][ --CC0033....99 aarrgg ] _d_i_r [ _d_o_t _l_o_c_a_l _h_o_s_t
+       _[_d_i_g_e_s_t_c_o_d_e_] ]
+
+DDEESSCCRRIIPPTTIIOONN
+       eezzmmllmm--mmaakkee sets up a new mailing list, _l_o_c_a_l@@_h_o_s_t, along  with  several
+       extra addresses to handle administrative requests.
+
+       All  mailing  list  information is stored in a new directory, _d_i_r.  _d_i_r
+       must be an absolute pathname, starting with a slash.  _d_o_t  must  be  an
+       absolute  file name starting with a slash. Arguments other than _d_i_r may
+       be omitted when editing an existing list, using the --ee  or  --++  options
+       (see below).
+
+       eezzmmllmm--mmaakkee  is  controlled  by a template, ..eezzmmllmmrrcc.  Described here is
+       the behavior with the default template file.  eezzmmllmm--mmaakkee will  print  a
+       warning  message  before  continuing,  if  the ezmlmrc version does not
+       match the eezzmmllmm--mmaakkee version.
+
+       eezzmmllmm--mmaakkee aallssoo ccrreeaatteess _d_i_r//ccoonnffiigg, where it stores  all  configuration
+       information.  By  reading  this  file,  you can rapidly get information
+       about how the list is set up.  eezzmmllmm--mmaakkee when used with the --ee  switch
+       will  read  information from this file. Thus, when using eezzmmllmm--mmaakkee --ee,
+       you only need to specify the desired switches and switch arguments  and
+       _d_i_r.   With  the --++ switch all switches become sticky, i.e. the default
+       for all switches (and command line arguments) becomes the switches  and
+       arguments  active  for  the  list to be edited. Note that the choice of
+       config file also is sticky, except when running eezzmmllmm--mmaakkee as root.
+
+       eezzmmllmm--mmaakkee sets up  four  ..qqmmaaiill  files:  _d_o_t,  _d_o_t--oowwnneerr,  _d_o_t--rreettuurrnn--
+       ddeeffaauulltt,  and  _d_o_t--ddeeffaauulltt.   You  should  make  sure  that messages to
+       _l_o_c_a_l@@_h_o_s_t, _l_o_c_a_l--oowwnneerr@@_h_o_s_t,  etc.  are  controlled  by  these  ..qqmmaaiill
+       files.
+
+       For  message  moderated lists, eezzmmllmm--mmaakkee sets up two additional ..qqmmaaiill
+       files: _d_o_t--aacccceepptt--ddeeffaauulltt and _d_o_t--rreejjeecctt--ddeeffaauulltt.
+
+       For digested lists, eezzmmllmm--mmaakkee sets up another two  ..qqmmaaiill  file:  _d_o_t--
+       ddiiggeesstt--rreettuurrnn--ddeeffaauulltt and _d_o_t--ddiiggeesstt--oowwnneerr.
+
+       If _d_i_g_e_s_t_c_o_d_e is specified, digest creation by eezzmmllmm--ggeett((11)) via trigger
+       messages to the _l_o_c_a_l//@@_h_o_s_t--ddiigg.._d_i_g_e_s_t_c_o_d_e address is enabled.
+
+       By default, eezzmmllmm--mmaakkee sets up lists to  add  a  ‘‘X-No-Archive:  yes’’
+       header  to  outgoing messages.  Public archiving servers will interpret
+       this header as a request not to archive messages from the list. It this
+       in  not  what  you  desire,  remove this header from eezzmmllmmrrcc for global
+       effects, or from _d_i_r//hheeaaddeerraadddd for the specific list.
+
+       Typical use of eezzmmllmm--mmaakkee by a normal user:
+
+          ezmlm-make ~joe/SOS ~joe/.qmail-sos joe-sos isp.net
+
+       Typical use of eezzmmllmm--mmaakkee by aalliiaass:
+
+          ezmlm-make ~alias/SOS ~alias/.qmail-sos sos isp.net
+          chown -R alias ~alias/SOS
+
+       Typical use of eezzmmllmm--mmaakkee by a normal user enabling automatic digests:
+
+          ezmlm-make -d ~joe/SOS ~joe/.qmail-sos joe-sos isp.net
+
+       Typical use of eezzmmllmm--mmaakkee to change an existing list in ~joe/SOS  to  a
+       message  moderated  list  with  remote administration, and enabling the
+       remote administrator(s) to retrieve  a  subscriber  list  and  to  edit
+       _d_i_r//tteexxtt files (digest are still enabled):
+
+          ezmlm-make -emrldn ~joe/SOS
+
+       Mail  can arrive at any time!  For safe editing, turn on the sticky bit
+       of the home directory before editing the list setup, then turn  it  off
+       again (see ddoott--qqmmaaiill((55))).
+
+       Moderator addresses are added with
+
+         ezmlm-sub ~joe/SOS mod mod1@host1 mod2@host2 ...
+
+       eezzmmllmm--mmaakkee also creates the necessary text files in _d_i_r//tteexxtt//.
+
+       eezzmmllmm--mmaakkee  has  a  large  number of switches to control all aspects of
+       list generation.  Only defaults or a small subset of switches are  nec‐
+       essary  for  most  list  setups. Other options are present primarily to
+       allow a external CGI script or other graphical user  interface  to  use
+       eezzmmllmm--mmaakkee to manipulate ezmlm list setups.
+
+VVIIRRTTUUAALL DDOOMMAAIINNSS
+       To  create  the  list  ‘‘tl@virtual.dom’’ where ‘‘virtual.dom’’ is con‐
+       trolled by ‘‘vu’’ (virtual.dom:vu), change identity to ‘‘vu’’ or  chown
+       files to that user after:
+
+            ezmlm-make ~vu/dir ~vu/.qmail-tl tl virtual.dom
+
+       Thus, create the list exactly as for a list under ‘‘alias’’.
+
+OOPPTTIIOONNSS
+       All  eezzmmllmm--mmaakkee  letter  switches  except  --vv  and --VV are available for
+       interpretation via _e_z_m_l_m_r_c.  Switches --ee, --EE, --cc, and --CC  have  special
+       meaning  within  the program.  _e_z_m_l_m_r_c customization should respect the
+       function of the switches described here.
+
+       --++   Switches currently active for the list will be used,  as  modified
+            by  the current command line.  Thus, --++ makes switches ‘‘sticky’’.
+            By default, only switches specified on the  current  command  line
+            will  be used.  This switch implies --ee as it is meaningless except
+            in edit mode. Note that the config file choice (see --cc and --CC)  is
+            also  sticky.   eezzmmllmmrrcc((55))  is set up so that most text files (and
+            _D_I_R//hheeaaddeerraadddd, _D_I_R//hheeaaddeerrkkeeeepp, and _D_I_R//hheeaaddeerrrreemmoovvee) are not over‐
+            written  if they already exist so as to preserve manual customiza‐
+            tions. If _l_o_c_a_l is specified eezzmmllmm--mmaakkee  overrides  this  behavior
+            and  all  files  are  rewritten.  You can also force eezzmmllmm--mmaakkee to
+            rewrite all files by using --++++.
+
+       --aa   (Default.) Archived and configured with eezzmmllmm--ggeett((11))  for  archive
+            access.   eezzmmllmm--mmaakkee  will  touch  _d_i_r//aarrcchhiivveedd and _d_i_r//iinnddeexxeedd so
+            that eezzmmllmm--sseenndd((11)) will archive new messages.
+
+       --AA   Not archived.
+
+       --bb   Block archive. Only moderators are allowed to access the  archive.
+
+       --BB   (Default.)   Archive access is open to anyone or subscribers only,
+            depending on the --gg switch.
+
+       --cc   Config.  Use _._e_z_m_l_m_r_c (see CONFIGURATION) from the directory where
+            _d_o_t  resides.   eezzmmllmm--mmaakkee  otherwise uses the system wide ezmlmrc
+            file (normally _/_e_t_c_/_e_z_m_l_m_/_d_e_f_a_u_l_t_/_e_z_m_l_m_r_c).   The  --cc  switch  may
+            cause you to execute eezzmmllmm--mmaakkee based on a configuration file con‐
+            trolled by another user.  eezzmmllmm--mmaakkee does not allow periods in any
+            tag  to  restrict all actions to within _d_i_r.  Be careful with this
+            option setting up lists for other users, especially  when  running
+            eezzmmllmm--mmaakkee as root.
+
+       --CC _a_r_g
+            Like --cc, but use file _a_r_g as the ezmlmrc file.  Use --CC _’_’ to over‐
+            ride a default when using --++ or --ee.  If the given path is a direc‐
+            tory  instead  of  a  file,  the  actual  ezmlmrc file is taken as
+            _a_r_g_/_e_z_m_l_m_r_c, and the other ezmlm-idx programs will use the  direc‐
+            tory to look up files (such as text files) that are not present in
+            the list directory.
+
+       --dd   Digest.  eezzmmllmm--mmaakkee will set up the _l_o_c_a_l--ddiiggeesstt@@hhoosstt digest  list
+            to  disseminate  digest  of the list messages. By default, this is
+            done when 30 messages, 48 hours, or 64 kbytes of message body text
+            have  accumulated  since  the  last digest. Edit the _d_i_r//ddiiggccoouunntt,
+            _d_i_r//ddiiggssiizzee, or _d_i_r//ddiiggttiimmee files to override these defaults.  See
+            eezzmmllmm--ttssttddiigg((11)) and eezzmmllmm--ggeett((11)) for more info.
+
+       --DD   (Default.)  No digest.  Do not set up the digest list.
+
+       --ee   Edit.   eezzmmllmm--mmaakkee  will  remove  links  before  creating them and
+            accept if directories to be created  are  already  present.   will
+            also  (via  entries  in _e_z_m_l_m_r_c) remove flags that are present but
+            not desired for the current list.  Thus, this option can  be  used
+            to reconfigure existing lists without affecting moderator and sub‐
+            scriber lists or message archive. All desired eezzmmllmm--mmaakkee  switches
+            need to be specified. To make all switches sticky, i.e. only spec‐
+            ify the ones changed from the previous  setup,  use  --++.   Command
+            line  arguments  other  than  _d_i_r can be omitted.  In the unlikely
+            case where _d_o_t is changed, you must manually remove the old links.
+            Mail can arrive at any time!  For safe editing, turn on the sticky
+            bit of the home directory before using  the  edit  function,  then
+            turn  it  off  again  (see ddoott--qqmmaaiill((55))).  eezzmmllmmrrcc((55)) is set up so
+            that most  text  files  (and  _D_I_R//hheeaaddeerraadddd,  _D_I_R//hheeaaddeerrkkeeeepp,  and
+            _D_I_R//hheeaaddeerrrreemmoovvee)  are not overwritten if they already exist so as
+            to preserve manual customizations. If _l_o_c_a_l  is  specified  eezzmmllmm--
+            mmaakkee  overrides this behavior and all files are rewritten. You can
+            also force eezzmmllmm--mmaakkee to rewrite all files by using --eeee.
+
+       --EE   (Default.)  No edit.  eezzmmllmm--mmaakkee  will  abort  if  directories  or
+            links to be created already exist. This prevents accidental recon‐
+            figuration of a pre-existing list, since the first  action  is  to
+            create the list directory.
+
+       --ff   Prefix.  eezzmmllmm--mmaakkee will set up the list so that the outgoing sub‐
+            ject will be prefixed with the list name.
+
+       --FF   (Default.)  No prefix.
+
+       --gg   Guard archive.  Archive access requests from unrecognized  SENDERs
+            will  be  rejected.   This  restriction is safe, since replies are
+            sent to the SENDER address.
+
+       --GG   (Default.)  Do not guard archive.  Archive access request from any
+            SENDER will be serviced.
+
+       --hh   Help  subscription.  Subscriptions  do  not  require confirmation.
+            Strongly recommended  against,  since  anyone  can  subscribe  any
+            address,  but may be useful for some subscription moderated lists.
+
+       --HH   (Default.)  Subscription requires confirmation by reply to a  mes‐
+            sage sent to the subscription address.
+
+       --ii   Indexed  for  WWW archive access.  eezzmmllmm--mmaakkee will create the list
+            so that eezzmmllmm--aarrcchhiivvee((11)) is invoked to maintain an index  suitable
+            for use by eezzmmllmm--ccggii((11)).
+
+       --II   (Default.)  The list is created without eezzmmllmm--aarrcchhiivvee((11)).
+
+       --jj   Jump off. Unsubscribe does not require confirmation. Strongly rec‐
+            ommended against, since anyone can unsubscribe  any  address,  but
+            may be useful in some situations.
+
+       --JJ   (Default.)  Unsubscribe requires confirmation by a reply to a mes‐
+            sage sent to the subscription address.
+
+       --kk
+
+       --KK   Ignored for backwards compatibility.   The  _d_i_r//ddeennyy//  subscribers
+            directory  is  always  created  to  allow  denying  messages  from
+            selected addresses.  This is useful in  combination  with  the  --uu
+            switch  to  temporarily  restrain offenders, such as misconfigured
+            auto-responders or automatic spammers.  It can  also  be  used  in
+            combination with --mm to filter out SENDERs from whom the moderators
+            do not want to see posts (again, bad re-mailers and spammers  come
+            to mind).
+
+            To add/remove blacklisted addresses:
+
+            eezzmmllmm--ssuubb _d_i_r ddeennyy _b_a_d_@_h_o_s_t
+
+            eezzmmllmm--uunnssuubb _d_i_r ddeennyy _b_a_d_@_h_o_s_t
+
+
+       --ll   List  subscribers.   eezzmmllmm--mmaakkee  sets  up  the list so that remote
+            administrators can request a subscriber list, and search the  sub‐
+            scriber log.
+
+       --LL   (Default.)  The subscriber list cannot be obtained.
+
+       --mm   Message  moderation.  (Please note that the --uu sswwiittcchh mmooddiiffiieess the
+            action of this switch.)  eezzmmllmm--mmaakkee  will  touch  _d_i_r//mmooddppoosstt  and
+            create  _d_i_r//mmoodd//  and  _d_i_r//mmoodd//ssuubbssccrriibbeerrss//,  where  the moderator
+            addresses are stored.  eezzmmllmm--mmaakkee also  creates  _d_i_r//mmoodd//ppeennddiinngg//,
+            _d_i_r//mmoodd//aacccceepptteedd//,  and  _d_i_r//mmoodd//rreejjeecctteedd//.  These directories are
+            used to queue messages awaiting moderation.   _d_i_r//eeddiittoorr  will  be
+            set  up  to  run  eezzmmllmm--ssttoorree((11)) to store incoming messages in the
+            moderation queue and send moderation requests to  the  moderators.
+            _d_i_r//mmooddeerraattoorr will be set up to run eezzmmllmm--mmooddeerraattee to process mod‐
+            erator _a_c_c_e_p_t or _r_e_j_e_c_t requests.
+
+            To add/remove moderators:
+
+            eezzmmllmm--ssuubb _d_i_r mmoodd _m_o_d_e_r_a_t_o_r_@_h_o_s_t
+
+            eezzmmllmm--uunnssuubb _d_i_r mmoodd _m_o_d_e_r_a_t_o_r_@_h_o_s_t
+
+
+       --MM   (Default.)  Message posting is not moderated.
+
+       --nn   New text file.  eezzmmllmm--mmaakkee sets up the list to allow remote admin‐
+            istrators to edit files in _d_i_r//tteexxtt//.
+
+       --NN   (Default.)  Not new text file.  Text file editing not allowed.
+
+       --oo   Others  rejected.   Posts from addresses other than moderators are
+            rejected. This is applicable to message moderated lists only  (see
+            --mm).  The switch has no effect on other lists.
+
+       --OO   (Default.)   Others  not rejected.  For moderated lists, all posts
+            are forwarded to the moderators.  The switch has effects  only  on
+            message moderated lists.
+
+       --pp   (Default.)  Public.   eezzmmllmm--mmaakkee  will  touch  _d_i_r//ppuubblliicc, so that
+            eezzmmllmm--mmaannaaggee((11)) will respond to administrative requests and eezzmmllmm--
+            ggeett will allow archive retrieval.
+
+       --PP   Private.   eezzmmllmm--mmaannaaggee((11)) and eezzmmllmm--ggeett((11)) will allow only digest
+            creation, remote administration, and archive retrieval  by  remote
+            administrators, (if the list is configured with these options).
+
+       --qq
+
+       --QQ   Ignored  for  backwards  compatibility.   The  request  address is
+            always  serviced.   Commands  sent  in  the  subject   to   _l_o_c_a_l--
+            rreeqquueesstt@@_h_o_s_t are processed by eezzmmllmm--rreeqquueesstt((11)).
+
+       --rr   Remote  admin.  eezzmmllmm--mmaakkee enables remote administration by touch‐
+            ing _d_i_r//rreemmoottee.  Moderator(s) can unsubscribe  and  subscribe  any
+            address.   See the --mm option on how moderator addresses are stored
+            and manipulated.
+
+       --RR   (Default.) No remote administration.
+
+       --ss   Subscription moderation.  eezzmmllmm--mmaakkee enables subscription  modera‐
+            tion  by touching _d_i_r//mmooddssuubb.  This affects subscriptions for both
+            the main list and the digest list.  See the --mm option on how  mod‐
+            erator addresses are stored and manipulated.
+
+       --SS   (Default.) Subscriptions are not moderated.
+
+       --tt   Trailer.   eezzmmllmm--mmaakkee  will  create _d_i_r//tteexxtt//ttrraaiilleerr to set up the
+            list to add a trailer to outgoing messages.
+
+       --TT   No trailer.  (Default.)
+
+       --uu   User posts only.  eezzmmllmm--mmaakkee sets up the list so  that  posts  and
+            archive  access is restricted to subscribers.  These are addresses
+            subscribed to the main list, the digest, or added manually to  the
+            address  database  in _d_i_r//aallllooww// which accommodates addresses from
+            e.g. subscribers working from an address  other  than  their  sub‐
+            scriber address.
+
+            Posts  from  unrecognized SENDER addresses will be rejected.  This
+            is relatively easily defeated for posts.  More secure alternatives
+            are  message  moderated  lists  configured  with the eezzmmllmm--mmaakkee --mm
+            switch (without the --uu switch).
+
+            There is no reason to combine of SENDER checks on posts with  mes‐
+            sage  moderation. Therefore, the combination of the --uu switch with
+            the --mm switch is used for a configuration with SENDER restrictions
+            (like with --uu alone), with the difference that posts from non-sub‐
+            scribers will be sent for moderation instead  of  being  rejected.
+            This  allows  the list admin to let non-subscribers post occasion‐
+            ally, as well as to catch subscribers posting from  non-subscriber
+            addresses.
+
+       --UU   (Default.)  Do not restrict posts based on SENDER address.
+
+       --vv   Display eezzmmllmm--mmaakkee version information.
+
+       --VV   Display eezzmmllmm--mmaakkee version information.
+
+       --ww   Remove  the  eezzmmllmm--wwaarrnn((11))  invocations from the list setup. It is
+            assumed  that  eezzmmllmm--wwaarrnn((11))  for  both  _l_o_c_a_l_@_h_o_s_t   and   _l_o_c_a_l--
+            ddiiggeesstt@@_h_o_s_t  will  be  run  by other means, such as crond.  As the
+            main list will have only sublists as subscribers, it is  desirable
+            to  log  bounces  and  feedback  messages  rather than to remove a
+            bouncing subscriber.
+
+       --WW   (Default.)  No address restriction. Normal  use  of  eezzmmllmm--wwaarrnn((11))
+            and eezzmmllmm--rreettuurrnn((11)).
+
+       --xx   eXtra.   eezzmmllmm--mmaakkee  will  configure  the  list with a few extras:
+            _d_i_r//mmiimmeerreemmoovvee will be configured to  strip  annoying  mime  parts
+            such  as excel spreadsheets, rtf text, html text etc from the mes‐
+            sages. Messages consisting solely of  this  Content-type  will  be
+            rejected. See eezzmmllmm--sseenndd((11)) and eezzmmllmm--rreejjeecctt((11)) for more info.
+
+       --yy   sender  confirmation.  eezzmmllmm--mmaakkee will configure the list so post‐
+            ing requires sender confirmation.
+
+       --YY   (Default.) No sender confirmation is required.
+
+
+
+       --00 _m_a_i_n_l_i_s_t_@_h_o_s_t
+            Make the list a sublist of list _m_a_i_n_l_i_s_t_@_h_o_s_t.
+
+       --33 _f_r_o_m_a_r_g
+            eezzmmllmm--mmaakkee sets up the list to replace the ‘‘From:’’ header
+            of the message with ‘‘From: _f_r_o_m_a_r_g’’.
+
+       --55 _o_w_n_e_r_@_h_o_s_t
+            eezzmmllmm--mmaakkee will configure the list to forward mail directed
+            to the list owner to _o_w_n_e_r_@_h_o_s_t.
+
+       --66 _p_l_u_g_i_n_:_h_o_s_t_:_p_o_r_t_:_u_s_e_r_:_p_a_s_s_w_o_r_d_:_d_a_t_a_b_:_t_a_b_l_e
+            Subscriber database info. Use  the  database  plugin  named
+            _p_l_u_g_i_n  which connects to _h_o_s_t (default localhost), on port
+            number _p_o_r_t (default port for  SQL  server)  as  _u_s_e_r  with
+            _p_a_s_s_w_o_r_d using database _d_a_t_a_b (default "ezmlm") and the ta‐
+            ble root name _t_a_b_l_e (default "ezmlm")
+
+       --77 _/_m_s_g___m_o_d___p_a_t_h
+            Make _/_p_a_t_h the path to the database for message moderators,
+            if   the   list   is   set   up   for  message  moderation.
+            _/_m_s_g___m_o_d___p_a_t_h must be an absolute pathname, starting with a
+            slash. If not, it will be ignored.
+
+       --88 _/_s_u_b___m_o_d___p_a_t_h
+            Make  _/_s_u_b___m_o_d___p_a_t_h  the path to the database for subscrip‐
+            tion moderators, if the list is  set  up  for  subscription
+            moderation.   _/_s_u_b___m_o_d___p_a_t_h  must  be an absolute pathname,
+            starting with a slash. If not, it will be ignored.
+
+       --99 _/_r_e_m___a_d_m___p_a_t_h
+            Make _/_p_a_t_h the path to the database for remote  administra‐
+            tors,  if  the  list  is  set up for remote administration.
+            _/_r_e_m___a_d_m___p_a_t_h must be an absolute pathname, starting with a
+            slash. If not, it will be ignored.
+
+LLIISSTT EEDDIITTIINNGG
+       When  eezzmmllmm--mmaakkee  is  used  with the --ee switch, and the list was
+       previously created or edited with a new (ezmlm-idx >= 0.23) ver‐
+       sion of eezzmmllmm--mmaakkee, all arguments other than _d_i_r can be omitted.
+       In this case, arguments  will  be  read  from  _d_i_r//ccoonnffiigg.   The
+       appropriate  flags  must  always  be specified. To override _d_o_t,
+       _l_o_c_a_l, _h_o_s_t, or _c_o_d_e, all arguments must be specified.
+
+CCOONNFFIIGGUURRAATTIIOONN
+       This version of eezzmmllmm--mmaakkee is template driven. The template file
+       consists  of  plain  text with four types of tags. Both start in
+       the first position of the line.  No other text is allowed on the
+       same line. For security reasons, no periods are allowed anywhere
+       in a tag.  Any line with a ‘‘#’’ in position 1 is ignored, as is
+       any text preceding the first tag.
+
+       <<//ffiilleennaammee##aaII//>>
+              The  following text will be copied to _d_i_r//ffiilleennaammee if the
+              options specified after the ‘‘#’’  are  active,  in  this
+              case  _a_r_c_h_i_v_e_d  and not _i_n_d_e_x_e_d.  Any number of flags can
+              be specified. This is used to adapt the  files  and  mes‐
+              sages  to the type of list created. If no flags are used,
+              the ‘‘#’’ can be omitted. If the file name is the same as
+              the  previous  tag, or if it is omitted, the text will be
+              added to the previous file.  When a new  file  is  opened
+              the previous file is closed. Attempts to add more text to
+              a already closed file overwrites its contents.
+
+              An alternative to specify that a flag, e.g. ‘‘4’’  should
+              not  be  active  is to prefix the switch with ‘‘^’’, e.g.
+              use ‘‘^4’’.  The ‘‘E’’ flag is treated in a special  man‐
+              ner. When the list is being edited, it evaluates to false
+              if the file already exists, true if it  does  not.  Thus,
+              files using this condition are not overwritten when edit‐
+              ing. This is useful for files that  you  frequently  cus‐
+              tomize manually.
+
+       <<//--ffiilleennaammee##eeAA//>>
+              _d_i_r//ffiilleennaammee  will  be  erased,  if the options after the
+              ‘‘#’’ are active, in this case _n_o_t _a_r_c_h_i_v_e_d and _e_d_i_t.
+
+       <<//++ddiirreeccttoorryy##aaII//>>
+              The directory ‘‘directory’’ is created if the flags spec‐
+              ified  are active, in this case _a_r_c_h_i_v_e_d and not _i_n_d_e_x_e_d.
+              If no flags are specified, the ‘‘#’’ can be omitted.
+
+       <<//::lliinnkk//ddiirreeccttoorryy##aaII//>>
+              ddoott_-_l_i_n_k is symlinked to _d_i_r_/_d_i_r_e_c_t_o_r_y if the flags spec‐
+              ified  are active, in this case _a_r_c_h_i_v_e_d and not _i_n_d_e_x_e_d.
+              If no flags are specified, the ‘‘#’’ can be omitted.
+
+       In addition, _l_o_c_a_l is substituted for <<##LL##>>,  the  part  of  _d_o_t
+       between  the first 2 hyphens (if any) for <<##11##>>, the part of _d_o_t
+       between the second and third hyphen (if any) for <<##22##>>, _h_o_s_t for
+       <<##HH##>>,  _d_i_r  for <<##DD##>>, _d_o_t for <<##TT##>>, _d_i_g_e_s_t_c_o_d_e for <<##CC##>>, the
+       set of all active flags for <<##FF##>>,  the  config  file  used  for
+       <<##XX##>>,  and the path to the eezzmmllmm binaries for <<##BB##>> anywhere in
+       the text. Other tags of this format are copied to the  files  as
+       is.
+
+       <<##ll##>>,  <<##hh##>>,  <<##nn##>>, <<##AA##>>, <<##RR##>>, will be substituted on-the-
+       fly where appropriate for the _l_o_c_a_l or _l_o_c_a_l--ddiiggeesstt  local  part
+       of  the  list  address,  the _h_o_s_t, the subscriber address or the
+       moderation accept address, the message number, and the subscrip‐
+       tion  reply  address or moderation reject address, respectively.
+       The use of <<##ll##>> is to allow the same text file to be  used  for
+       requests  pertaining  to both the main list and the digest list.
+       <<##hh##>> makes it possible  to  share  some  files  between  lists.
+       <<##nn##>>  is  defined only by programs where this makes sense, i.e.
+       eezzmmllmm--sseenndd((11)) and eezzmmllmm--ggeett((11))
+
+       In the absence of --ee and --++ switches, eezzmmllmm--mmaakkee will create the
+       list  directory  before processing the template file, and create
+       _d_i_r//kkeeyy after all other actions.
+
+       eezzmmllmm--mmaakkee will use  //eettcc//eezzmmllmm//ddeeffaauulltt//eezzmmllmmrrcc.   This  can  be
+       overridden with the --cc and --CC switches.
+
+BBUUGGSS
+       eezzmmllmm--mmaakkee deals with the template file as us-ascii.  Any occur‐
+       rence of the characters ‘‘</’’ at the beginning of a  line  will
+       disrupt  eezzmmllmm--mmaakkee  operation.  Any occurrence of tags with the
+       format ‘‘<#X#>’’ with with ’X’ being any digit, ’B’,  ’C’,  ’D’,
+       ’F’,  ’H’,  ’L’,  or ’T’ will be substituted by eezzmmllmm--mmaakkee.  Any
+       occurrence of a tag of this format with ’X’ being ’h’, ’l’, ’A’,
+       or  ’R’  will  be substituted by eezzmmllmm--ssttoorree and eezzmmllmm--mmaannaaggee at
+       run time.  eezzmmllmm--sseenndd will substitute tags with ’h’ and ’l’, and
+       tags  with  ’n’  will be replaced by the current message number.
+       eezzmmllmm--ggeett will substitute tags ‘‘<#h#>’’, ‘‘<#l#>’’ in the  same
+       way.  The  tag  ‘‘<#n#>’’ will be replaced by the digest message
+       number which is the number of the first message in the digest.
+
+       In practice, these character sequences are unlikely to occur  in
+       any  multi-byte  character set text. They also will not occur by
+       chance in single-byte character sets where  ’<’,  ’/’,  and  ’#’
+       retain their us-ascii codes.
+
+BBUUGGSS
+       eezzmmllmm--mmaakkee  cannot  deal with ezmlmrc lines containing NUL (they
+       will be truncated at the NUL). This needs to be fixed to make it
+       8-bit clean.
+
+SSEEEE AALLSSOO
+       ezmlm-clean(1),   ezmlm-get(1),   ezmlm-manage(1),  ezmlm-moder‐
+       ate(1),  ezmlm-send(1),  ezmlm-store(1),  ezmlm-sub(1),   ezmlm-
+       unsub(1), ezmlm(5)
+
+
+
+                                                                 ezmlm-make(1)

@@ -1,0 +1,68 @@
+qmail-users(5)                                                  qmail-users(5)
+
+
+
+NNAAMMEE
+       qmail-users - assign mail addresses to users
+
+OOVVEERRVVIIEEWW
+       The  file //vvaarr//qqmmaaiill//uusseerrss//aassssiiggnn assigns addresses to users. For exam‐
+       ple,
+
+          =joe.shmoe:joe:503:78:/home/joe:::
+
+       says that mail for jjooee..sshhmmooee should be delivered to user jjooee, with  uid
+       503 and gid 78, as specified by //hhoommee//jjooee//..qqmmaaiill.
+
+       Assignments  fed  to qqmmaaiill--nneewwuu will be used by qqmmaaiill--llssppaawwnn to control
+       qqmmaaiill--llooccaall’s   deliveries.    See   qqmmaaiill--nneewwuu(8).    A   change    to
+       //vvaarr//qqmmaaiill//uusseerrss//aassssiiggnn will have no effect until qqmmaaiill--nneewwuu is run.
+
+SSTTRRUUCCTTUURREE
+       //vvaarr//qqmmaaiill//uusseerrss//aassssiiggnn  is  a series of assignments, one per line.  It
+       ends with a line containing a single dot.  Lines must not contain  NUL.
+
+SSIIMMPPLLEE AASSSSIIGGNNMMEENNTTSS
+       A simple assignment is a line of the form
+
+          =local:user:uid:gid:homedir:dash:ext:
+
+       Here _l_o_c_a_l is an address; _u_s_e_r, _u_i_d, and _g_i_d are the account name, uid,
+       and gid of the user in charge of _l_o_c_a_l; and messages to _l_o_c_a_l  will  be
+       controlled by _h_o_m_e_d_i_r//..qqmmaaiill_d_a_s_h_e_x_t.
+
+       If  there  are  several  assignments for the same _l_o_c_a_l address, qqmmaaiill--
+       llssppaawwnn will use the first one.
+
+       _l_o_c_a_l is interpreted without regard to case.
+
+WWIILLDDCCAARRDD AASSSSIIGGNNMMEENNTTSS
+       A wildcard assignment is a line of the form
+
+          +loc:user:uid:gid:homedir:dash:pre:
+
+       This assignment applies to any address beginning  with  _l_o_c,  including
+       _l_o_c itself.  It means the same as
+
+          =locext:user:uid:gid:homedir:dash:preext:
+
+       for every string _e_x_t.
+
+       A  more  specific wildcard assignment overrides a less specific assign‐
+       ment, and a simple assignment overrides any wildcard  assignment.   For
+       example:
+
+          +:alias:7790:2108:/var/qmail/alias:-::
+          +joe-:joe:507:100:/home/joe:-::
+          =joe:joe:507:100:/home/joe:::
+
+       The address jjooee is handled by the third line; the address jjooee--ddiirreecctt is
+       handled by the second line; the address bbiillll is handled  by  the  first
+       line.
+
+SSEEEE AALLSSOO
+       qmail-pw2u(8), qmail-newu(8), qmail-lspawn(8)
+
+
+
+                                                                qmail-users(5)

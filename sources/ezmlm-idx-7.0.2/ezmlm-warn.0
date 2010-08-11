@@ -1,0 +1,71 @@
+ezmlm-warn(1)                                                    ezmlm-warn(1)
+
+
+
+NNAAMMEE
+       ezmlm-warn - send out bounce warnings
+
+SSYYNNOOPPSSIISS
+       eezzmmllmm--wwaarrnn [ --ddDD ][ --tt _t_i_m_e_o_u_t ][ --ll _l_o_c_k_o_u_t ] _d_i_r
+
+DDEESSCCRRIIPPTTIIOONN
+       eezzmmllmm--wwaarrnn  sends  out  warning messages for the mailing list stored in
+       _d_i_r.
+
+       eezzmmllmm--wwaarrnn scans _d_i_r//bboouunnccee//dd// for directories older than _t_i_m_e_o_u_t  days
+       ago  (see --tt).  The directories are created by eezzmmllmm--rreettuurrnn and contain
+       bounces.  If eezzmmllmm--wwaarrnn  sees  a  distribution  bounce  for  _b_o_x@@_d_o_m_a_i_n
+       received  more than _t_i_m_e_o_u_t days ago, it sends _b_o_x@@_d_o_m_a_i_n a list of all
+       the message numbers missed recently, and deletes  the  bounce.   If  it
+       sees  a  warning  bounce for _b_o_x@@_d_o_m_a_i_n received more than _t_i_m_e_o_u_t days
+       ago, it sends _b_o_x@@_d_o_m_a_i_n a probe, and deletes the bounce.
+
+       eezzmmllmm--wwaarrnn uses _d_i_r//bboouunnccee//llaassttdd to keep track of when it was last run.
+       If  insufficient time has passed (see --ll) eezzmmllmm--wwaarrnn exits without fur‐
+       ther action.
+
+       eezzmmllmm--wwaarrnn  keeps  files  with   the   bounced   message   numbers   in
+       _d_i_r//bboouunnccee//hh.   Expired  files  are  removed and _d_i_r//bboouunnccee//llaasstthh keeps
+       track of the last subdirectory scanned.
+
+       eezzmmllmm--wwaarrnn will not send a warning or probe to an address that  is  not
+       currently a subscriber.
+
+       If  neither  the  --dd  nor the --DD option is given to eezzmmllmm--wwaarrnn, it will
+       process bounces for both the main and digest lists.
+
+       eezzmmllmm--wwaarrnn reads _d_i_r//ccooppyylliinneess to determine how many lines of the orig‐
+       inal  message to copy into the outgoing message.  If this file is empty
+       or not present, a value of _0 is presumed, meaning that only the  header
+       is copied.
+
+       If _d_i_r//nnoowwaarrnn exists, eezzmmllmm--wwaarrnn exits without taking any action.
+
+OOPPTTIIOONNSS
+       --dd     process  bounces  only for the digest list.  Digest list bounces
+              are stored in _d_i_r//ddiiggeesstt//bboouunnccee// rather than in _d_i_r//bboouunnccee//.
+
+       --DD     Process bounces only for the main list.
+
+       --ll _l_o_c_k_o_u_t
+              eezzmmllmm--wwaarrnn will abort execution if it was run less than  _l_o_c_k_o_u_t
+              seconds ago. The default is _t_i_m_e_o_u_t _/ 50, which with the default
+              _t_i_m_e_o_u_t is 20,000 seconds (approx. 5.6 hours). There is no  rea‐
+              son  to use this switch, except for testing and possibly in com‐
+              bination with --tt..
+
+       --tt _t_i_m_e_o_u_t
+              Bounces received more than _t_i_m_e_o_u_t days ago are processed.  This
+              overrides  the default of 10 days and may possibly be useful for
+              very large busy lists. Also, a _t_i_m_e_o_u_t of zero can  be  used  to
+              send  a  warning  to  all  addresses for which a bounce has been
+              received and a probe for all addresses for which a  warning  has
+              bounces.  This is useful to rapidly clear out bouncing addresses
+              from a (low quality) address list.
+
+SSEEEE AALLSSOO
+       ezmlm-make(1), ezmlm-return(1), ezmlm(5)
+
+
+
+                                                                 ezmlm-warn(1)

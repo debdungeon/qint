@@ -1,0 +1,724 @@
+.\"  <!-- $Id: maildiracl.sgml,v 1.6 2009/05/10 14:48:33 mrsam Exp $ -->
+.\"  <!-- Copyright 2003-2009 Double Precision, Inc.  See COPYING for -->
+.\"  <!-- distribution information. -->
+.\"     Title: maildiracl
+.\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
+.\" Generator: DocBook XSL Stylesheets v1.74.0 <http://docbook.sf.net/>
+.\"      Date: 05/10/2009
+.\"    Manual: Double Precision, Inc.
+.\"    Source: Double Precision, Inc.
+.\"  Language: English
+.\"
+.TH "MAILDIRACL" "1" "05/10/2009" "Double Precision, Inc." "Double Precision, Inc."
+.\" -----------------------------------------------------------------
+.\" * (re)Define some macros
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" toupper - uppercase a string (locale-aware)
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.de toupper
+.tr aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ
+\\$*
+.tr aabbccddeeffgghhiijjkkllmmnnooppqqrrssttuuvvwwxxyyzz
+..
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" SH-xref - format a cross-reference to an SH section
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.de SH-xref
+.ie n \{\
+.\}
+.toupper \\$*
+.el \{\
+\\$*
+.\}
+..
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" SH - level-one heading that works better for non-TTY output
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.de1 SH
+.\" put an extra blank line of space above the head in non-TTY output
+.if t \{\
+.sp 1
+.\}
+.sp \\n[PD]u
+.nr an-level 1
+.set-an-margin
+.nr an-prevailing-indent \\n[IN]
+.fi
+.in \\n[an-margin]u
+.ti 0
+.HTML-TAG ".NH \\n[an-level]"
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+\." make the size of the head bigger
+.ps +3
+.ft B
+.ne (2v + 1u)
+.ie n \{\
+.\" if n (TTY output), use uppercase
+.toupper \\$*
+.\}
+.el \{\
+.nr an-break-flag 0
+.\" if not n (not TTY), use normal case (not uppercase)
+\\$1
+.in \\n[an-margin]u
+.ti 0
+.\" if not n (not TTY), put a border/line under subheading
+.sp -.6
+\l'\n(.lu'
+.\}
+..
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" SS - level-two heading that works better for non-TTY output
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.de1 SS
+.sp \\n[PD]u
+.nr an-level 1
+.set-an-margin
+.nr an-prevailing-indent \\n[IN]
+.fi
+.in \\n[IN]u
+.ti \\n[SN]u
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.ps \\n[PS-SS]u
+\." make the size of the head bigger
+.ps +2
+.ft B
+.ne (2v + 1u)
+.if \\n[.$] \&\\$*
+..
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" BB/BE - put background/screen (filled box) around block of text
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.de BB
+.if t \{\
+.sp -.5
+.br
+.in +2n
+.ll -2n
+.gcolor red
+.di BX
+.\}
+..
+.de EB
+.if t \{\
+.if "\\$2"adjust-for-leading-newline" \{\
+.sp -1
+.\}
+.br
+.di
+.in
+.ll
+.gcolor
+.nr BW \\n(.lu-\\n(.i
+.nr BH \\n(dn+.5v
+.ne \\n(BHu+.5v
+.ie "\\$2"adjust-for-leading-newline" \{\
+\M[\\$1]\h'1n'\v'+.5v'\D'P \\n(BWu 0 0 \\n(BHu -\\n(BWu 0 0 -\\n(BHu'\M[]
+.\}
+.el \{\
+\M[\\$1]\h'1n'\v'-.5v'\D'P \\n(BWu 0 0 \\n(BHu -\\n(BWu 0 0 -\\n(BHu'\M[]
+.\}
+.in 0
+.sp -.5v
+.nf
+.BX
+.in
+.sp .5v
+.fi
+.\}
+..
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" BM/EM - put colored marker in margin next to block of text
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.de BM
+.if t \{\
+.br
+.ll -2n
+.gcolor red
+.di BX
+.\}
+..
+.de EM
+.if t \{\
+.br
+.di
+.ll
+.gcolor
+.nr BH \\n(dn
+.ne \\n(BHu
+\M[\\$1]\D'P -.75n 0 0 \\n(BHu -(\\n[.i]u - \\n(INu - .75n) 0 0 -\\n(BHu'\M[]
+.in 0
+.nf
+.BX
+.in
+.fi
+.\}
+..
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "Name"
+maildiracl \- manage access control lists
+.SH "Synopsis"
+.fam C
+.HP \w'\fBmaildiracl\fR\ 'u
+\fBmaildiracl\fR {\-reset} {\fImaildir\fR}
+.fam
+.fam C
+.HP \w'\fBmaildiracl\fR\ 'u
+\fBmaildiracl\fR {\-list} {\fImaildir\fR} {\fIINBOX[\&.folder]\fR}
+.fam
+.fam C
+.HP \w'\fBmaildiracl\fR\ 'u
+\fBmaildiracl\fR {\-set} {\fImaildir\fR} {\fIINBOX[\&.folder]\fR} {\fI[\-]identifier\fR} {\fI[+/\-]rights\fR}
+.fam
+.fam C
+.HP \w'\fBmaildiracl\fR\ 'u
+\fBmaildiracl\fR {\-delete} {\fImaildir\fR} {\fIINBOX[\&.folder]\fR} {\fI[\-]identifier\fR}
+.fam
+.fam C
+.HP \w'\fBmaildiracl\fR\ 'u
+\fBmaildiracl\fR {\-compute} {\fImaildir\fR} {\fIINBOX[\&.folder]\fR} {\fIidentifier\fR...}
+.fam
+.SH "DESCRIPTION"
+.PP
+
+\fBmaildiracl\fR
+manages
+\(lqaccess control lists\(rq
+(or ACLs) of the
+Courier
+IMAP server maildir folders\&. Access control lists are used primarily to provide fine\-grained control for accessing virtual shared folders via IMAP\&.
+.if n \{\
+.sp
+.\}
+.RS 4
+.BM yellow
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBNote\fR
+.ps -1
+.br
+.PP
+The
+Courier
+IMAP server server implements two types of shared folders: filesystem permission\-based shared folders, as well as virtual shared folders based on IMAP access control lists\&. Use the
+\fBmaildiracl\fR
+command to set up access control lists for virtual shared folders\&. Use the
+\m[blue]\fB\fBmaildirmake\fR(1)\fR\m[]\&\s-2\u[1]\d\s+2, command to implement shared folders based on filesystem permissions\&.
+.PP
+See the
+Courier
+IMAP server documentation for additional information on setting up virtual shared folders\&.
+.sp .5v
+.EM yellow
+.RE
+.SS "ACL overview"
+.PP
+ACLs provide a fine\-grained mechanism for controlling access to shared folders\&. ACLs may be used to specify, for example, that
+\FCuser1\F[]
+may only open and read the messages in the folder; and
+\FCuser2\F[]
+can not only do that, but also delete messages, and create subfolders\&.
+.PP
+Each folder maintains its own individual access control list, that specifies who can do what to the folder\&. An ACL is a list of
+\(lqidentifier\(rq
+and
+\(lqrights\(rq
+pairs\&. Each
+\(lqidentifier\(rq
+and
+\(lqrights\(rq
+pair means that an entity called
+\(lqidentifier\(rq
+(using the
+\FCUTF\-8\F[]
+character set) is allowed to do
+\(lqrights\(rq
+on this folder\&.
+\(lqrights\(rq
+consists of one or more letters, each letter signifies a particular action:
+.PP
+a
+.RS 4
+
+\fIidentifier\fR
+may modify this folder\'s ACLs\&.
+.RE
+.PP
+c
+.RS 4
+
+\fIidentifier\fR
+may create subfolders of this folder (this includes renaming another folder as this folder\'s subfolders)\&.
+.RE
+.PP
+e
+.RS 4
+
+\fIidentifier\fR
+may remove deleted messages from this folder\&.
+.RE
+.PP
+i
+.RS 4
+
+\fIidentifier\fR
+may add messages to this folder (either uploading them one by one, or copying messages from another folder)\&.
+.RE
+.PP
+l
+.RS 4
+
+\fIidentifier\fR
+may actually see that this folder exists\&. If
+\fIidentifier\fR
+does not have the
+\(lql\(rq
+right on this folder, the folder is effectively invisible to
+\fIidentifier\fR\&.
+.RE
+.PP
+r
+.RS 4
+
+\fIidentifier\fR
+may open this folder\&. Note that if
+\fIidentifier\fR
+knows the name of this folder, it can open it even if
+\fIidentifier\fR
+does not the
+\(lql\(rq
+right on this folder\&.
+.RE
+.PP
+s
+.RS 4
+
+\fIidentifier\fR
+may mark messages in this folder as seen, or unseen\&.
+.RE
+.PP
+t
+.RS 4
+
+\fIidentifier\fR
+may mark messages in this folder as deleted, or undeleted\&.
+.RE
+.PP
+w
+.RS 4
+
+\fIidentifier\fR
+may change other status flags of messages in this folder\&. May also add or remove custom keywords on individual messages\&.
+.RE
+.PP
+x
+.RS 4
+
+\fIidentifier\fR
+may delete this folder (which includes renaming this folder as another mailbox\'s subfoler\&.
+.RE
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBNegative rights\fR
+.RS 4
+.PP
+An ACL entry of
+\(lq\-identifier\(rq
+and
+\(lqrights\(rq
+is called a
+\(lqnegative right\(rq, which explicitly removes
+\(lqrights\(rq
+from
+\(lqidentifier\(rq\&. More than one
+\(lqidentifier\(rq
+is usually used to determine the actual rights someone has for the given folder\&. The actual access rights are determined by taking all rights from all applicable
+\fIidentifier\fR, than subtracting any negative rights, as specified in the following section\&.
+.RE
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBIdentifiers\fR
+.RS 4
+.PP
+Access rights on a given folder are computed by obtained the rights on the following identifiers, then subtracting the negative rights on the same identifiers:
+.PP
+\FCowner\F[]
+.RS 4
+The owner of the maildir containing this folder\&. The maildir\'s INBOX\'s ACL defaults to all rights for its owner\&. A new folder\'s ACL is the same as its parent\'s ACL\&. In all cases, trying to remove the
+\(lqa\(rq
+right from the owner (either directly or using a negative right) results in an error\&.
+.RE
+.PP
+\FCanyone\F[]
+.RS 4
+This identifier refers literally to every userid\&. The associated rights (or negative rights) are always used\&.
+.RE
+.PP
+\FCanonymous\F[]
+.RS 4
+This is a synonym from
+\(lqanyone\(rq\&.
+.RE
+.PP
+\FCuser=\F[]\fIloginid\fR
+.RS 4
+Rights (or negative rights) for IMAP account
+\(lqloginid\(rq\&.
+.if n \{\
+.sp
+.\}
+.RS 4
+.BM yellow
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBNote\fR
+.ps -1
+.br
+
+\(lqloginid\(rq
+is what\'s logged to syslog after a succesful login\&. In some situations
+\(lqloginid\(rq
+is not exactly the actual login ID used by the IMAP client\&.
+.sp .5v
+.EM yellow
+.RE
+.RE
+.PP
+\FCgroup=\F[]\fIname\fR
+.RS 4
+Rights (or negative rights) for account group
+\(lqname\(rq\&. Access rights are granted to an account group as a whole\&. The account options feature of the Courier Authentication Library specifies which account belongs to which account group\&. See courier\-authlib\'s documentation for more information\&.
+.RE
+.PP
+\FCadministrators\F[]
+.RS 4
+This is an alias for
+\(lqgroup=administrators\(rq\&. Accounts that are members of an account group called
+\(lqadministrators\(rq
+are considered administrative accounts, and automatically receive all access rights on all accessible folders\&.
+.RE
+.PP
+Consider the following access control list:
+.sp
+.if n \{\
+.RS 4
+.\}
+.fam C
+.ps -1
+.nf
+.if t \{\
+.sp -1
+.\}
+.BB lightgray adjust-for-leading-newline
+.sp -1
+
+owner          aceilrstwx
+anyone         lr
+user=john      w
+\-user=mary     r
+administrators aceilrstwx
+.EB lightgray adjust-for-leading-newline
+.if t \{\
+.sp 1
+.\}
+.fi
+.fam
+.ps +1
+.if n \{\
+.RE
+.\}
+.PP
+This access control list specifies that the folder\'s owner has complete control over the mailbox (as well as the administrators, which have complete access to every folder); everyone else can see it and open it, except for
+\(lqmary\(rq
+who can see that the mailbox exists, but can\'t open it; additionally,
+\(lqjohn\(rq
+can change the status and keywords of individual messages (but not mark them as deleted/undeleted or seen/unseen, which requires additional rights)\&.
+.RE
+.SH "OPTIONS"
+.fam C
+.HP \w'\fBmaildiracl\ \-reset\ \fR\fB\fImaildir\fR\fR\ 'u
+\fBmaildiracl \-reset \fR\fB\fImaildir\fR\fR
+.fam
+.PP
+This command resets access control lists in
+\FC\fImaildir\fR\F[]
+which as a path to a maildir\&. Under certain conditions, the files where a folder\'s ACLs are saved may continue to exist after the folder is removed\&. The
+\FC\-reset\F[]
+options goes through
+\fImaildir\fR
+and removes all stale ACL files for removed folders\&.
+.if n \{\
+.sp
+.\}
+.RS 4
+.BM yellow
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBNote\fR
+.ps -1
+.br
+.PP
+The
+Courier
+IMAP server normally performs this maintenance function automatically\&. It is not necessary to run this command under normal conditions\&.
+.sp .5v
+.EM yellow
+.RE
+.fam C
+.HP \w'\fBmaildiracl\ \-list\ \fR\fB\fImaildir\fR\fR\fB\ \fR\fB\fIfolder\fR\fR\fB\ \fR\ 'u
+\fBmaildiracl \-list
+\fR\fB\fImaildir\fR\fR\fB
+\fR\fB\fIfolder\fR\fR\fB
+\fR
+.fam
+.PP
+This command lists the access control lists set for
+\fIfolder\fR\&.
+\fIfolder\fR
+must be either
+\(lqINBOX\(rq
+or
+\(lqINBOX\&.folder\&.subfolder\(rq, which is the same naming convention for the
+Courier
+IMAP server\&.
+.fam C
+.HP \w'\fBmaildiracl\ \-set\ \fR\fB\fImaildir\fR\fR\fB\ \fR\fB\fIfolder\fR\fR\fB\ \fR\fB\fIidentifier\fR\fR\fB\ \fR\fB\fIrights\fR\fR\ 'u
+\fBmaildiracl \-set
+\fR\fB\fImaildir\fR\fR\fB
+\fR\fB\fIfolder\fR\fR\fB
+\fR\fB\fIidentifier\fR\fR\fB
+\fR\fB\fIrights\fR\fR
+.fam
+.PP
+Puts
+\fIidentifier\fR
+(which may begin with a minus sign to specify a negative right) and
+\fIrights\fR
+in
+\fIfolder\fR\'s access control list\&. Existing rights for
+\fIidentifier\fR
+(or
+\fIidentifier\fR) are replaced by
+\fIrights\fR
+unless
+\(lqrights\(rq
+begins with
+\(lq+\(rq
+or
+\(lq\-\(rq, which modifies the existing rights by adding or removing from them accordingly\&. Some examples:
+.sp
+.if n \{\
+.RS 4
+.\}
+.fam C
+.ps -1
+.nf
+.if t \{\
+.sp -1
+.\}
+.BB lightgray adjust-for-leading-newline
+.sp -1
+
+maildiracl \-set /home/user1/Maildir INBOX\&.Sent user=john lr
+
+maildiracl \-set /home/user2/Maildir INBOX\&.Notes anyone \-r
+
+maildiracl \-set /home/user3/Maildir INBOX\&.Private \-user=tom +r
+.EB lightgray adjust-for-leading-newline
+.if t \{\
+.sp 1
+.\}
+.fi
+.fam
+.ps +1
+.if n \{\
+.RE
+.\}
+.if n \{\
+.sp
+.\}
+.RS 4
+.BM yellow
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBNote\fR
+.ps -1
+.br
+.PP
+Observe that the last command
+\fIrevokes\fR
+the
+\(lqr\(rq
+right from
+\(lqtom\(rq, by adding it as a negative right\&.
+.sp .5v
+.EM yellow
+.RE
+.fam C
+.HP \w'\fBmaildiracl\ \-delete\ \fR\fB\fImaildir\fR\fR\fB\ \fR\fB\fIfolder\fR\fR\fB\ \fR\fB\fIidentifier\fR\fR\ 'u
+\fBmaildiracl \-delete
+\fR\fB\fImaildir\fR\fR\fB
+\fR\fB\fIfolder\fR\fR\fB
+\fR\fB\fIidentifier\fR\fR
+.fam
+.PP
+This command removes
+\fIidentifier\fR
+from
+\fIfolder\fR\'s access control list, if it exists\&. Use
+\(lq\-\fIidentifier\fR\(rq
+to remove negative rights\&.
+.fam C
+.HP \w'\fBmaildiracl\ \-compute\ \fR\fB\fImaildir\fR\fR\fB\ \fR\fB\fIfolder\fR\fR\fB\ [\fR\fB\fIidentifier\fR\fR\fB]+\fR\ 'u
+\fBmaildiracl \-compute
+\fR\fB\fImaildir\fR\fR\fB
+\fR\fB\fIfolder\fR\fR\fB
+[\fR\fB\fIidentifier\fR\fR\fB]+\fR
+.fam
+.PP
+This command takes a list of one or more
+\fIidentifier\fRs\&. All access rights for the
+\fIidentifier\fRs are combined together, then any appropriate negative rights are removed, and the result is printed on standard output\&. Use the following procedure to compute access rights the same way as they are computed by the
+Courier
+IMAP server:
+.sp
+.if n \{\
+.RS 4
+.\}
+.fam C
+.ps -1
+.nf
+.if t \{\
+.sp -1
+.\}
+.BB lightgray adjust-for-leading-newline
+.sp -1
+
+maildiracl \-compute /home/tom46/Maildir INBOX\&.Sent owner user=tom46
+.EB lightgray adjust-for-leading-newline
+.if t \{\
+.sp 1
+.\}
+.fi
+.fam
+.ps +1
+.if n \{\
+.RE
+.\}
+.PP
+This command computes access rights
+\(lqtom46\(rq
+has on his own folder\&.
+.sp
+.if n \{\
+.RS 4
+.\}
+.fam C
+.ps -1
+.nf
+.if t \{\
+.sp -1
+.\}
+.BB lightgray adjust-for-leading-newline
+.sp -1
+
+maildiracl \-compute /home/john34/Maildir INBOX\&.Public user=tom46
+.EB lightgray adjust-for-leading-newline
+.if t \{\
+.sp 1
+.\}
+.fi
+.fam
+.ps +1
+.if n \{\
+.RE
+.\}
+.PP
+This command computes access rights
+\(lqtom46\(rq
+has on
+\(lqjohn34\(rq\'s folder\&.
+.SH "IRREVOCABLE ACCESS RIGHTS"
+.PP
+The owner of the mailbox must always have the
+\(lqa\(rq
+amd
+\(lql\(rq
+access rights\&. The
+\FCadministrators\F[]
+group must always have all access rights to all folders\&. Attempts to set access control lists, that do not include these minimum access rights, will be rejected\&.
+.SH "BUGS"
+.PP
+All identifiers are specified using the
+\FCUTF\-8\F[]
+character set\&.
+.PP
+All non\-Latin letters in folder names are specified using the
+\FCmodified\-UTF7\F[]
+coding as used in IMAP\&.
+.PP
+This implementation of access control lists is based on version 2 (or
+\(lqACL2\(rq) of IMAP access control lists, which is a work\-in\-progress\&. The existing IMAP ACL,
+\m[blue]\fBRFC 2086\fR\m[]\&\s-2\u[2]\d\s+2
+is transparently implemented inside the ACL2 model\&.
+.PP
+If history\'s of any guidance, ACL2 is subject to change at any time\&. Be sure to check the release notes when upgrading to a newer version of this software\&. The
+\(lqACL overview\(rq
+portion of this manual page is a
+\fIvery\fR
+brief summary of ACL2, which leaves out optional parts of ACL2 that are not implemented\&.
+.SH "SEE ALSO"
+.PP
+
+\m[blue]\fB\fBmaildirmake\fR(1)\fR\m[]\&\s-2\u[1]\d\s+2,
+\m[blue]\fB\fBmaildirkw\fR(1)\fR\m[]\&\s-2\u[3]\d\s+2,
+.SH "Notes"
+.IP " 1." 4
+\fBmaildirmake\fR(1)
+.RS 4
+\%[set $man.base.url.for.relative.links]/maildirmake.html
+.RE
+.IP " 2." 4
+RFC 2086
+.RS 4
+\%http://www.rfc-editor.org/rfc/rfc2086.txt
+.RE
+.IP " 3." 4
+\fBmaildirkw\fR(1)
+.RS 4
+\%[set $man.base.url.for.relative.links]/maildirkw.html
+.RE

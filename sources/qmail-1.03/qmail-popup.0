@@ -1,0 +1,44 @@
+qmail-popup(8)                                                  qmail-popup(8)
+
+
+
+NNAAMMEE
+       qmail-popup - read a POP username and password
+
+SSYYNNOOPPSSIISS
+       qqmmaaiill--ppooppuupp _h_o_s_t_n_a_m_e _s_u_b_p_r_o_g_r_a_m
+
+DDEESSCCRRIIPPTTIIOONN
+       qqmmaaiill--ppooppuupp  reads  a  POP  username and password from the network.  It
+       then runs _s_u_b_p_r_o_g_r_a_m.
+
+       qqmmaaiill--ppooppuupp is most commonly invoked from iinneettdd as
+
+          qmail-popup CHANGEME checkpassword qmail-pop3d Maildir
+
+       with CHANGEME replaced by the fully qualified domain name of the  local
+       host.
+
+       qqmmaaiill--ppooppuupp  expects descriptor 0 to read from the network and descrip‐
+       tor 1 to write to the network.  It reads a username and  password  from
+       descriptor  0  in POP’s USER-PASS style or APOP style.  It invokes _s_u_b_‐
+       _p_r_o_g_r_a_m, with the same descriptors 0 and 1; descriptor 2 writing to the
+       network; and descriptor 3 reading the username, a 0 byte, the password,
+       another 0 byte, an APOP timestamp derived from _h_o_s_t_n_a_m_e, and a final  0
+       byte.   qqmmaaiill--ppooppuupp  then waits for _s_u_b_p_r_o_g_r_a_m to finish.  It prints an
+       error message if _s_u_b_p_r_o_g_r_a_m crashes or exits nonzero.
+
+       qqmmaaiill--ppooppuupp should be used only within a secure network.  Otherwise  an
+       eavesdropper  can  steal  passwords.   Even  if you use APOP, an active
+       attacker can still take over the connection and wreak havoc.
+
+       qqmmaaiill--ppooppuupp has a 20-minute idle timeout.
+
+       qqmmaaiill--ppooppuupp is based on a program contributed by Russ Nelson.
+
+SSEEEE AALLSSOO
+       maildir(5), qmail-local(8), qmail-pop3d(8)
+
+
+
+                                                                qmail-popup(8)

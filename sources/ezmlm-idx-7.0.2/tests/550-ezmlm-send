@@ -1,0 +1,36 @@
+  prompt "ezmlm-send:           "
+
+  cat >"$TMP" <<EOF
+From: test@example.org
+Subject: test post
+X-Test-Header: one
+Content-Length: zip
+
+message goes here
+EOF
+
+  LOCAL="$LOC"
+  ${EZBIN}/ezmlm-send "$DIR" <"$TMP" >"$ERR" 2>&1 || \
+  fatal "failed to produce post"
+
+  grephdr_list 1
+  grephdr Precedence: bulk
+  grephdr X-No-Archive: yes
+  grephdr Delivered-To: "mailing list ${LOC}@${HOST}"
+  grephdr From: test@example.org
+  grephdr Subject: '\[PFX\] test post'
+  grephdr X-Test-Header: one
+  grephdr Sender: "<${LOC}@${HOST}>"
+  grephdr_empty
+
+  grepbody Local: "$LOCAL"
+  grepbody local: "$LOCAL"
+  grepbody host: "$HOST"
+  grepbody num: `cut -d: -f1 "${DIR}/num"`
+
+  rm -f "$DIR"/prefix
+  ${EZBIN}/ezmlm-send "$DIR" <"$TMP" >"$ERR" 2>&1 || \
+  fatal "failed to produce post"
+  grephdr Subject: 'test post'
+
+  ${ECHO} OK

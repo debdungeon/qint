@@ -1,0 +1,79 @@
+ezmlm-clean(1)                                                  ezmlm-clean(1)
+
+
+
+NNAAMMEE
+       ezmlm-clean - clean moderation directory
+
+SSYYNNOOPPSSIISS
+       eezzmmllmm--cclleeaann [[--mmMMrrRRvvVV]] _d_i_r
+
+DDEESSCCRRIIPPTTIIOONN
+       eezzmmllmm--cclleeaann  sends  out  messages for timed-out posts in the moderation
+       directory, removes timed-out messages  awaiting  confirm,  and  removes
+       stubs  for  rejected  and accepted posts for the mailing list stored in
+       _d_i_r.
+
+       eezzmmllmm--cclleeaann reads _d_i_r//mmooddttiimmee and extracts a time-out ‘‘time’’ in hours
+       from  it.  If ‘‘time’’ is 0 or _d_i_r//mmooddttiimmee is empty or doesn’t exist, a
+       default of 120 h is used. If a time is given,  it  is  limited  to  the
+       range 24 h to 240 h.
+
+       eezzmmllmm--cclleeaann  then  looks  through _d_i_r//mmoodd//aacccceepptteedd//, _d_i_r//mmoodd//rreejjeecctteedd//,
+       _d_i_r//mmoodd//uunnccoonnffiirrmmeedd//, and _d_i_r//mmoodd//ppeennddiinngg// and  removes  message  stubs
+       older  than  ‘‘time’’.  ‘‘Time’’ is a minimum retention time. Since the
+       files are processed only when eezzmmllmm--cclleeaann is run, the  delay  before  a
+       message  is  timed-out may be substantially longer if the list does not
+       receive many messages.
+
+       Message age determined by the time parsed _f_r_o_m _t_h_e _f_i_l_e _n_a_m_e_, not  from
+       the  creation  time.   Thus, there is no good way to extend the life of
+       the file by e.g. touching it. Also, files in these directories are  not
+       checked  for  the  proper format. Thus, most non-message files in these
+       directories will be deleted the first time eezzmmllmm--cclleeaann is run.
+
+       For messages in _d_i_r//mmoodd//ppeennddiinngg// and _d_i_r//mmoodd//uunnccoonnffiirrmmeedd//, no action is
+       taken  on  read-only  files. Messages without the owner execute bit set
+       are silently removed, as they  are  the  result  of  incomplete  eezzmmllmm--
+       ssttoorree((11)) executions.  For other messages in _d_i_r//mmoodd//ppeennddiinngg//, a notifi‐
+       cation of the time out is sent  to  the  sender,  before  the  file  is
+       removed.   Messages  in  _d_i_r//mmoodd//uunnccoonnffiirrmmeedd//,  _d_i_r//mmoodd//aacccceepptteedd//,  and
+       _d_i_r//mmoodd//rreejjeecctteedd// are silently removed.
+
+       eezzmmllmm--cclleeaann logs errors to the mail log.  Re-delivery should be avoided
+       by suffixing any _._q_m_a_i_l line invoking eezzmmllmm--cclleeaann with ’|| exit 0’.
+
+       By default, the timed-out post is returned to the sender.  If _d_i_r//nnoorree‐‐
+       ttuurrnnppoossttss exists, it switches the  default  to  discard  the  timed-out
+       post.   NNoottee::  eezzmmllmm--cclleeaann  is  normally  run  from both _d_i_r//eeddiittoorr and
+       _d_i_r//mmooddeerraattoorr.  To suppress sender notification,  either  _d_i_r//nnoorreettuurrnn‐‐
+       ppoossttss  needs  to  exist  or the --RR option needs to be specified for all
+       invocations of eezzmmllmm--cclleeaann.
+
+OOPPTTIIOONNSS
+       --mm     (Default.)  The timed-out post is sent as a MIME enclosure.
+
+       --MM     The timed-out post is appended to the message.
+
+       --rr     (Default.)  The timed-out post is returned to sender.
+
+       --RR     The timed-out post is discarded without sender notification.
+
+       --vv     Display eezzmmllmm--cclleeaann version information.
+
+       --VV     Display eezzmmllmm--cclleeaann version information.
+
+CCHHAARRAACCTTEERR SSEETTSS
+       If _d_i_r//cchhaarrsseett exists, eezzmmllmm--cclleeaann will use the  character  set  listed
+       for all messages. Otherwise, the default ‘‘us-ascii’’ will be used. The
+       character set can be suffixed by ‘‘:’’ followed by a code. If the  code
+       is  ‘‘Q’’, outgoing messages are sent as ‘‘Quoted-Printable’’, if it is
+       ‘‘B’’ they are sent ‘‘base64’’ encoded.  Otherwise, text is sent as is.
+
+SSEEEE AALLSSOO
+       ezmlm-confirm(1),   ezmlm-make(1),  ezmlm-moderate(1),  ezmlm-store(1),
+       ezmlm(5)
+
+
+
+                                                                ezmlm-clean(1)

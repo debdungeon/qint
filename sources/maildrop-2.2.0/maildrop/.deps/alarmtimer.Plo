@@ -1,0 +1,7 @@
+alarmtimer.lo alarmtimer.o: alarmtimer.C alarmtimer.h alarm.h config.h
+
+alarmtimer.h:
+
+alarm.h:
+
+config.h:

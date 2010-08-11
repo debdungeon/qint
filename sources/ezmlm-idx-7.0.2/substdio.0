@@ -1,0 +1,61 @@
+substdio(3)                                                        substdio(3)
+
+
+
+NNAAMMEE
+       substdio - the Sub-Standard Input/Output Library
+
+SSYYNNTTAAXX
+       ##iinncclluuddee <<ssuubbssttddiioo..hh>>
+
+       void ssuubbssttddiioo__ffddbbuuff(&_s,_o_p,_f_d,_b_u_f,_l_e_n);
+
+       int ssuubbssttddiioo__ffiilleennoo(&_s);
+
+       substdio _s;
+       int (*_o_p)();
+       int _f_d;
+       char *_b_u_f;
+       int _l_e_n;
+
+DDEESSCCRRIIPPTTIIOONN
+       ssuubbssttddiioo is the Sub-Standard I/O Library.  ssuubbssttddiioo contains only a few
+       of the features of stdio; it is a fast, lightweight, low-level library,
+       suitable for use as a component of higher-level I/O libraries.
+
+       The  point of ssuubbssttddiioo is to provide buffered I/O.  The basic object in
+       ssuubbssttddiioo is the ssuubbssttddiioo structure; a ssuubbssttddiioo variable stores an oper‐
+       ation,  a  descriptor,  and  a  pointer  into  a buffer of some nonzero
+       length.  The ssuubbssttddiioo operations read data from the buffer, filling the
+       buffer  as  necessary  using  the operation on the descriptor, or write
+       data to the buffer, flushing the buffer as necessary using  the  opera‐
+       tion on the descriptor.  Input and output operations cannot be mixed.
+
+       ssuubbssttddiioo__ffddbbuuff  initializes  a ssuubbssttddiioo variable.  The operation is _o_p.
+       The descriptor is _f_d.  The buffer is _b_u_f, an array of _l_e_n chars.
+
+       _o_p will be called as _o_p(_f_d,_x,_n).  Here _x is a pointer to  an  array  of
+       characters  of  length  _n; _o_p must read some characters from _f_d to that
+       array, or write some characters to _f_d  from  that  array.   The  return
+       value  from  _o_p  must  be  the number of characters read or written.  0
+       characters read means end of input; 0 characters written means that the
+       write  operation  should be tried again immediately.  On error, _o_p must
+       return -1, setting eerrrrnnoo appropriately, without reading or writing any‐
+       thing.   Most  errors are returned directly to the ssuubbssttddiioo caller, but
+       an error of eerrrroorr__iinnttrr means that the operation should be  tried  again
+       immediately.
+
+       There is a SSUUBBSSTTDDIIOO__FFDDBBUUFF macro that can be used to statically initial‐
+       ize a ssuubbssttddiioo variable:
+
+          substdio s = SUBSTDIO_FDBUF(op,fd,buf,len);
+
+       ssuubbssttddiioo__ffiilleennoo returns the  descriptor  for  an  initialized  ssuubbssttddiioo
+       variable.
+
+SSEEEE AALLSSOO
+       substdio_in(3), substdio_out(3), substdio_copy(3), error(3)
+
+
+
+                                                                   substdio(3)

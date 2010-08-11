@@ -1,0 +1,76 @@
+ezmlm-limit(1)                                                  ezmlm-limit(1)
+
+
+
+NNAAMMEE
+       ezmlm-limit - Limits traffic to list
+
+SSYYNNOOPPSSIISS
+       eezzmmllmm--lliimmiitt [ --ff _f_i_l_e ][ --ddDDFF ][ --tt _s_e_c_s ][ --nn _m_s_g_s ] _d_i_r
+
+       eezzmmllmm--lliimmiitt  is  intended to limit traffic to a list in case an outside
+       source sends excessive messages. Traffic is limited by  converting  the
+       list to a message moderated list, or by deferring messages.
+
+       eezzmmllmm--lliimmiitt reads _d_i_r//llooooppnnuumm.  If it does not exist or contains a time
+       stamp more than _s_e_c_s seconds old, it is updated.  If  it  exists,  con‐
+       tains  a  time  stamp  less than _s_e_c_s seconds old, and _m_s_g_s messages or
+       more have passed since _d_i_r//llooooppnnuumm  was  created,  eezzmmllmm--lliimmiitt  creates
+       _d_i_r//mmooddppoosstt.   For  lists  set  up  with eezzmmllmm--ssttoorree((11)) this results in
+       future messages being moderated.
+
+       As long as _d_i_r//mmooddppoosstt does not exist, eezzmmllmm--ssttoorree((11)) will simply  for‐
+       ward  the  message to eezzmmllmm--sseenndd((11)).  Once _d_i_r//mmooddppoosstt exists, messages
+       will be queued for moderation. Thus, in case of error (such as  miscon‐
+       figured  auto  responders) subscribers are spared messages in excess of
+       the limit. However, no messages are lost, since  the  moderator(s)  can
+       (selectively) approve queued messages.
+
+       If _d_i_r//mmooddppoosstt already exists, eezzmmllmm--lliimmiitt will not take any action.
+
+       Resetting the list requires manual removal of _d_i_r//mmooddppoosstt.  Queued mes‐
+       sages can be managed with regular moderation or approved in  bulk  with
+       eezzmmllmm--aacccceepptt((11)).
+
+       eezzmmllmm--lliimmiitt  is  not  required  for normal lists, since qmail and ezmlm
+       loop detection prevent problems caused by regular bounces. However,  it
+       affords some protection against malice, and severely misconfigured sub‐
+       scribers.
+
+
+OOPPTTIIOONNSS
+       --dd     Defer excess traffic. Excess messages  are  deferred  and  qmail
+              will  re-deliver. As a consequence, traffic will be throttled to
+              the maximum allowed. Due to qmail  delivery  back-off,  messages
+              may  not  be  disseminated  in the order received. If traffic is
+              continuously above or close to the limit, some messages  may  be
+              delayed for a long time or even bounced.
+
+       --DD     (Default.)   Make  the  list  moderated  once  excess traffic is
+              detected. This requires the list to be configured up with eezzmmllmm--
+              ssttoorree((11))  rather  than  eezzmmllmm--sseenndd((11)),  which is easiest done by
+              first creating a message moderated list, then removing  _d_i_r//mmoodd‐‐
+              ppoosstt.
+
+       --nn _m_s_g_s
+              Trigger after _m_s_g_s messages (default 30).
+
+       --ff _f_i_l_e
+              Instead  of  _d_i_r//llooooppnnuumm use _f_i_l_e as the time stamp. This allows
+              the use of multiple instances of eezzmmllmm--lliimmiitt for the same  list.
+              For  instance,  you  may  allow  60  messages  per hour with one
+              instance and 150 messages per day with another. If _f_i_l_e is rela‐
+              tive, this is relative to _d_i_r.
+
+       --FF     (Default.)  Use _d_i_r//llooooppnnuumm as the time stamp.
+
+       --tt _s_e_c_s
+              Check  the  number  of  messages  within  period of _s_e_c_s seconds
+              (default 3600 seconds).
+
+SSEEEE AALLSSOO
+       ezmlm-accept(1), ezmlm-make(1), ezmlm-send(1), ezmlm-store(1), ezmlm(5)
+
+
+
+                                                                ezmlm-limit(1)

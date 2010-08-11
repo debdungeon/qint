@@ -1,0 +1,139 @@
+ezmlm-archive(1)                                              ezmlm-archive(1)
+
+
+
+NNAAMMEE
+       ezmlm-archive  -  create  thread  and  author  index for a mailing list
+       archive
+
+SSYYNNOOPPSSIISS
+       eezzmmllmm--aarrcchhiivvee [ --ccCCFFTTvvVV ][ --ff _m_s_g_1 ] ][ --tt _m_s_g_2 ] _d_i_r
+
+DDEESSCCRRIIPPTTIIOONN
+       eezzmmllmm--aarrcchhiivvee reads the index files from a message archive, and creates
+       a  subject  index,  a  collection of subject files, and a collection of
+       author files. These files are suitable as an index for WWW  access  to,
+       and navigation through a mailing list archive by eezzmmllmm--ccggii((11)).
+
+       The  index  files  read are created by eezzmmllmm--iiddxx((11)) on a per-list basis
+       and by eezzmmllmm--sseenndd((11)) on a per-message archive for a indexed list.
+
+       The output files created are:
+
+       _d_i_r//aarrcchhiivvee//tthhrreeaaddss//yyyyyyyymmmm
+              The thread index. It contains one  line  per  subject,  starting
+              with  the  number  of the first message with that subject within
+              the set investigated, ‘‘:’’, a 20 character subject hash, blank,
+              ‘‘[n]’’  where  ‘‘n’’  is  the number of messages in the thread,
+              blank, and the subject.  The file  ‘‘yyyymm’’  contains  entries
+              for  all  threads  that have messages in the month ‘‘yyyymm’’ or
+              that have messages both before and after that month.   The  sub‐
+              ject hash is a key to the subject files; the message number is a
+              key to the index file.  The lines are in ascending order by mes‐
+              sage  number  when  the  index is created _d_e _n_o_v_o on an existing
+              archive. When the messages are added  one-by-one  as  in  normal
+              archive  operation, ‘‘n’’ is the number of message in the thread
+              _f_o_r _t_h_e _p_a_r_t_i_c_u_l_a_r _m_o_n_t_h and the order is in reverse  of  latest
+              message,  i.e.  the last extended thread is shown last. The mes‐
+              sage number accompanying a thread is always a message within the
+              thread.  It  is the first in archives created on existing lists,
+              and the last message in incrementally created archives.  Use the
+              corresponding  subject  index file to get a list of all messages
+              in the thread in ascending order.
+
+       _d_i_r//aarrcchhiivvee//ssuubbjjeeccttss//xxxx//yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy
+              A subject file. The first line is the subject hash, a space, and
+              the subject.  This is followed by one line per message with this
+              subject, in the format message  number,  ‘‘:’’,  date  (yyyymm),
+              ‘‘:’’,  author  hash,  blank,  author  from  line. The lines are
+              sorted by message number. The author hash is a key to the author
+              files;  the  message number is a key to the index file. The file
+              in   the   example   would   be    for    the    subject    hash
+              ‘‘xxyyyyyyyyyyyyyyyyyy’’.
+
+       _d_i_r//aarrcchhiivvee//aauutthhoorrss//xxxx//yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy
+              An  author file. The first line is the author hash, a space, and
+              the author from line.  This is followed by one line per  message
+              with  this  author,  in  the  format message number, ‘‘:’’, date
+              (yyyymm), ‘‘:’’, subject hash, blank,  subject.  The  lines  are
+              sorted  by message number. The subject hash is a key to the sub‐
+              ject files; the message number is a key to the index  file.  The
+              file   in   the   example   would   be   for   the  author  hash
+              ‘‘xxyyyyyyyyyyyyyyyyyy’’.
+
+              _d_i_r//aarrcchhnnuumm keeps track of the last message processed. Normally,
+              eezzmmllmm--aarrcchhiivvee  will  process entries for messages from one above
+              the contents of this file up to an including the message  number
+              in _d_i_r//nnuumm.
+
+OOPPTTIIOONNSS
+       eezzmmllmm--aarrcchhiivvee  writes messages in a crash-proof manner when run in nor‐
+       mal mode. When overriding the normal message  range  with  any  of  the
+       options  listed,  the  normal ssyynncc((33)) of the output files is suppressed
+       for efficiency. Should the computer crash during this time the state of
+       the  indices  is not defined. Use the --ss option in the (extremely rare)
+       cases where this would be a problem.
+
+       --cc     Create a new index. This  overrides _d_i_r//aarrcchhnnuumm  causing  eezzmmllmm--
+              aarrcchhiivvee  to start with the first message in the archive. Synonym
+              for --ff_0.  NNOOTTEE:: eezzmmllmm--aarrcchhiivvee  does  not  remove  files  in  the
+              index.  While  it  will  overwrite/update  old files it will not
+              remove files that are obsolete for other reasons.
+
+       --CC     (Default.)  Process entries starting with the message after  the
+              message listed in _d_i_r//aarrcchhnnuumm.
+
+       --ff _m_s_g_1
+              Process  messages from the archive section (set of 100 messages)
+              containing message _m_s_g_1.  This is useful  if  you  have  removed
+              part  of  the  archive,  as  it will shorten processing time and
+              decrease memory use.  NNOOTTEE:: eezzmmllmm--aarrcchhiivvee does not remove  files
+              in  the  index. While it will overwrite/update old files it will
+              not remove files that are obsolete for other reasons. The number
+              of  messages  per  thread will be incorrect when using of the --ff
+              and --tt switches leads to partial re-indexing of already  indexed
+              messages.
+
+       --FF     (Default.)   Do not change the starting message from the default
+              (see --CC).
+
+       --ss     Always sync files.
+
+       --SS     (Default.)  Sync files, except when on of the message range mod‐
+              ifying options is used.
+
+       --tt _m_s_g_2
+              Process  messages to message _m_s_g_2 instead of the last message in
+              the archive. Again, files written are corrected, but other files
+              are not explicitly removed.
+
+       --TT     (Default.)   Process entries for messages up to the last message
+              in the archive.
+
+       --vv     Display eezzmmllmm--aarrcchhiivvee version info.
+
+       --VV     Display eezzmmllmm--aarrcchhiivvee version info.
+
+MMEEMMOORRYY UUSSAAGGEE
+       eezzmmllmm--aarrcchhiivvee stores its linked lists in memory. On at 32-bit architec‐
+       ture,  it uses 12 bytes per message, 28 bytes per thread (plus one copy
+       of the subject), and 20 bytes per author (plus one copy of  the  author
+       from line).
+
+       In normal list use, it processes only at most a few messages at a time,
+       but for initial processing of a large archive, considerable amounts  of
+       memory may be used. Assuming 40 bytes for subject/from line, 5 messages
+       per thread, 100,000 messages, and 1000 authors, this  is  2.5  MB.  For
+       1,000,000 messages this is about 20 MB.
+
+       Thus, for large archives, it may be useful to use the _-_t switch to pro‐
+       cess the archive in multiple subsets,  starting  with  e.g.  the  first
+       100,000, then the next, and so on.
+
+SSEEEE AALLSSOO
+       ezmlm-cgi(1), ezmlm-idx(1), ezmlm-send(1), ezmlm(5)
+
+
+
+
+                                                              ezmlm-archive(1)

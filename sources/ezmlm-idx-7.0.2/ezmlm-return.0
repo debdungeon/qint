@@ -1,0 +1,71 @@
+ezmlm-return(1)                                                ezmlm-return(1)
+
+
+
+NNAAMMEE
+       ezmlm-return - handle mailing list bounces
+
+SSYYNNOOPPSSIISS
+       eezzmmllmm--rreettuurrnn [ --ddDD ] _d_i_r
+
+DDEESSCCRRIIPPTTIIOONN
+       eezzmmllmm--rreettuurrnn handles bounces for the mailing list stored in _d_i_r and, if
+       it exists, the associated digest list.
+
+       eezzmmllmm--rreettuurrnn is normally invoked from a ..qqmmaaiill file.  It reads  a  mail
+       message  from  its standard input, and a mail envelope from the SSEENNDDEERR,
+       LLOOCCAALL, and HHOOSSTT environment variables.
+
+       eezzmmllmm--rreettuurrnn exits 99, not 0, upon success.
+
+OOPPTTIIOONNSS
+       --dd     eezzmmllmm--rreettuurrnn will assume the bounce is for a digest list.   Nor‐
+              mally,   eezzmmllmm--rreettuurrnn  will  autodetect  this  from  the  bounce
+              address. Autodetection makes eezzmmllmm--rreettuurrnn less flexible and will
+              be removed in future versions.
+
+       --DD     eezzmmllmm--rreettuurrnn  will  assume that the bounce is for a normal (non-
+              digest) list.  Normally, eezzmmllmm--rreettuurrnn will autodetect this  from
+              the bounce address. Autodetection makes eezzmmllmm--rreettuurrnn less flexi‐
+              ble and will be removed in future versions.  --DD will become  the
+              default.
+
+AADDDDRREESSSSEESS
+       eezzmmllmm--rreettuurrnn handles mail sent to any of the following addresses:
+
+       _l_o_c_a_l--rreettuurrnn--
+              Trash.  A help message or subscription acknowledgment bounced.
+
+       _l_o_c_a_l--rreettuurrnn--_m_s_g--_b_o_x==_d_o_m_a_i_n
+              Distribution  bounce.  Message number _m_s_g was lost on the way to
+              _b_o_x@@_d_o_m_a_i_n.
+
+       _l_o_c_a_l--rreettuurrnn--_m_s_g--
+              Pre-VERP distribution bounce, in QSBMF format.   Message  number
+              _m_s_g  was  lost on the way to one or more addresses; eezzmmllmm--rreettuurrnn
+              will parse the bounce to figure out the addresses.
+
+       _l_o_c_a_l--rreettuurrnn--wwaarrnn--_c_o_o_k_i_e--_b_o_x==_d_o_m_a_i_n
+              Warning bounce.  A warning message from eezzmmllmm--wwaarrnn bounced.
+
+       _l_o_c_a_l--rreettuurrnn--pprroobbee--_c_o_o_k_i_e--_b_o_x==_d_o_m_a_i_n
+              Probe bounce.  A probe from  eezzmmllmm--wwaarrnn  bounced.   eezzmmllmm--rreettuurrnn
+              will remove _b_o_x@@_d_o_m_a_i_n from the mailing list.
+
+       _l_o_c_a_l--rreettuurrnn--rreecceeiipptt--_c_o_o_k_i_e_-_f_I_m_s_g_-
+              A  receipt  from  the  list.  This is logged. For SQL supporting
+              lists, _c_o_o_k_i_e is verified and receipt logged only if the  cookie
+              is  correct.  The arrival of the receipt shows that qmail at the
+              sending host is running.
+
+              For all the above addresses if, _l_o_c_a_l is  followed  by  _-_d_i_g_e_s_t,
+              bounces  are  assumed to be from the digest list, and are stored
+              in _d_i_r//ddiiggeesstt//bboouunnccee rather than in _d_i_r //bboouunnccee ..
+
+SSEEEE AALLSSOO
+       ezmlm-manage(1),  ezmlm-make(1),  ezmlm-send(1),  ezmlm-sub(1),  ezmlm-
+       unsub(1), ezmlm-warn(1), ezmlm-weed(1), ezmlm(5), qmail-command(8)
+
+
+
+                                                               ezmlm-return(1)

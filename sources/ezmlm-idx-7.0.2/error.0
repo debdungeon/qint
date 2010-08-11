@@ -1,0 +1,37 @@
+error(3)                                                              error(3)
+
+
+
+NNAAMMEE
+       error - syscall error codes
+
+SSYYNNTTAAXX
+       ##iinncclluuddee <<eerrrroorr..hh>>
+
+       extern int eerrrrnnoo;
+
+       extern int eerrrroorr__iinnttrr;
+       extern int eerrrroorr__nnoommeemm;
+       extern int eerrrroorr__nnooeenntt;
+       extern int eerrrroorr__ttxxttbbssyy;
+       extern int eerrrroorr__iioo;
+       extern int eerrrroorr__eexxiisstt;
+       extern int eerrrroorr__ttiimmeeoouutt;
+       extern int eerrrroorr__iinnpprrooggrreessss;
+       extern int eerrrroorr__wwoouullddbblloocckk;
+       extern int eerrrroorr__aaggaaiinn;
+       extern int eerrrroorr__ppiippee;
+       extern int eerrrroorr__ppeerrmm;
+       extern int eerrrroorr__aacccceess;
+
+DDEESSCCRRIIPPTTIIOONN
+       UNIX  syscalls provide detailed error codes in the eerrrrnnoo variable.  The
+       eerrrroorr library provides portable names for a variety of  possible  eerrrrnnoo
+       values.
+
+SSEEEE AALLSSOO
+       error_str(3), error_temp(3)
+
+
+
+                                                                      error(3)

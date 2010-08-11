@@ -1,0 +1,97 @@
+qmail-pw2u(8)                                                    qmail-pw2u(8)
+
+
+
+NNAAMMEE
+       qmail-pw2u - build address assignments from a passwd file
+
+SSYYNNOOPPSSIISS
+       qqmmaaiill--ppww22uu [ --//oohhHHuuUUCC ] [ --cc_c_h_a_r ]
+
+DDEESSCCRRIIPPTTIIOONN
+       qqmmaaiill--ppww22uu reads a V7-format passwd file from standard input and prints
+       a qqmmaaiill--uusseerrss-format assignment file.
+
+       A V7-format passwd file is a series of lines.  Each line has the format
+
+          user:password:uid:gid:gecos:home:shell
+
+       where _u_s_e_r is an account name, _u_i_d and _g_i_d are the user id and group id
+       of that account, and _h_o_m_e is the account’s home  directory.   _p_a_s_s_w_o_r_d,
+       _g_e_c_o_s, and _s_h_e_l_l are ignored by qqmmaaiill--ppww22uu.
+
+       If  you  put the output of qqmmaaiill--ppww22uu into //vvaarr//qqmmaaiill//uusseerrss//aassssiiggnn, and
+       then run qqmmaaiill--nneewwuu, qqmmaaiill--llssppaawwnn will obey the assignments printed  by
+       qqmmaaiill--ppww22uu.   WWAARRNNIINNGG::  After  changing  any users, uids, gids, or home
+       directories in your passwd file, you must run qqmmaaiill--ppww22uu and qqmmaaiill--nneewwuu
+       again if you want qqmmaaiill--llssppaawwnn to see the changes.
+
+RRUULLEESS
+       By default, qqmmaaiill--ppww22uu follows the same rules as qqmmaaiill--ggeettppww.  It skips
+       _u_s_e_r if (1) _u_i_d is zero, (2) _h_o_m_e does not exist, (3) _u_s_e_r does not own
+       _h_o_m_e,  or  (4)  _u_s_e_r  contains  uppercase  letters.  It then gives each
+       remaining _u_s_e_r control over the basic _u_s_e_r address and all addresses of
+       the  form  _u_s_e_r--_a_n_y_t_h_i_n_g.   A catch-all user, aalliiaass, controls all other
+       addresses.
+
+       You may change these rules by setting up files in //vvaarr//qqmmaaiill//uusseerrss:
+
+       iinncclluuddee
+              Allowed users, one per line.  If iinncclluuddee exists, and _u_s_e_r is not
+              listed in iinncclluuddee, _u_s_e_r is ignored.
+
+       eexxcclluuddee
+              Ignored  users,  one  per  line.  If eexxcclluuddee exists, and _u_s_e_r is
+              listed in eexxcclluuddee, _u_s_e_r is ignored.
+
+       mmaaiillnnaammeess
+              Replacement names for users.  Each line has the form
+
+                 user:mailname1:mailname2:...
+
+              The addresses _m_a_i_l_n_a_m_e_1 and _m_a_i_l_n_a_m_e_1--_e_x_t and _m_a_i_l_n_a_m_e_2  and  so
+              on will be delivered to _u_s_e_r.
+
+              WWAARRNNIINNGG::  The  addresses _u_s_e_r and _u_s_e_r--_e_x_t will not be delivered
+              to _u_s_e_r unless _u_s_e_r is listed as one of the _m_a_i_l_n_a_m_es.
+
+              A line in mmaaiillnnaammeess is silently ignored if  the  user  does  not
+              exist.
+
+       ssuubbuusseerrss
+              Extra addresses.  Each line has the form
+
+                 sub:user:pre:
+
+              _s_u_b  will  be  handled  by _h_o_m_e//..qqmmaaiill--_p_r_e, where _h_o_m_e is _u_s_e_r’s
+              home directory; _s_u_b--_e_x_t will be handled by  _h_o_m_e//..qqmmaaiill--_p_r_e--_e_x_t.
+
+       aappppeenndd Extra assignments, printed at the end of qqmmaaiill--ppww22uu’s output.
+
+OOPPTTIIOONNSS
+       --oo     (Default.)   Skip _u_s_e_r if _h_o_m_e does not exist (or is not visible
+              to qqmmaaiill--ppww22uu).  Skip _u_s_e_r if _h_o_m_e is not owned by _u_s_e_r.
+
+       --hh     Stop if _h_o_m_e does not exist.  This is appropriate if every  user
+              is  supposed to have a home directory.  Skip _u_s_e_r if _h_o_m_e is not
+              owned by _u_s_e_r.
+
+       --HH     Do not check the existence or ownership of _h_o_m_e.
+
+       --UU     (Default.)  Skip _u_s_e_r if there  are  any  uppercase  letters  in
+              _u_s_e_r.
+
+       --uu     Allow uppercase letters in _u_s_e_r.
+
+       --cc_c_h_a_r Use _c_h_a_r as the user-extension delimiter in place of --.
+
+       --CC     Disable the user-extension mechanism.
+
+       --//     Use _h_o_m_e//..qqmmaaiill--//...  instead of _h_o_m_e//..qqmmaaiill--...
+
+SSEEEE AALLSSOO
+       qmail-users(5), qmail-lspawn(8), qmail-newu(8), qmail-getpw(8)
+
+
+
+                                                                 qmail-pw2u(8)

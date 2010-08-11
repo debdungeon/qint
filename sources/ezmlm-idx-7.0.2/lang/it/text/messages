@@ -1,0 +1,165 @@
+ERR_ADDR_AT:l'indirizzo non ha @
+ERR_ADDR_LONG:l'indirizzo è troppo lungo
+ERR_ADDR_NL:l'indirizzo ha un a capo
+ERR_ANONYMOUS:non rispondo a mittenti senza nome host (#5.7.2)
+ERR_BADHOST:host della lista non consentito
+ERR_BADLOCAL:nome della lista non consentito
+ERR_BADUSER:utente non consentito
+ERR_BAD_ADDRESS:non accetto messaggi a questo indirizzo (il nome della lista non corrisponde) (#5.1.1)
+ERR_BAD_ALL:Mi dispiace, ma dopo aver tolto dal tuo messaggio le parti MIME non consentite non è rimasto nulla (#5.7.0)
+ERR_BAD_DIGCODE:Codice digest non corretto (#5.7.1)
+ERR_BAD_INDEX:L'indice è corrotto o non supportato. Esegui ezmlm-idx! (#5.3.0)
+ERR_BAD_NAME:nel nome del file sono consentiti solo lettere e l'underscore (#5.6.0)
+ERR_BAD_PART:Mi dispiace, una parte del messaggio ha un MIME Content-Type non ammesso: '<#1#>' (#5.2.3)
+ERR_BAD_REQUEST:Formato della richiesta illegale (#5.7.1)
+ERR_BAD_RETURN_ADDRESS:Formato dell'indirizzo di ritorno invalido (#5.7.1)
+ERR_BAD_TYPE:Mi dispiace, ma non accetto messaggi con MIME Content-Type '<#1#>' (#5.2.3)
+ERR_BODYCOMMAND:Mi dispiace, ma visto che il messaggio incomincia con "[un]subscribe" sembra essere un comando amministrativo. Manda un messaggio all'indirizzo -help mostrato nell'header \"Mailing-List:\" per ulteriori informazioni (#5.7.0)
+ERR_BOUNCE:Non rispondo ai messaggi di errore (#5.7.2)
+ERR_CFHOST:nella prima linea di <#1#> è necessario il bounce-host
+ERR_CHDIR:Non posso spostarmi nella cartella <#1#>
+ERR_CHILD_CRASHED:il programma figlio è terminato inaspettatamente
+ERR_CHILD_FATAL:errore fatale dal programma figlio
+ERR_CHILD_TEMP:errore temporaneo dal programma figlio
+ERR_CHILD_UNKNOWN:errore sconosciuto dal programma figlio
+ERR_CHMOD:non posso eseguire chmod <#1#>
+ERR_CHROOT:non posso eseguire chroot <#1#>
+ERR_CLOSE:non posso chiudere <#1#>
+ERR_COOKIE:il messaggio non ha un valido codice di autenticazione
+ERR_CREATE:non posso creare <#1#>
+ERR_CRONTAB:aggiornamento di crontab fallito. Contatta l'amministratore di sistema con le informazioni di errore precedenti
+ERR_DELETE:non posso cancellare <#1#>
+ERR_DONE:il messaggio è già stato processato da questa lista
+ERR_DOW:per i giorni della settimana usa solo singole cifre separate da virgola
+ERR_EDSIZE:Superata la massima dimensione per un file da modificare (#5.6.0)
+ERR_EMPTY_DIGEST:non ho nulla da mettere nella raccolta
+ERR_EMPTY_LIST:non ci sono messaggi in archivio
+ERR_ENDTAG:il tag manca del terminatore />
+ERR_EUID:non ho trovato l'user id effettivo
+ERR_EXCESS_DEFER:troppo traffico: pospongo
+ERR_EXCESS_MOD:troppo traffico: modero
+ERR_EXCLUSIVE:le opzioni di controllo delle azioni sono mutualmente esclusive
+ERR_EXECUTE:non posso eseguire <#1#>
+ERR_EXTRA_SUB:Processata la richiesta di aggiunta del controllo del SENDER per: <#1#>
+ERR_EXTRA_UNSUB:Processata la richiesta di rimozione del controllo del SENDER per: <#1#>
+ERR_FILENAME:tag di continuazione senza che il file name sia definito: <#1#>
+ERR_FLUSH:flush di <#1#> fallito
+ERR_FLUSH_STDOUT:flush dello standard output fallito
+ERR_FORK:fork fallita
+ERR_JUNK:Precedence: junk - messaggio ignorato
+ERR_LINKDIR:il tag di link non ha /dir: <#1#>
+ERR_LISTNO:superato il massimo numero di elementi della lista
+ERR_LOOPING:questo messaggio è in loop: ha già la mia linea Delivered-To: (#5.4.6)
+ERR_MAILING_LIST:il messaggio ha già l'intestazone Mailing-List (forse questa dovrebbe essere una sottolista) (#5.7.2)
+ERR_MAX_BOUNCE:superato il massimo numero di messaggi di errore: il messaggio di errore non verrà salvato
+ERR_MAX_SIZE:Mi dispiace, non accetto messaggi con più di <#1#> caratteri
+ERR_MIME_QUOTE:Il delimitatore MIME non ha le virgolette finali
+ERR_MIN_SIZE:Mi dispiace, non accetto messaggi più corti di <#1#> caratteri (#5.2.3)
+ERR_MKTAB:creazione delle tabelle degli iscritti fallita
+ERR_MOD_ACCEPTED:Mi dispiace, ho già accettato questo messaggio
+ERR_MOD_COOKIE:Richiesta di moderazione illegale o scaduta (#5.7.1)
+ERR_MOD_REJECTED:Mi dispiace, ho già rigettato questo messaggio
+ERR_MOD_TIMEOUT:Mi dispiace, non ho più questo messaggio
+ERR_MOVE:non riesco a spostare <#1#> su <#2#>
+ERR_NEWLINE:a capo non consentito in dir
+ERR_NOCMD:comando non disponibile
+ERR_NODEFAULT:manca DEFAULT
+ERR_NODTLINE:manca DTLINE
+ERR_NOEXIST:non esiste
+ERR_NOINDEX:Mi dispiace, non trovo l'indice di questo messaggio
+ERR_NOLOCAL:manca LOCAL
+ERR_NOMEM:memoria esaurita
+ERR_NOSENDER:manca SENDER
+ERR_NOT_ACTIVE:la sottolista non è attiva
+ERR_NOT_ALLOWED:Il comando è ammesso solo dai moderatori (#5.7.1)
+ERR_NOT_ARCHIVED:Mi dispiace, questa lista non ha un archivio (#5.1.1)
+ERR_NOT_AVAILABLE:Comando non disponibile (#5.1.1)
+ERR_NOT_CLEAN:Carattere non consentito nelle componenti dell'indirizzo
+ERR_NOT_INDEXED:Mi dispiace, questa lista non ha un indice (#5.1.1)
+ERR_NOT_PARENT:questo messaggio non arriva dalla mia lista padre (#5.7.2)
+ERR_NOT_PUBLIC:Mi dispiace, mi è stato chiesto di rigettare tutte le richieste (#5.7.2)
+ERR_NO_ABSOLUTE:i nomi di cartelle assolute al di fuori della cartella della lista non sono più supportati
+ERR_NO_ADDRESS:L'indirizzo della lista dev'essere in To: o Cc: (#5.7.0)
+ERR_NO_LEVELS:i nomi delle tabelle degli iscritti non possono contenere la barra '/'
+ERR_NO_MARK:mancano gli indicatori di inizio-testo o fine-testo (#5.6.0)
+ERR_NO_MATCH:non ho trovato un'entry corrispondente
+ERR_NO_PLUGIN:nessun plugin specificato nei dati di connessione al database
+ERR_NO_POST:Mi dispiace, non sei autorizzato a spedire messaggi a questa lista (#5.7.2)
+ERR_NO_SUBJECT:Mi dispiace, non accetto messaggi senza oggetto (#5.7.0)
+ERR_OBTAIN_LOCK:non posso mettere un lock su <#1#>
+ERR_OPEN:non posso aprire <#1#>
+ERR_OPEN_LISTMSGS:non posso aprire <#1#> in listmsgs. Riesegui ezmlm-archive!
+ERR_PERIOD:i punti non sono ammessi nei tag
+ERR_QMAIL_QUEUE:non posso eseguire qmail-queue
+ERR_QUOTE:le virgolette non sono consentite in dir
+ERR_READ:non posso leggere <#1#>
+ERR_READ_INPUT:non posso leggere l'input
+ERR_READ_NOTHING:non posso leggere <#1#>: non c'è nulla
+ERR_READ_STDIN:non posso leggere lo standard input
+ERR_REJECT:Mi dispiace, mi è stato chiesto di rigettare questo messaggio (#5.7.0)
+ERR_REQ_LISTNAME:Questo comando richiede il nome di una mailing list (#5.1.1)
+ERR_REQ_LOCAL:la parte locale della stringa del comando non corrisponde a questa lista (#5.1.1)
+ERR_SEEK:non posso eseguire seek su <#1#>
+ERR_SEEK_INPUT:non posso eseguire seek sull'input
+ERR_SETUID:non posso impostare lo user id
+ERR_SLASH:dir e dot devono cominciare con una barra '/'
+ERR_STAT:non posso eseguire stat su <#1#>
+ERR_SUBCOMMAND:Mi dispiace, non accetto comandi nell'oggetto. Manda un messaggio all'indirizzo -help mostrato nell'intestazione \"Mailing-List:\" per informazioni sui comandi (#5.7.0)
+ERR_SUBLIST:i messaggi della sottolista devono avere l'intestazione Mailing-List (#5.7.2)
+ERR_SUBSCRIBER_CAN:solo gli iscritti possono <#1#> (#5.7.1)
+ERR_SUBST_UNSAFE:Mi dispiace, la sostituzione degli indirizzi di destinazione nelle intestazioni con #A# o #t# non è permessa perchè insicura.
+ERR_SUB_NOP:il destinatario è già un iscritto
+ERR_SUID:Mi dispiace, non posso essere eseguito con i permessi di root
+ERR_SYNC:non posso eseguire il sync di <#1#>
+ERR_SYNTAX:errore di sintassi in <#1#>
+ERR_SYNTAX_CONFIG:errore di sintassi nel file di configurazione <#1#>
+ERR_SYNTAX_MISSING_AUTHHASH:errore di sintassi: <#1#>: manca l'hash dell'autore
+ERR_SYNTAX_MISSING_AUTHOR:errore di sintassi: <#1#>: mancano le informazioni dell'autore.
+ERR_SYNTAX_MISSING_FIRST:errore di sintassi: <#1#>: manca la prima linea
+ERR_SYNTAX_MISSING_SEMIDATE:errore di sintassi: <#1#>: manca ';' dopo la data
+ERR_SYNTAX_MISSING_SEPARATOR:errore di sintassi: <#1#>: manca il separatore dell'oggetto
+ERR_SYNTAX_MISSING_SUBJHASH:errore di sintassi: <#1#>: manca l'hash dell'oggetto
+ERR_TMP_QMAIL_QUEUE:errore temporaneop di qmail-queue
+ERR_UID:user id non trovato
+ERR_UNIQUE:non posso creare un nome univoco per il file del messaggio
+ERR_UNSUB_NOP:il destinatario non è un iscritto
+ERR_VERSION:la versione di ezmlmrc non corrisponde. Il comportamento potrebbe essere diverso da quello indicato nella documentazione.
+ERR_WRITE:non posso scrivere <#1#>
+ERR_WRITE_STDOUT:non posso scrivere sullo standard output
+SUB_CONFIRM_POST:Conferma l'invio a <#L#>@<#H#>
+SUB_EDIT_LIST:Elenco dei testi modificabili per <#L#>@<#H#>
+SUB_EDIT_REQUEST:MODIFICA di <#1#> per <#L#>@<#H#>
+SUB_EDIT_SUCCESS:La modifica di <#1#> per <#L#>@<#H#> ha avuto successo
+SUB_FAQ:FAQ su <#L#>@<#H#>
+SUB_GET_MSG:Estrazione dall'archivio di <#L#>@<#H#>
+SUB_GOODBYE:ARRIVEDERCI da <#L#>@<#H#>
+SUB_HELP:Aiuto per <#L#>@<#H#>
+SUB_INFO:Informazioni su <#L#>@<#H#>
+SUB_LIST:Elenco degli iscritti a <#L#>@<#H#>
+SUB_LOG:Log delle iscrizioni di <#L#>@<#H#>
+SUB_LOG_SEARCH:Risultato della ricerca nei log di <#L#>@<#H#>
+SUB_MODERATE:MODERA per <#L#>@<#H#>
+SUB_MOD_HELP:Aiuto per i moderatori di <#L#>@<#H#>
+SUB_MOD_SUBSCRIBE:CONFERMA dell'iscrizione a <#L#>@<#H#>
+SUB_MOD_UNSUBSCRIBE:CONFERMA della cancellazione da <#L#>@<#H#>
+SUB_PROBE:Verifica da <#L#>@<#H#>
+SUB_RESULTS:Risultati per <#L#>
+SUB_RETURNED_POST:Messaggio rigettato da <#L#>@<#H#>
+SUB_STATUS:Stato dell'iscrizione a <#L#>@<#H#>
+SUB_SUBSCRIBE_NOP:Sei già iscritto a <#L#>@<#H#>
+SUB_UNSUBSCRIBE_NOP:Non sei iscritto a <#L#>@<#H#>
+SUB_USR_SUBSCRIBE:conferma l'iscrizione a <#L#>@<#H#>
+SUB_USR_UNSUBSCRIBE:conferma la cancellazione da <#L#>@<#H#>
+SUB_WARNING:Avvertimento da <#L#>@<#H#>
+SUB_WELCOME:BENVENUTO in <#L#>@<#H#>
+TXT_ADMINISTRIVIA:Administrivia:
+TXT_BY:da: <#1#>
+TXT_EDIT_END:%%% FINE DEL TESTO
+TXT_EDIT_START:%%% INIZIO DEL TESTO
+TXT_LISTMEMBERS:Gli iscritti alla lista sono
+TXT_MAILING_LIST:contatta <#L#>-help@<#H#>; gestita da ezmlm
+TXT_NOINDEX:aaaaaaaaaaaaaaaaaaaa <- indice degli oggetti non disponibile per i messaggi ->
+TXT_ONLY_SUBSCRIBERS:Mi dispiace, solo gli iscritti possono spedire messaggi. Se sei iscritto, invia questo messaggio a <#L#>-owner@<#H#> per far includere questo nuovo indirizzo.
+TXT_REJECT_POSTS:Mi dispiace, mi è stato chiesto di rifiutare i tuoi messaggi. Contatta <#L#>-owner@<#H#> se desideri maggiori informazioni.
+TXT_SUPPRESSED:<soppresso>
+TXT_TOP_TOPICS:Argomenti (messaggi dal <#1#> al <#2#>)

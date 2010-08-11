@@ -1,0 +1,70 @@
+qmail-control(5)                                              qmail-control(5)
+
+
+
+NNAAMMEE
+       qmail-control - qmail configuration files
+
+IINNTTRROODDUUCCTTIIOONN
+       You  can  change  the behavior of the qqmmaaiill system by modifying qqmmaaiill’s
+       _c_o_n_t_r_o_l _f_i_l_e_s in //vvaarr//qqmmaaiill//ccoonnttrrooll.
+
+       qqmmaaiill can survive with just one control file, _m_e, containing the fully-
+       qualified  name  of the current host.  This file is used as the default
+       for other hostname-related control files.
+
+       Comments are allowed in _b_a_d_h_e_l_o, _b_a_d_m_a_i_l_f_r_o_m, _b_a_d_m_a_i_l_f_r_o_m_n_o_r_e_l_a_y, _b_a_d_r_‐
+       _c_p_t_o,  _b_a_d_r_c_p_t_o_n_o_r_e_l_a_y,  _l_o_c_a_l_s,  _p_e_r_c_e_n_t_h_a_c_k,  _q_m_q_p_s_e_r_v_e_r_s, _r_c_p_t_h_o_s_t_s,
+       _s_m_t_p_r_o_u_t_e_s, and _v_i_r_t_u_a_l_d_o_m_a_i_n_s.  Trailing spaces and tabs  are  allowed
+       in any control file.
+
+       The  following  table  lists  all control files other than _m_e.  See the
+       corresponding man pages for further details.
+
+              control             default            used by
+
+              _b_a_d_h_e_l_o             (none)             qmail-smtpd
+              _b_a_d_m_a_i_l_f_r_o_m         (none)             qmail-smtpd
+              _b_a_d_m_a_i_l_f_r_o_m_n_o_r_e_l_a_y  (none)             qmail-smtpd
+              _b_a_d_r_c_p_t_t_o           (none)             qmail-smtpd
+              _b_a_d_r_c_p_t_t_o_n_o_r_e_l_a_y    (none)             qmail-smtpd
+              _b_o_u_n_c_e_f_r_o_m          MAILER-DAEMON      qmail-send
+              _b_o_u_n_c_e_h_o_s_t          _m_e                 qmail-send
+              _c_o_n_c_u_r_r_e_n_c_y_l_o_c_a_l    10                 qmail-send
+              _c_o_n_c_u_r_r_e_n_c_y_r_e_m_o_t_e   20                 qmail-send
+              _d_e_f_a_u_l_t_d_o_m_a_i_n       _m_e                 qmail-inject
+              _d_e_f_a_u_l_t_h_o_s_t         _m_e                 qmail-inject
+              _d_a_t_a_b_y_t_e_s           0                  qmail-smtpd
+              _d_o_u_b_l_e_b_o_u_n_c_e_h_o_s_t    _m_e                 qmail-send
+              _d_o_u_b_l_e_b_o_u_n_c_e_t_o      postmaster         qmail-send
+              _e_n_v_n_o_a_t_h_o_s_t         _m_e                 qmail-send
+              _h_e_l_o_h_o_s_t            _m_e                 qmail-remote
+              _i_d_h_o_s_t              _m_e                 qmail-inject
+              _l_o_c_a_l_i_p_h_o_s_t         _m_e                 qmail-smtpd
+              _l_o_c_a_l_s              _m_e                 qmail-send
+              _m_f_c_h_e_c_k             0                  qmail-smtpd
+              _m_o_r_e_r_c_p_t_h_o_s_t_s       (none)             qmail-smtpd
+              _p_e_r_c_e_n_t_h_a_c_k         (none)             qmail-send
+              _p_l_u_s_d_o_m_a_i_n          _m_e                 qmail-inject
+              _q_m_q_p_s_e_r_v_e_r_s         (none)             qmail-qmqpc
+              _q_u_e_u_e_l_i_f_e_t_i_m_e       604800             qmail-send
+              _r_c_p_t_h_o_s_t_s           (none)             qmail-smtpd
+              _s_m_t_p_g_r_e_e_t_i_n_g        _m_e                 qmail-smtpd
+              _s_m_t_p_r_o_u_t_e_s          (none)             qmail-remote
+              _s_p_f_b_e_h_a_v_i_o_r         0                  qmail-smtpd
+              _s_p_f_e_x_p              (default)          qmail-smtpd
+              _s_p_f_g_u_e_s_s            (none)             qmail-smtpd
+              _s_p_f_r_u_l_e_s            (none)             qmail-smtpd
+              _t_a_p_s                                   (none)qmail-queue
+              _t_i_m_e_o_u_t_c_o_n_n_e_c_t      60                 qmail-remote
+              _t_i_m_e_o_u_t_r_e_m_o_t_e       1200               qmail-remote
+              _t_i_m_e_o_u_t_s_m_t_p_d        1200               qmail-smtpd
+              _v_i_r_t_u_a_l_d_o_m_a_i_n_s      (none)             qmail-send
+
+SSEEEE AALLSSOO
+       qmail-inject(8),   qmail-qmqpc(8),   qmail-queue(8),   qmail-remote(8),
+       qmail-send(8), qmail-showctl(8), qmail-smtpd(8)
+
+
+
+                                                              qmail-control(5)

@@ -1,0 +1,165 @@
+ERR_ADDR_AT:adres bevat geen @
+ERR_ADDR_LONG:adres is te lang
+ERR_ADDR_NL:adres bevat newline
+ERR_ANONYMOUS:Ik antwoord niet op zenders zonder hostnaam (#5.7.2)
+ERR_BADHOST:list host niet toegestaan
+ERR_BADLOCAL:list local niet toegestaan
+ERR_BADUSER:gebruiker niet toegestaan
+ERR_BAD_ADDRESS:Ik accepteer geen berichten op dit adres (local komt niet overeen) (#5.1.1)
+ERR_BAD_ALL:Het spijt me, na het verwijderen van onaccepteerbare MIME delen bleef er niks over (#5.7.0)
+ERR_BAD_DIGCODE:onjuiste digest code (#5.7.1)
+ERR_BAD_INDEX:Oud formaat of kapotte index. Start ezmlm-idx! (#5.3.0)
+ERR_BAD_NAME:alleen letters en underscores toegestaan in de bestandsnaam (#5.6.0)
+ERR_BAD_PART:Het spijt me, een deel van het bericht bevat een onaanvaardbaar MIME Content-Type: '<#1#>' (#5.2.3)
+ERR_BAD_REQUEST:Ongeldige opmaak verzoek (#5.7.1)
+ERR_BAD_RETURN_ADDRESS:Ongeldige opmaak bounce of ontvangstbevesting (#5.1.1)
+ERR_BAD_TYPE:Het spijt me, ik accepteer geen berichten met MIME Content-Type '<#1#>' (#5.2.3)
+ERR_BODYCOMMAND:Sorry, aangezien het bericht met "[un]subscribe" begint lijkt het op een adminstratief verzoek. Stuur een bericht naar het -help adres dat in de "Mailing-List:" header getoond wordt voor informatie over abonneren/opzeggen (#5.7.0)
+ERR_BOUNCE:Ik antwoord niet op bounce berichten (#5.7.2)
+ERR_CFHOST:bounce-host moet eerste regel zijn van <#1#>
+ERR_CHDIR:Kan niet naar directory <#1#> wisselen
+ERR_CHILD_CRASHED:subproces afgebroken
+ERR_CHILD_FATAL:fatale fout uit subproces
+ERR_CHILD_TEMP:tijdelijke fout uit subproces
+ERR_CHILD_UNKNOWN:onbekende fout uit subproces
+ERR_CHMOD:kan <#1#> niet chmod'en
+ERR_CHROOT:kon geen chroot doen naar <#1#>
+ERR_CLOSE:kon <#1#> niet sluiten
+ERR_COOKIE:bericht bevat geen geldig autenticatie-token
+ERR_CREATE:kon <#1#> niet maken
+ERR_CRONTAB:bijwerken crontab milukt. Neem met bovenstaande fout-informatie contact op met uw systeembeheerder
+ERR_DELETE:kon <#1#> niet verwijderen
+ERR_DONE:bericht is al met succes door deze list verwerkt
+ERR_DOW:weekdag alleen aangeven met enkele, door komma's gescheiden cijfers
+ERR_EDSIZE:Maximum omvang van te bewerken bestand overschreden (#5.6.0)
+ERR_EMPTY_DIGEST:niets samen te vatten
+ERR_EMPTY_LIST:geen berichten in archief
+ERR_ENDTAG:/> einde markering ontbreekt aan tag
+ERR_EUID:effectief gebruikers-id niet gevonden
+ERR_EXCESS_DEFER:overmatig verkeer: opgeschort
+ERR_EXCESS_MOD:overmatig verkeer: gemodereerd
+ERR_EXCLUSIVE:opties die de actie beheersen sluiten elkaar uit
+ERR_EXECUTE:kon <#1#> niet uitvoeren
+ERR_EXTRA_SUB:Toevoegen SENDER controle verwerkt voor: <#1#>
+ERR_EXTRA_UNSUB:Verwijderen SENDER controle verwerkt voor: <#1#>
+ERR_FILENAME:voortzettingstag zonder gedefinieerde bestandsnaam: <#1#>
+ERR_FLUSH_STDOUT:kon standaard uitvoer niet legen
+ERR_FLUSH:kon <#1#> niet legen
+ERR_FORK:kon niet aftakken
+ERR_JUNK:bericht met Precedence: junk genegeerd
+ERR_LINKDIR:linktag heeft geen /dir: <#1#>
+ERR_LISTNO:max. aantal items in lijst overschreden
+ERR_LOOPING:dit bericht ping-pongt: het heeft mijn Delivered-To regel al (#5.4.6)
+ERR_MAILING_LIST:bericht bevat al een Mailing-List header (misschien moet ik een sublist zijn)
+ERR_MAX_BOUNCE:max. aantal bounces overschreden: bounce wordt niet opgeslagen
+ERR_MAX_SIZE:Sorry, ik accepteer geen berichten die groter zijn dan <#1#> bytes
+ERR_MIME_QUOTE:MIME boundary bevat geen aanhalingsteken sluiten
+ERR_MIN_SIZE:Sorry, ik accepteer geen berichten die korter zijn dan <#1#> bytes
+ERR_MKTAB:maken van abonnee-tabellen mislukt
+ERR_MOD_ACCEPTED:Het spijt me maar ik heb dit bericht al geaccepteerd
+ERR_MOD_COOKIE:Ongeldig of verlopen moderatieverzoek
+ERR_MOD_REJECTED:Het spijt me maar ik heb dit bericht al afgewezen
+ERR_MOD_TIMEOUT:Het spijt me maar ik heb dit bericht niet meer
+ERR_MOVE:kon <#1#> niet naar <#2#> verplaatsen
+ERR_NEWLINE:dir mag geen regeleindes bevatten
+ERR_NOCMD:commando niet beschikbaar
+ERR_NODEFAULT:DEFAULT niet ingesteld
+ERR_NODTLINE:DTLINE niet ingesteld
+ERR_NOEXIST:bestaat niet
+ERR_NOINDEX:Sorry, ik kan de index voor dit bericht niet vinden
+ERR_NOLOCAL:LOCAL niet ingesteld
+ERR_NOMEM:te weinig geheugen
+ERR_NOSENDER:SENDER niet ingesteld
+ERR_NOT_ACTIVE:deze sublist is niet actief
+ERR_NOT_ALLOWED:Commando alleen toegestaan voor moderators (#5.7.1)
+ERR_NOT_ARCHIVED:Sorry, deze lijst wordt niet gearchiveerd (#5.1.1)
+ERR_NOT_AVAILABLE:Commando niet beschikbaar (#5.1.1)
+ERR_NOT_CLEAN:Ongeldig teken in adresdeel
+ERR_NOT_INDEXED:Sorry, deze lijst is niet geïndexeerd (#5.1.1)
+ERR_NOT_PARENT:dit bericht is niet afkomstig van mijn bovenliggende list ($5.7.2)
+ERR_NOT_PUBLIC:Sorry, ik heb opdracht alle verzoeken af te wijzen (#5.7.2)
+ERR_NO_ABSOLUTE:absolutie directorynamen buiten de list directory worden niet langer ondersteund
+ERR_NO_ADDRESS:List adres moet in To: of Cc: staan (#5.7.0)
+ERR_NO_LEVELS:abonnee tabelnamen mogen geen schuine strepen bevatten
+ERR_NO_MARK:ontbrekende begin-van-tekst of einde-van-tekst markering (#5.6.0)
+ERR_NO_MATCH:geen overeenkomend item gevonden
+ERR_NO_PLUGIN:geen plugin aangegeven in databaseverbindingsgegevens
+ERR_NO_POST:Het spijt me maar u mag geen berichten sturen naar deze list (#5.7.2)
+ERR_NO_SUBJECT:Sorry, ik accepteer geen berichten met een leeg onderwerp (#5.7.0)
+ERR_OBTAIN_LOCK:kon <#1#> niet vergrendelen
+ERR_OPEN_LISTMSGS:kon <#1#> in listberichten niet open. Draai ezmlm-archive opnieuw!
+ERR_OPEN:kon <#1#> niet openen
+ERR_PERIOD:punten zijn niet toegestaan in tags
+ERR_QMAIL_QUEUE:kon qmail-queue niet uitvoeren
+ERR_QUOTE:aanhalingstekens zijn niet toegestaan in dir
+ERR_READ_INPUT:kon invoer niet lezen
+ERR_READ_NOTHING:kon <#1#> niet lezen: er staat niks
+ERR_READ_STDIN:kon standaard invoer niet lezen
+ERR_READ:kon <#1#> niet lezen
+ERR_REJECT:Sorry, ik heb opdracht dit bericht af te wijzen
+ERR_REQ_LISTNAME:Dit commando vereist de naam van een mailing list (#5.1.1)
+ERR_REQ_LOCAL:het lokale deel van het commando komt niet overeen met deze lijst (#5.1.1)
+ERR_SEEK_INPUT:kon invoer niet doorzoeken
+ERR_SEEK:kon <#1#> niet doorzoeken
+ERR_SETUID:kon uid niet instellen
+ERR_SLASH:dir en dot moeten met een schuine streep beginnen
+ERR_STAT:kon <#1#> niet statten
+ERR_SUBCOMMAND:Sorry, ik accepteer geen commando's in het onderwerp. Stuur a.u.b. een bericht naar het -help adres dat in de "Mailing-List:" header getoond wordt voor informatie over commando's (#5.7.0)
+ERR_SUBLIST:sublist berichten moeten een Mailing-List header hebben (#5.7.2)
+ERR_SUBSCRIBER_CAN:alleen abonnees kunnen <#1#> (#5.7.1)
+ERR_SUBST_UNSAFE:Sorry, vervangen van doeladressen in headers door #A# of #t# is onveilig en niet toegestaan.
+ERR_SUB_NOP:doel is al abonnee
+ERR_SUID:Sorry, ik weiger als root te draaien
+ERR_SYNC:kon <#1#> niet synchroniseren
+ERR_SYNTAX_CONFIG:syntaxfout in configuratiebestand <#1#>
+ERR_SYNTAX_MISSING_AUTHHASH:syntaxfout: <#1#>: auteurhash ontbreekt
+ERR_SYNTAX_MISSING_AUTHOR:syntaxfout: <#1#>: auteurinformatie ontbreekt
+ERR_SYNTAX_MISSING_FIRST:syntaxfout: <#1#>: eerste regel ontbreekt
+ERR_SYNTAX_MISSING_SEMIDATE:syntaxfout: <#1#>: \";\"na datum ontbreekt
+ERR_SYNTAX_MISSING_SEPARATOR:syntaxfout: <#1#>: onderwerpscheiding ontbreekt
+ERR_SYNTAX_MISSING_SUBJHASH:syntaxfout: <#1#>: onderwerphash ontbreekt
+ERR_SYNTAX:syntaxfout in <#1#>
+ERR_TMP_QMAIL_QUEUE:tijdelijke qmail-queue fout
+ERR_UID:gebruikers-id niet gevonden
+ERR_UNIQUE:kon geen unieke bestandsnaam maken voor het bericht
+ERR_UNSUB_NOP:doel is geen abonnee
+ERR_VERSION:versie van ezmlmrc komt niet overeen. Gedrag stemt mogelijk niet overeen met de documentatie.
+ERR_WRITE_STDOUT:kon niet naar standaard uitvoer schrijven
+ERR_WRITE:kon niet naar <#1#> schrijven
+SUB_CONFIRM_POST:Bevestig bericht naar <#L#>@<#H#>
+SUB_EDIT_LIST:Lijst van bewerkbare bestanden voor <#L#>@<#H#>
+SUB_EDIT_REQUEST:BEWERK <#1#> voor <#L#>@<#H#>
+SUB_EDIT_SUCCESS:<#1#> voor <#L#>@<#H#> met succes bewerkt
+SUB_FAQ:Veel Voorkomende Vragen vragen (VVV) voor <#L#>@<#H#>
+SUB_GET_MSG:Archief ophalen uit <#L#>@<#H#>
+SUB_GOODBYE:Tot ziens van <#L#>@<#H#>
+SUB_HELP:Help voor <#L#>@<#H#>
+SUB_INFO:Informatie over <#L#>@<#H#>
+SUB_LIST:Abonneelijst van <#L#>@<#H#>
+SUB_LOG_SEARCH:Zoekresultaten uit log van <#L#>@<#H#>
+SUB_LOG:Abonneelog van <#L#>@<#H#>
+SUB_MODERATE:Moderatie voor <#L#>@<#H#>
+SUB_MOD_HELP:Moderatorhulp voor <#L#>@<#H#>
+SUB_MOD_SUBSCRIBE:Bevestig abonneren op <#L#>@<#H#>
+SUB_MOD_UNSUBSCRIBE:Bevestig opzeggen van <#L#>@<#H#>
+SUB_PROBE:Peiling van <#L#>@<#H#>
+SUB_RESULTS:<#L#> resultaten
+SUB_RETURNED_POST:Teruggestuurd bericht voor <#L#>@<#H#>
+SUB_STATUS:Abonnementsstatus op <#L#>@<#H#>
+SUB_SUBSCRIBE_NOP:Al geabonneerd op <#L#>@<#H#>
+SUB_UNSUBSCRIBE_NOP:Geen abonnee van <#L#>@<#H#>
+SUB_USR_SUBSCRIBE:bevestig abonneren op <#L#>@<#H#>
+SUB_USR_UNSUBSCRIBE:bevestig opzeggen van <#L#>@<#H#>
+SUB_WARNING:Waarschuwing van <#L#>@<#H#>
+SUB_WELCOME:Welkom bij <#L#>@<#H#>
+TXT_ADMINISTRIVIA:Administratief:
+TXT_BY:door: <#1#>
+TXT_EDIT_END:%%% EINDE VAN TEKST BESTAND
+TXT_EDIT_START:%%% START VAN TEKST BESTAND
+TXT_LISTMEMBERS:Abonnees van deze list zijn:
+TXT_MAILING_LIST:neem contact op met <#L#>-help@<#H#>; beheerd door ezmlm
+TXT_NOINDEX:aaaaaaaaaaaaaaaaaaaa <- onderwerpindex niet beschikbaar voor bericht(en) ->
+TXT_ONLY_SUBSCRIBERS:Sorry, alleen abonnees mogen berichten sturen. Als u abonnee bent, stuur dit bericht dan door naar <#L#>-owner@<#H#> om uw adres toe te laten voegen.
+TXT_REJECT_POSTS:Sorry, ik heb opdracht gekregen om uw berichten te weigeren. U kunt contact opnemen met <#L#>-owner@<#H#> als u hier vragen over heeft.
+TXT_SUPPRESSED:<onderdrukt>
+TXT_TOP_TOPICS:Onderwerpen (bericht <#1#> tot en met <#2#>)

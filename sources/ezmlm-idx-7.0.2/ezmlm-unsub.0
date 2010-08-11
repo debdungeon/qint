@@ -1,0 +1,68 @@
+ezmlm-unsub(1)                                                  ezmlm-unsub(1)
+
+
+
+NNAAMMEE
+       ezmlm-unsub - manually remove addresses from a mailing list
+
+SSYYNNOOPPSSIISS
+       eezzmmllmm--uunnssuubb [ --HHmmMMnnNNvvVV ] [ --hh _h_a_s_h ] _d_i_r [ _s_u_b_d_i_r ] [ _b_o_x@@_d_o_m_a_i_n [ _n_a_m_e
+       ] _._._.  ]
+
+DDEESSCCRRIIPPTTIIOONN
+       eezzmmllmm--uunnssuubb removes each  address  _b_o_x@@_d_o_m_a_i_n  from  the  mailing  list
+       stored  in  _d_i_r/_s_u_b_d_i_r.  _n_a_m_e is added as a comment to the subscription
+       log, if the --nn switch is used.
+
+       If no argument is given on the command line, eezzmmllmm--uunnssuubb  will  process
+       standard input instead.
+
+       If _b_o_x@@_d_o_m_a_i_n is not on the mailing list, eezzmmllmm--uunnssuubb keeps it off.
+
+       eezzmmllmm--uunnssuubb  converts  _d_o_m_a_i_n  to  lowercase before removing _b_o_x@@_d_o_m_a_i_n
+       from the mailing list.
+
+
+GGEENNEERRAALL OOPPTTIIOONNSS
+       --hh _h_a_s_h
+              With SQL support, the argument is used as the hash. The argument
+              should be between 1 and 99. The hash is used in in the distribu‐
+              tion of addresses between sublists.  As  the  hash  is  normally
+              between  0 and 52, controlling the hash makes it possible to add
+              addresses that cannot be manipulated remotely.
+
+       --HH     (Default.)  The address can be removed if it has a hash  in  the
+              normal range (0..52).  Only used by SQL subscriber databases.
+
+       --mm     (Default.)  Use the configured subscriber database for the list.
+
+       --MM     Use the standard subscriber database even if the list  was  con‐
+              figured to use another plugin.  This is equivalent to specifying
+              --SS _s_t_d.
+
+       --nn     Assume arguments are pairs of _b_o_x@@_d_o_m_a_i_n and _n_a_m_e (or other sub‐
+              scriber  info) rather than addresses alone.  eezzmmllmm--uunnssuubb((11)) will
+              remove the first argument in each pair from the subscriber list.
+              If  it  is a new address, _n_a_m_e will be added to the subscription
+              log.
+
+       --NN     (Default.)  Arguments are all addresses of the type  _b_o_x@@_d_o_m_a_i_n.
+
+       --SS _s_u_b_d_b
+              Connect  to  the  given subscriber database plugin.  This option
+              can be used to manipulate alternate subscriber  databases.   The
+              contents  of  the parameter should be the same as would be given
+              to eezzmmllmm--mmaakkee --66.  Use in combination with eezzmmllmm--lliisstt((11)) to con‐
+              vert an SQL address db to a ezmlm standard address database.
+
+       --vv     Display eezzmmllmm--uunnssuubb((11)) version information.
+
+       --VV     Display eezzmmllmm--uunnssuubb((11)) version information.
+
+SSEEEE AALLSSOO
+       ezmlm-list(1), ezmlm-manage(1), ezmlm-make(1), ezmlm-receipt(1), ezmlm-
+       send(1), ezmlm-sub(1), ezmlm(5)
+
+
+
+                                                                ezmlm-unsub(1)

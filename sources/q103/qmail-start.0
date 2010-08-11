@@ -1,0 +1,47 @@
+qmail-start(8)                                                  qmail-start(8)
+
+
+
+NNAAMMEE
+       qmail-start - turn on mail delivery
+
+SSYYNNOOPPSSIISS
+       qqmmaaiill--ssttaarrtt [ _d_e_f_a_u_l_t_d_e_l_i_v_e_r_y [ _l_o_g_g_e_r _a_r_g _._._.  ] ]
+
+DDEESSCCRRIIPPTTIIOONN
+       qqmmaaiill--ssttaarrtt  invokes qqmmaaiill--sseenndd, qqmmaaiill--llssppaawwnn, qqmmaaiill--rrssppaawwnn, and qqmmaaiill--
+       cclleeaann, under the proper uids and gids.  These four daemons cooperate to
+       deliver messages from the queue.
+
+       qqmmaaiill--ssttaarrtt  arranges  for  qqmmaaiill--sseenndd’s  activity record to be sent to
+       qqmmaaiill--ssttaarrtt’s output.  See qqmmaaiill--lloogg((55)) for the format of the  activity
+       record.   Other than this, qqmmaaiill--ssttaarrtt does not print anything, even on
+       failure.
+
+       If _d_e_f_a_u_l_t_d_e_l_i_v_e_r_y is supplied, qqmmaaiill--ssttaarrtt passes it to  qqmmaaiill--llssppaawwnn.
+
+       If  _l_o_g_g_e_r is supplied, qqmmaaiill--ssttaarrtt invokes _l_o_g_g_e_r with the given argu‐
+       ments, and feeds qqmmaaiill--sseenndd’s activity record through _l_o_g_g_e_r.
+
+       Environment variables given to qqmmaaiill--ssttaarrtt will eventually be passed on
+       to  qqmmaaiill--llooccaall,  so  make  sure to clean up the environment if you run
+       qqmmaaiill--ssttaarrtt manually:
+
+          # env - PATH="/var/qmail/bin:$PATH"
+          qmail-start ./Mailbox splogger qmail &
+          (all on one line)
+
+       Resource limits, controlling ttys, et al. are also passed  from  qqmmaaiill--
+       ssttaarrtt to qqmmaaiill--llooccaall.
+
+       Note  that qqmmaaiill--sseenndd normally juggles several simultaneous deliveries.
+       To reduce qqmmaaiill--sseenndd’s impact on other programs,  you  can  run  qqmmaaiill--
+       ssttaarrtt with a low priority.
+
+SSEEEE AALLSSOO
+       logger(1),  splogger(1),  nice(1), qmail-log(5), qmail-local(8), qmail-
+       clean(8), qmail-lspawn(8), qmail-rspawn(8), qmail-send(8)
+
+
+
+                                                                qmail-start(8)

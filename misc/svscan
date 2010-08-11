@@ -1,0 +1,6 @@
+# svscan - daemontools
+description "SVC daemontools monitor for daemons"
+start on runlevel [2345]
+stop on runlevel [!2345]
+respawn
+exec /usr/bin/svscanboot

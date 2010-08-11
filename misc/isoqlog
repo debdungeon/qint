@@ -1,0 +1,10 @@
+Alias /isoqlog /var/www/isoqlog
+
+<Directory /var/www/isoqlog>  
+  Order allow,deny
+  Allow from all
+  AuthName "Mail admin"
+  AuthType Basic
+  AuthUserFile /var/htpasswd/.htpasswd
+  Require user admin
+</Directory>

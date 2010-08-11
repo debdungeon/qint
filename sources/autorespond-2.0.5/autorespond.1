@@ -1,0 +1,41 @@
+.\"                                      Hey, EMACS: -*- nroff -*-
+.TH AUTORESPOND 1 "September 11, 2001"
+.\" Please adjust this date whenever revising the manpage.
+.\"
+.\" Some roff macros, for reference:
+.\" .nh        disable hyphenation
+.\" .hy        enable hyphenation
+.\" .ad l      left justify
+.\" .ad b      justify to both left and right margins
+.\" .nf        disable filling
+.\" .fi        enable filling
+.\" .br        insert line break
+.\" .sp <n>    insert n+1 empty lines
+.\" for manpage-specific macros, see man(7)
+.SH NAME
+autorespond \- simple autoresponder for qmail
+.SH SYNOPSIS
+.B autorespond
+time num message dir
+.br
+.SH DESCRIPTION
+This manual page documents briefly the
+.B autorespond
+command.
+This manual page was written for the Debian GNU/Linux distribution
+because the original program does not have a manual page.
+.PP
+\fBautorespond\fP sends an automatically generated response to emails for
+given address(es). It catches simple situations such as mail from a
+mailer-daemon, empty envelope sender, bulk precedence headers, etc.
+.PP
+time - amount of time to consider a message (in secs)
+.PP
+num - maximum number of messages to allow within time secs
+.PP
+message - the filename of the message to send
+.PP
+dir - the directory to hold the log of messages
+.SH AUTHOR
+This manual page was written by Sam Johnston <samj@debian.org>,
+for the Debian GNU/Linux system (but may be used by others).

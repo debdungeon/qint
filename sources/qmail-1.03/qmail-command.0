@@ -1,0 +1,69 @@
+qmail-command(8)                                              qmail-command(8)
+
+
+
+NNAAMMEE
+       qmail-command - user-specified mail delivery program
+
+SSYYNNOOPPSSIISS
+       in ..qqmmaaiill_e_x_t: ||_c_o_m_m_a_n_d
+
+DDEESSCCRRIIPPTTIIOONN
+       qqmmaaiill--llooccaall  will,  upon  your request, feed each incoming mail message
+       through a program of your choice.
+
+       When a mail message arrives, qqmmaaiill--llooccaall runs sshh  --cc  _c_o_m_m_a_n_d  in  your
+       home  directory.   It makes the message available on _c_o_m_m_a_n_d’s standard
+       input.
+
+       WWAARRNNIINNGG:: The mail message  does  not  begin  with  qqmmaaiill--llooccaall’s  usual
+       RReettuurrnn--PPaatthh and DDeelliivveerreedd--TToo lines.
+
+       Note  that qqmmaaiill--llooccaall uses the same file descriptor for every delivery
+       in your ..qqmmaaiill file, so it is not safe for _c_o_m_m_a_n_d to fork a child that
+       reads the message in the background while the parent exits.
+
+EEXXIITT CCOODDEESS
+       _c_o_m_m_a_n_d’s  exit  codes  are  interpreted  as  follows: 0 means that the
+       delivery was successful; 99 means that the delivery was successful, but
+       that  qqmmaaiill--llooccaall  should ignore all further delivery instructions; 100
+       means that the delivery failed permanently (hard error); 111 means that
+       the  delivery  failed but should be tried again in a little while (soft
+       error).
+
+       Currently 64, 65, 70, 76, 77, 78, and 112 are considered  hard  errors,
+       and  all  other  codes  are  considered soft errors, but _c_o_m_m_a_n_d should
+       avoid relying on this.
+
+EENNVVIIRROONNMMEENNTT VVAARRIIAABBLLEESS
+       qqmmaaiill--llooccaall supplies several useful environment variables  to  _c_o_m_m_a_n_d.
+       WWAARRNNIINNGG::  These environment variables are not quoted.  They may contain
+       special characters.  They are under the control of a possibly malicious
+       remote user.
+
+       SSEENNDDEERR  is  the  envelope  sender address.  NNEEWWSSEENNDDEERR is the forwarding
+       envelope sender address, as described in  ddoott--qqmmaaiill((55)).   RREECCIIPPIIEENNTT  is
+       the  envelope  recipient address, _l_o_c_a_l_@_d_o_m_a_i_n.  UUSSEERR is _u_s_e_r.  HHOOMMEE is
+       your home directory, _h_o_m_e_d_i_r.  HHOOSSTT is the _d_o_m_a_i_n part of the recipient
+       address.   LLOOCCAALL is the _l_o_c_a_l part.  EEXXTT is the address extension, _e_x_t.
+
+       HHOOSSTT22 is the portion of HHOOSSTT preceding the last dot; HHOOSSTT33 is the  por‐
+       tion  of HHOOSSTT preceding the second-to-last dot; HHOOSSTT44 is the portion of
+       HHOOSSTT preceding the third-to-last dot.
+
+       EEXXTT22 is the portion of EEXXTT following the first dash; EEXXTT33 is  the  por‐
+       tion following the second dash; EEXXTT44 is the portion following the third
+       dash.  DDEEFFAAUULLTT is the portion corresponding to the ddeeffaauulltt part of  the
+       ..qqmmaaiill--...  file name; DDEEFFAAUULLTT is not set if the file name does not end
+       with ddeeffaauulltt.
+
+       DDTTLLIINNEE and RRPPLLIINNEE are the usual  DDeelliivveerreedd--TToo  and  RReettuurrnn--PPaatthh  lines,
+       including  newlines.   UUFFLLIINNEE  is the UUCP-style FFrroomm__ line that qqmmaaiill--
+       llooccaall adds to _m_b_o_x-format files.
+
+SSEEEE AALLSSOO
+       dot-qmail(5), envelopes(5), qmail-local(8)
+
+
+
+                                                              qmail-command(8)

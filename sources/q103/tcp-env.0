@@ -1,0 +1,38 @@
+tcp-env(1)                                                          tcp-env(1)
+
+
+
+NNAAMMEE
+       tcp-env - set up TCP-related environment variables
+
+SSYYNNOOPPSSIISS
+       ttccpp--eennvv [ --rrRR ] [ --tt_t_i_m_e_o_u_t ] _p_r_o_g_r_a_m [ _a_r_g _._._.  ]
+
+DDEESSCCRRIIPPTTIIOONN
+       The  input  for  ttccpp--eennvv  must  be a TCP connection.  ttccpp--eennvv finds out
+       information about that connection, puts the  information  into  several
+       environment  variables as described in ttccpp--eennvviirroonn((55)),, and runs _p_r_o_g_r_a_m
+       with the given arguments.
+
+       Usually ttccpp--eennvv is run from  iinneettdd.   It  might  instead  be  run  from
+       another server that already sets up the right environment variables; if
+       PPRROOTTOO is set to TTCCPP when ttccpp--eennvv is invoked, ttccpp--eennvv assumes  that  all
+       the  other variables are set up properly, and it does not check whether
+       the input is a TCP connection.
+
+OOPPTTIIOONNSS
+       --rr     (Default.)  Attempt to  obtain  TTCCPPRREEMMOOTTEEIINNFFOO  from  the  remote
+              host.
+
+       --RR     Do not attempt to obtain TTCCPPRREEMMOOTTEEIINNFFOO from the remote host.
+
+       --tt_t_i_m_e_o_u_t
+              Give  up  on  the TTCCPPRREEMMOOTTEEIINNFFOO connection attempt after _t_i_m_e_o_u_t
+              seconds.  Default: 30.
+
+SSEEEE AALLSSOO
+       tcp-environ(5), inetd(8)
+
+
+
+                                                                    tcp-env(1)

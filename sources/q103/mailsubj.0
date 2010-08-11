@@ -1,0 +1,30 @@
+mailsubj(1)                                                        mailsubj(1)
+
+
+
+NNAAMMEE
+       mailsubj - send a mail message with a subject line
+
+SSYYNNOOPPSSIISS
+       mmaaiillssuubbjj _s_u_b_j_e_c_t _r_e_c_i_p _._._.
+
+DDEESSCCRRIIPPTTIIOONN
+       mmaaiillssuubbjj inserts _s_u_b_j_e_c_t and the list of _r_e_c_i_ps into a mail message:
+
+          Subject: subject
+          To: recip ...
+
+          body
+
+       mmaaiillssuubbjj  reads  the body of the message from its standard input.  Then
+       it sends the message.
+
+       Note that _s_u_b_j_e_c_t and _r_e_c_i_p must be quoted  properly  for  the  message
+       header.
+
+SSEEEE AALLSSOO
+       addresses(5), qmail-header(8), qmail-inject(8)
+
+
+
+                                                                   mailsubj(1)

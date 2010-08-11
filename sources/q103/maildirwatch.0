@@ -1,0 +1,24 @@
+maildirwatch(1)                                                maildirwatch(1)
+
+
+
+NNAAMMEE
+       maildirwatch - look for new mail in a maildir
+
+SSYYNNOOPPSSIISS
+       mmaaiillddiirrwwaattcchh
+
+DDEESSCCRRIIPPTTIIOONN
+       mmaaiillddiirrwwaattcchh  watches  your  _m_a_i_l_d_i_r  for  new mail.  You must supply a
+       MMAAIILLDDIIRR environment variable with the name of your _m_a_i_l_d_i_r directory.
+
+       mmaaiillddiirrwwaattcchh prints a  new  mail  summary  twice  per  minute.   It  is
+       designed  to run inside a (VT100-compatible) window; it clears the win‐
+       dow before each summary.
+
+SSEEEE AALLSSOO
+       maildir(5)
+
+
+
+                                                               maildirwatch(1)

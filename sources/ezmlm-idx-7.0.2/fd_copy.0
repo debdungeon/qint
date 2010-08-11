@@ -1,0 +1,29 @@
+fd_copy(3)                                                          fd_copy(3)
+
+
+
+NNAAMMEE
+       fd_copy - duplicate a descriptor
+
+SSYYNNTTAAXX
+       ##iinncclluuddee <<ffdd..hh>>
+
+       int ffdd__ccooppyy(_t_o,_f_r_o_m);
+
+       int _t_o;
+       int _f_r_o_m;
+
+DDEESSCCRRIIPPTTIIOONN
+       ffdd__ccooppyy  copies  descriptor  _f_r_o_m  to descriptor _t_o.  If _t_o was already
+       open, ffdd__ccooppyy closes it.  ffdd__ccooppyy always leaves _f_r_o_m intact; if _t_o  and
+       _f_r_o_m are the same number, ffdd__ccooppyy does nothing.
+
+       ffdd__ccooppyy  returns 0 on success, -1 on error.  ffdd__ccooppyy does not guarantee
+       that _t_o will remain open, if it was open, in case of error.
+
+SSEEEE AALLSSOO
+       dup(2), fd_move(3)
+
+
+
+                                                                    fd_copy(3)

@@ -1,0 +1,173 @@
+qmail-log(5)                                                      qmail-log(5)
+
+
+
+NNAAMMEE
+       qmail-log - the qmail activity record
+
+DDEESSCCRRIIPPTTIIOONN
+       qqmmaaiill--sseenndd  prints  a  series of lines describing its activities.  Each
+       possible line is described below.
+
+SSTTAATTUUSS
+       ssttaattuuss:: llooccaall _l//_L rreemmoottee _r//_R ......
+              qqmmaaiill--sseenndd is waiting for _l local deliveries and _r remote deliv‐
+              eries.  The concurrency limits are _L and _R.
+
+       ssttaattuuss:: eexxiittiinngg
+              qqmmaaiill--sseenndd is done.
+
+FFAATTAALL PPRROOBBLLEEMMSS
+       aalleerrtt:: ccaannnnoott ssttaarrtt:: ......
+              qqmmaaiill--sseenndd  is unable to prepare itself for delivering messages;
+              it is giving up.  This normally indicates a  serious  configura‐
+              tion  error,  but  it  can  be  caused  by  a  temporary lack of
+              resources.
+
+       aalleerrtt:: oohh nnoo!! lloosstt ......
+              One of the other daemons has died.  qqmmaaiill--sseenndd will exit as soon
+              as possible.
+
+SSEERRIIOOUUSS PPRROOBBLLEEMMSS
+       aalleerrtt:: uunnaabbllee ttoo aappppeenndd ttoo bboouunnccee mmeessssaaggee......
+              qqmmaaiill--sseenndd  is  unable  to  record  a permanent failure, usually
+              because the disk is full.   This  is  a  very  serious  problem;
+              qqmmaaiill--sseenndd  cannot  proceed  without  recording the results.  It
+              will try again in ten seconds.
+
+       aalleerrtt:: oouutt ooff mmeemmoorryy......
+              qqmmaaiill--sseenndd tried to allocate more memory and  failed.   It  will
+              try again in ten seconds.
+
+       aalleerrtt:: uunnaabbllee ttoo ooppeennddiirr......
+              qqmmaaiill--sseenndd is having trouble reading a file list from disk, usu‐
+              ally because the system’s file descriptor  table  is  full,  but
+              possibly  because  permissions are set incorrectly.  It will try
+              again in ten seconds.
+
+       aalleerrtt:: uunnaabbllee ttoo sswwiittcchh bbaacckk......
+              qqmmaaiill--sseenndd was sent SIGHUP, and it  is  unable  to  reenter  the
+              queue  directory.   This  is  a very serious problem; qqmmaaiill--sseenndd
+              cannot proceed outside the queue directory.  It will  try  again
+              in ten seconds.
+
+       aalleerrtt:: uunnaabbllee ttoo rreerreeaadd......
+              qqmmaaiill--sseenndd  was  sent  SIGHUP,  but it is unable to read the new
+              controls.  It will continue operating  with  the  original  con‐
+              trols.
+
+MMEESSSSAAGGEESS
+       nneeww mmssgg _m
+              qqmmaaiill--sseenndd is going to preprocess a queued message.  The message
+              number, _m, is its disk inode number.  After a message is removed
+              from the queue, its number can be reused immediately.
+
+       iinnffoo mmssgg _m:: bbyytteess _b ffrroomm <<_s>> qqpp _q uuiidd _u
+              Message  _m  contains  _b  bytes; its envelope sender is _s; it was
+              queued by a user with  user  ID  _u.   _q  is  a  long-term  queue
+              identifier,  the  process  ID of the qqmmaaiill--qquueeuuee that queued the
+              message.
+
+       bboouunnccee mmssgg _m qqpp _q
+              Message _m had some delivery failures.  The long-term queue iden‐
+              tifier of the bounce (or double-bounce) message is _q.
+
+       ttrriippllee bboouunnccee:: ddiissccaarrddiinngg ......
+              Message  _m  had some delivery failures, but it is already a dou‐
+              ble-bounce message, so it must be  thrown  away.   Triple-bounce
+              messages do not exist.
+
+       eenndd mmssgg _m
+              qqmmaaiill--sseenndd is about to remove message _m from the queue.
+
+DDEELLIIVVEERRIIEESS
+       ssttaarrttiinngg ddeelliivveerryy _d:: mmssgg _m ttoo ......
+              qqmmaaiill--sseenndd  is  telling  qqmmaaiill--llssppaawwnn or qqmmaaiill--rrssppaawwnn to deliver
+              message _m to one recipient.  The delivery number, _d, starts at 1
+              and increases by 1 for each new delivery.
+
+       ddeelliivveerryy _d:: ssuucccceessss:: ......
+              Delivery _d was successful.
+
+       ddeelliivveerryy _d:: ffaaiilluurree:: ......
+              Delivery _d failed permanently.  The message will bounce.
+
+       ddeelliivveerryy _d:: ddeeffeerrrraall:: ......
+              Delivery  _d  failed temporarily.  This recipient will be retried
+              later.
+
+       ddeelliivveerryy _d:: rreeppoorrtt mmaanngglleedd,, wwiillll ddeeffeerr
+              There is a serious bug in qqmmaaiill--llssppaawwnn  or  qqmmaaiill--rrssppaawwnn.   This
+              recipient will be retried later.
+
+WWAARRNNIINNGGSS
+       iinntteerrnnaall eerrrroorr:: ddeelliivveerryy rreeppoorrtt oouutt ooff rraannggee
+              qqmmaaiill--llssppaawwnn or qqmmaaiill--rrssppaawwnn has supplied a report on a nonexis‐
+              tent delivery.  This is a serious bug.
+
+       qqmmaaiill--cclleeaann uunnaabbllee ttoo cclleeaann uupp ......
+              For some reason qqmmaaiill--cclleeaann is unable to  remove  the  indicated
+              file.  It will try again later.
+
+       ttrroouubbllee ffssyynncciinngg ......
+              qqmmaaiill--sseenndd  was  unable  to write to disk the results of prepro‐
+              cessing a queued message.  It will try again later.
+
+       ttrroouubbllee iinn sseelleecctt
+              There is an operating system bug.
+
+       ttrroouubbllee iinnjjeeccttiinngg bboouunnccee mmeessssaaggee......
+              qqmmaaiill--sseenndd was unable to queue a bounce message, usually because
+              the disk is full.  It will try again later.
+
+       ttrroouubbllee mmaarrkkiinngg ......
+              qqmmaaiill--sseenndd  was  unable  to record the result of a successful or
+              permanently unsuccessful delivery.  This means that the delivery
+              will be tried again later.
+
+       ttrroouubbllee ooppeenniinngg ......
+              qqmmaaiill--sseenndd was unable to open the list of local or remote recip‐
+              ients for a message.  It will try again later.
+
+       ttrroouubbllee rreeaaddiinngg ......
+              Either qqmmaaiill--sseenndd is unable to read a recipient list, or  it  is
+              unable to read the envelope of a queued message, or it is out of
+              memory.  Whatever it was doing, it will try again later.
+
+       ttrroouubbllee wwrriittiinngg ttoo ......
+              qqmmaaiill--sseenndd was unable to preprocess a  queued  message,  usually
+              because the disk is full.  It will try again later.
+
+       uunnaabbllee ttoo ccrreeaattee ......
+              qqmmaaiill--sseenndd  was  unable  to preprocess a queued message, usually
+              because the disk is out of inodes.  It will try again later.
+
+       uunnaabbllee ttoo ooppeenn ......
+              qqmmaaiill--sseenndd is unable to read the envelope of  a  queued  message
+              for preprocessing.  It will try again later.
+
+       uunnaabbllee ttoo ssttaarrtt qqmmaaiill--qquueeuuee......
+              qqmmaaiill--sseenndd  is unable to queue a bounce message, usually because
+              the machine is almost out of memory.  It will try again later.
+
+       uunnaabbllee ttoo ssttaatt ......
+              qqmmaaiill--sseenndd is unable to obtain information  about  a  file  that
+              should exist.  It will try again later.
+
+       uunnaabbllee ttoo uunnlliinnkk ......
+              qqmmaaiill--sseenndd is unable to remove a file.  It will try again later.
+
+       uunnaabbllee ttoo uuttiimmee ......
+              qqmmaaiill--sseenndd is about to exit, and it is unable to record on  disk
+              the  next  scheduled  delivery  time for a message.  The message
+              will be retried as soon as qqmmaaiill--sseenndd is restarted.
+
+       uunnkknnoowwnn rreeccoorrdd ttyyppee iinn ......
+              There is a serious bug in either qqmmaaiill--qquueeuuee or qqmmaaiill--sseenndd.
+
+SSEEEE AALLSSOO
+       qmail-send(8)
+
+
+
+                                                                  qmail-log(5)

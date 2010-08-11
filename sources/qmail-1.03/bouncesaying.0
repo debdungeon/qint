@@ -1,0 +1,37 @@
+bouncesaying(1)                                                bouncesaying(1)
+
+
+
+NNAAMMEE
+       bouncesaying - perhaps bounce each incoming message
+
+SSYYNNOOPPSSIISS
+       in ..qqmmaaiill: ||bboouunncceessaayyiinngg _e_r_r_o_r [ _p_r_o_g_r_a_m [ _a_r_g _._._.  ] ]
+
+DDEESSCCRRIIPPTTIIOONN
+       bboouunncceessaayyiinngg  feeds  each  new  mail  message to _p_r_o_g_r_a_m with the given
+       arguments.  If _p_r_o_g_r_a_m exits 0, bboouunncceessaayyiinngg prints _e_r_r_o_r  and  bounces
+       the message.
+
+       If  _p_r_o_g_r_a_m  exits  111,  bboouunncceessaayyiinngg  exits  111, so delivery will be
+       retried later.
+
+       If _p_r_o_g_r_a_m exits anything else (or does not exist), bboouunncceessaayyiinngg  exits
+       0, so the rest of ..qqmmaaiill will be processed as usual.
+
+       Note  that  it  is  not safe for _p_r_o_g_r_a_m to fork a child that reads the
+       message in the background.
+
+       If _p_r_o_g_r_a_m is not supplied, bboouunncceessaayyiinngg always bounces the message:
+
+          |bouncesaying ’This address no longer accepts mail.’
+
+       WWAARRNNIINNGG:: If you create a ..qqmmaaiill file to enable bboouunncceessaayyiinngg, make  sure
+       to also add a line specifying delivery to your normal mailbox.
+
+SSEEEE AALLSSOO
+       condredirect(1), except(1), dot-qmail(5), qmail-command(8)
+
+
+
+                                                               bouncesaying(1)

@@ -1,0 +1,24 @@
+qmail-rspawn(8)                                                qmail-rspawn(8)
+
+
+
+NNAAMMEE
+       qmail-rspawn - schedule remote deliveries
+
+SSYYNNOOPPSSIISS
+       qqmmaaiill--rrssppaawwnn
+
+DDEESSCCRRIIPPTTIIOONN
+       qqmmaaiill--rrssppaawwnn reads a series of remote delivery commands from descriptor
+       0, invokes qqmmaaiill--rreemmoottee to  perform  the  deliveries,  and  prints  the
+       results to descriptor 1.
+
+       qqmmaaiill--rrssppaawwnn  invokes  qqmmaaiill--rreemmoottee  asynchronously, so the results may
+       not be in the same order as the commands.
+
+SSEEEE AALLSSOO
+       qmail-send(8), qmail-remote(8)
+
+
+
+                                                               qmail-rspawn(8)

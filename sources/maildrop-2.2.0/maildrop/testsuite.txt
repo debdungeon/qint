@@ -1,0 +1,79 @@
+Yes1
+Yes2
+Four: 4
+Six: 6
+Three: 3
+One: 1
+Zero: 0
+Minus six: -6
+message1
+message2
+Not dupe: 1
+Not dupe: 0
+extract1@example.com
+subject1
+From: extract2@example.com
+Subject: subject2
+From: nobody@example.com
+Subject: replacementsubject
+
+-a test
+From: nobody@example.com
+From: me@example.com
+Subject: replacementsubject
+
+-A test
+From: nobody@example.com
+Subject: catenate header test
+To: nobody@example.com
+
+test
+Subject: remove From_ test
+
+test
+Subject: remove From_ test
+
+test
+From testing
+From: nobody@example.com
+Subject: add From_ test
+
+test
+From nobody@example.com
+From: nobody@example.com
+Subject: add From_ test
+
+test
+From: nobody@example.com
+Subject: -i test
+Old-Header1: value1
+Header1: value1
+Header2: value2
+
+test
+From: nobody@example.com
+Subject: -I test
+Header2: value2
+
+test
+To: nobody@example.com
+In-Reply-To: <1@example.com>
+References: <2@example.com>
+	<3@example.com>
+      <1@example.com>
+Subject: Re: autoreply test
+
+You wrote:
+
++Autoreply test
++Original message
+old-subject: -R option test
+From: nobody@example.com
+
+-R option test
+Subject: -u test, line1
+
+Testing -u option
+Subject: -u test, line2
+
+Testing -u option

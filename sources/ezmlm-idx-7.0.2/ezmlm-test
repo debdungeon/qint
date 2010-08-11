@@ -1,0 +1,2926 @@
+#!/bin/sh
+# WARNING: This file was auto-generated. Do not edit!
+VER="ezmlm-idx-7.0.2"
+# Above should have been added a VER definition
+# DEBUG=1
+# This program is meant to test ezmlm-idx.
+#
+# The script will use __TSTDIR and __TSTDIR__err and destroy any files
+# therein. Both user name and directory names etc can be configured
+# below, but this should only very rarely be necessary.
+
+# must be absolute
+EZBIN=`pwd`
+
+# Version of ezmlm-idx for which this test script is designed
+OLD_VER='ezmlm-idx-031'		# ezmlm-idx-0.31x
+
+# basedir for test list. It and all files therein are destroyed by
+# the script
+SUBDIR=__TSTDIR
+DIR="$PWD/$SUBDIR"
+
+# part that follows user name of local name of the list
+LIST='__tstlist'
+
+# file not within listdir where some error output is stored. If something
+# fails, this file may have more info.
+ERR="${DIR}__err"
+
+# file that can hold crated test msg to avoid sigpipe
+TMP="${DIR}/__tmp"
+
+# file to hold a test qmail-queue
+QQTEST="${DIR}/__qqtest"
+
+# file to hold the message output from qmail-queue
+QQMSG="${DIR}/__qqmsg"
+
+# file to hold the envelope output from qmail-queue
+QQENV="${DIR}/__qqenv"
+
+# file to hold the message headers output from qmail-queue
+QQHDR="${DIR}/__qqhdr"
+
+# file to hold the message body output from qmail-queue
+QQBODY="${DIR}/__qqbody"
+
+# defaults for SQL version - overridden by command line switches
+TABLE='list'
+DB='ezmlm'
+SQLHOST=''
+SQLUSER='eztest'	# -u overrides this
+
+#programs:
+# to report disk usage summary
+DU='du -s'
+# Need full path in case qmail doesn't have these in the path
+ECHO=`which echo` 2>/dev/null || ECHO='echo'
+GREP=`which grep` 2>/dev/null || GREP='grep'
+# std programs
+HEAD='head'
+MKDIR='mkdir'
+MV='mv'
+RM='rm'
+LN='ln'
+SED='sed'
+STRINGS='strings'
+TAIL='tail'
+UNSET='unset'
+WC='wc'
+CHMOD='chmod'
+CAT='cat'
+TEST='test'
+TR='tr'
+
+###################### END CONFIRGRABLE ITEMS #########################
+if ${ECHO} -n | grep n > /dev/null 2>&1; then
+	prompt() {
+		${ECHO} "$*\c"
+	}
+else
+	prompt() {
+		${ECHO} -n "$*"
+	}
+fi
+
+if ps auxw > /dev/null 2>&1; then
+	PS='ps auxw'
+else
+	PS='ps -ef'
+fi
+
+if (whoami) > /dev/null 2>&1; then
+	USER=`whoami`
+elif (id) > /dev/null 2>&1; then
+	USER=`id | cut -d'(' -f2 | cut -d')' -f1`
+# the remaining two tests work only if "su -" was used
+# perhaps delete them
+elif (logname) > /dev/null 2>&1; then
+	USER=`logname`
+elif (who am i) > /dev/null 2>&1; then
+	USER=`who am i | cut -d' ' -f1 | cut -d'!' -f2`
+else
+	${ECHO} "Could not determine current user name, using 'nobody'"
+	USER='nobody'
+fi
+
+SQLUSER=''	# must be empty
+# Set if we've found bug from old version
+BUG=''
+# Use subdb plugin
+SUBDB=''
+# process arguments
+
+while [ ! -z "$1" ]; do		# not everyone has getopt :-(
+	case "$1" in
+		-s)
+			SUBDB="$2"; shift; shift;;
+		-d)
+			DB="$2"; shift; shift;;
+		-h)
+			SQLHOST="$2"; shift; shift;;
+		-p)
+			PW="$2"; shift; shift;;
+		-u)
+			SQLUSER="$2"; shift; shift;;
+		-t)
+			TABLE="$2"; shift; shift;;
+		--)
+			shift; break;;
+		*)
+			${ECHO} "$i"
+			${ECHO} "Usage: ezmlm-test [-/]" \
+				"[-s plugin [-p sqlpassword] [-u sqluser] [-d sqldb]" \
+				"[-t sqltable] [-h sqlhost]]"
+			${ECHO}
+			${ECHO} "args have to be separated from switches!"
+			${ECHO}
+			${ECHO} "defaults: -s [empty - use standard subdb]"
+			${ECHO} "          -d ezmlm"
+			${ECHO} "          -h [empty => plugin default]"
+			${ECHO} "          -p [empty]"
+			${ECHO} "          -s 1 [run test from beginning]"
+			${ECHO} "          -t list"
+			${ECHO} "          -u eztest"
+			${ECHO}
+			exit 99;;
+	esac
+done
+
+LOC="xyzzy-$LIST"
+# calculate position in LOCAL where [normally] default starts
+LOCLEN=`${ECHO} "$LOC-" | ${WC} -c | ${SED} 's/ //g'`
+REJLEN=`${ECHO} "$LOC-reject-" | ${WC} -c | ${SED} 's/ //g'`
+ACCLEN=`${ECHO} "$LOC-accept-" | ${WC} -c | ${SED} 's/ //g'`
+
+DOT="$DIR/dot.qmail-$LIST"
+
+HOST="example.com"
+
+# test addresses.
+SND="sender"
+MOD="moderator"
+DIG="digest"
+MAN="manager"
+BNC="bouncer"
+
+if [ ! -x "${EZBIN}/ezmlm-make" ]; then
+	${ECHO} "can't execute ${EZBIN}/ezmlm-make. Most likely, you"
+	${ECHO} "doen't have execute permission to files in directory"
+	${ECHO} "``${EZBIN}''. Adjust permissions or execute the script"
+	${ECHO} "as a user with the appropriate permissions."
+	exit 99
+fi
+
+########################
+# remove old test list #
+########################
+if [ -n "$SUBDB" ]; then
+	${EZBIN}/ezmlm-unsub "$DIR" digest "${MAN}@$HOST" "${DIG}@$HOST" \
+		>"$ERR" 2>&1
+	${EZBIN}/ezmlm-unsub "$DIR" mod "${MOD}@$HOST" \
+		>"$ERR" 2>&1
+	${EZBIN}/ezmlm-unsub "$DIR" allow "aaa@bbb" "ccc@ddd" "eee@fff" \
+		>"$ERR" 2>&1
+fi
+${RM} -rf "$DIR" "$ERR" >/dev/null 2>&1
+test -e "$DIR" \
+&& fatal "Could not remove old list"
+
+#################
+# check version #
+#################
+
+THIS_VER=`${EZBIN}/ezmlm-make -V 2>&1` || \
+	fatal "This program only works with ezmlm-idx"
+THIS_VER=`${ECHO} "$THIS_VER" | cut -d' ' -f3`
+if [ "$THIS_VER" != "$VER" ]; then
+  ${ECHO} "Warning: These tests were built for $VER but the programs being"
+  ${ECHO} "         tested are version $THIS_VER.  Some errors may result from"
+  ${ECHO} "         this version mis-match."
+fi
+
+# Set BADUNSET if unset doesn't do the job
+
+A='a'
+export A
+${UNSET} A
+[ -z "$A" ] || BADUNSET='y'
+
+${UNSET} DEFAULT
+
+QMAILHOME="$DIR"
+QMAILQUEUE="$QQTEST"
+EZMLM_BIN="$EZBIN"
+EZMLM_ETC="$EZBIN"/lang
+EZMLM_LIB="$EZBIN"
+
+export DEFAULT LOCAL QMAILHOME QMAILQUEUE SENDER EZMLM_BIN EZMLM_ETC EZMLM_LIB
+fatal() {
+  for line in "$@"; do
+    ${ECHO} "$line" >&2
+  done
+  exit 100;
+}
+
+grephdr() {
+  # Search for the header line, and produce an error if it didn't match.
+  ${GREP} "^$*$" "$QQHDR" >/dev/null 2>&1 || \
+  {
+    ${ECHO} "Header is missing or wrong $1 line:";
+    ${GREP} -i "^$1" "$QQHDR"
+    BUG="${BUG} headers"
+    prompt "..............: "
+  }
+  # Remove any found lines from the header file
+  ${GREP} -iv "^$1" "$QQHDR" >"${TMP}hdr"
+  ${MV} -f "${TMP}hdr" "$QQHDR"
+}
+
+grepbody() {
+  ${GREP} "^$*$" "$QQBODY" >/dev/null 2>&1 || \
+  {
+    ${ECHO} "Body is missing or wrong $1 line:";
+    ${GREP} -i "^$1" "$QQBODY"
+    BUG="${BUG} body"
+    prompt "..............: "
+  }
+}
+
+grepbodynot() {
+  ${GREP} "^$*" "$QQBODY" >/dev/null 2>&1 && \
+  {
+    ${ECHO} "Body is contains extraneous $1 line:";
+    ${GREP} -i "^$1" "$QQBODY"
+    BUG="${BUG} body"
+    prompt "..............: "
+  }
+}
+
+grephdr_std() {
+  grephdr Message-ID: "<[0123456789]*\\.[0123456789]*\\.ezmlm@${HOST}>"
+  grephdr Delivered-To: "responder for ${LOC}@${HOST}"
+  grephdr MIME-Version: 1.0
+}
+
+grephdr_list() {
+  grephdr Mailing-List: "contact ${LOC}-help@${HOST}; run by ezmlm"
+  grephdr List-Help: "<mailto:${LOC}-help@${HOST}>"
+  grephdr List-Post: "<mailto:${LOC}@${HOST}>"
+  grephdr List-Subscribe: "<mailto:${LOC}-subscribe@${HOST}>"
+  if [ -n "$*" ]; then
+    grephdr List-Unsubscribe: "<mailto:${LOC}-unsubscribe@${HOST}>"
+  fi
+}
+
+grephdr_manage() {
+  grephdr_std
+  grephdr_list
+  grephdr Date: '..* ... .... ..:..:.. [-+]....'
+  grephdr From: "${LOC}-help@${HOST}"
+  grephdr To: "test@example.org"
+  grephdr Content-Type: "text/plain; charset=.*"
+}
+
+grephdr_empty() {
+  # Use this after all other grephdr checks to ensure nothing else was output
+  test -s "$QQHDR" && \
+  {
+    ${ECHO} "Headers contained extra lines:"
+    ${CAT} "$QQHDR"
+    BUG="${BUG} headers"
+  }
+}
+
+checkenv()
+{
+  msg="$1"
+  ${HEAD} -n 1 "$QQENV" | grep "^F$2$" >/dev/null \
+  || fatal "envelope for $msg has wrong sender"
+  test $# = $(wc -l <"$QQENV") \
+  || fatal "envelope for $msg has wrong number of recipients"
+  shift 2
+  for rcpt in "$@"; do
+    grep "^T$rcpt$" "$QQENV" >/dev/null \
+    || fatal "envelope for $msg is missing recipient $rcpt"
+  done
+}
+
+###############################
+# message generating function #
+###############################
+make_body()
+{
+  ${ECHO} "This is a simple message body"
+  ${ECHO} "--bound123ary"
+  ${ECHO} "Content-type: Text/pLAIn"
+  ${ECHO}
+  ${ECHO} "plain text"
+  ${ECHO} "--bound123ary"
+  ${ECHO} "Content-type: texT/Html"
+  ${ECHO}
+  ${ECHO} "html text"
+  ${ECHO} "--bound123ary--"
+  ${ECHO}
+  ${ECHO} "junk after boundary"
+  return 0
+}
+
+qqclean()
+{
+  ${RM} -f "$QQBODY" "$QQENV" "$QQHDR" "$QQMSG" "$QQMSG".*
+}
+
+make_message()
+{
+  ${ECHO} "ReCEIved: #LAST#"
+  ${ECHO} "ReCeIved: #PENULTIMATE#"
+  ${ECHO} "retuRN-RECeipt-to: nobody"
+  ${ECHO} "To: $TO"
+  ${ECHO} "CC: "
+  ${ECHO} " $CC"
+  ${ECHO} "FROM: $FROM"
+  if [ ! -z "$CONTENT" ]; then
+	${ECHO} "MIME-Version: 1.0"
+	${ECHO} "Content-type: $CONTENT;"
+	${ECHO} " boundary=bound123ary${AFTERBOUND}"
+  fi
+  if [ ! -z "$SUBJECT" ]; then
+	${ECHO} "Subject: $SUBJECT"
+  fi
+  ${ECHO}
+  make_body
+  return 0
+}
+
+#########################
+# Tests for file status #
+#########################
+exists() {
+  for file in "$@"; do
+    ${TEST} -e "$file" || return 1
+  done
+  return 0
+}
+
+msgexists() {
+  ${TEST} -s "$QQMSG" -a -s "${QQENV}"
+}
+
+#######################################
+# Extract parts of the message header #
+#######################################
+gethdr() {
+    ${SED} -e "/^$1:/!d; s/[^ ]* *//;" "$QQHDR"
+}
+##############
+# ezmlm-make #
+##############
+
+  prompt "ezmlm-make:           "
+
+# edit non-existant list
+  ${EZBIN}/ezmlm-make -e -C${EZBIN}/lang/en_US "$DIR" "$DOT" \
+	"$LOC" "$HOST" > /dev/null 2>&1 && \
+	fatal "ezmlm-make failed reject edit of non-existing list:"
+
+# make simple test list
+  ${EZBIN}/ezmlm-make -C${EZBIN}/lang/en_US "$DIR" "$DOT" \
+	"$LOC" "$HOST" || \
+	fatal "ezmlm-make failed to create test list"
+
+# remake simple test list which should fail
+  ${EZBIN}/ezmlm-make -C${EZBIN}/lang/en_US "$DIR" "$DOT" \
+	"$LOC" "$HOST" >/dev/null 2>&1 && \
+	fatal "failed to reject creation of existing list"
+
+# edit the list (add digest)
+  ${EZBIN}/ezmlm-make -+d -C${EZBIN}/lang/en_US "$DIR" || \
+	fatal "ezmlm-make failed to edit test list"
+
+# edit the list (add digest)
+  ${EZBIN}/ezmlm-make -ed -C${EZBIN}/lang/en_US "$DIR" "$DOT" "$LOC" "$HOST" \
+	>/dev/null 2>&1 || \
+	{ ${ECHO} "failed to edit"
+	  prompt "ezmlm-make ......     "
+	}
+
+  ${GREP} "ezmlm-weed" "${DIR}/bouncer" >/dev/null 2>&1 || \
+	fatal "no ezmlm-weed in bouncer"
+  ${GREP} "ezmlm-return" "${DIR}/bouncer" >/dev/null 2>&1 || \
+	{ ${ECHO} "no ezmlm-return in bouncer: 0.32 bug, fixed in 0.321."
+	  prompt "ezmlm-make ......     "
+	  BUG="${BUG} return"
+	}
+
+# digest/bouncer
+    if [ ! -f "${DIR}/digest/bouncer" ]; then
+	fatal "failed to create digest/bouncer";
+    fi
+    ${GREP} "ezmlm-weed" "${DIR}/digest/bouncer" >/dev/null 2>&1 || \
+	fatal "no ezmlm-weed in bouncer"
+    ${GREP} "ezmlm-return" "${DIR}/digest/bouncer" >/dev/null 2>&1 || \
+	{ ${ECHO} "no ezmlm-return in digest/bouncer: 0.32 bug, OK in 0.321."
+	  prompt "ezmlm-make ......     "
+	  BUG="${BUG} return"
+	}
+
+  ${ECHO} "OK"
+
+# Add subdb files for plugin testing
+${ECHO} "Using subdb plugin:   ${SUBDB:-std}"
+if [ -n "$SUBDB" ]; then
+  # make sure any old tables no longer exist first
+  ${EZBIN}/ezmlm-rmtab -S "$SUBDB:$SQLHOST::$SQLUSER:$PW:$DB:$TABLE" "$DIR" \
+	>/dev/null 2>&1
+  ${EZBIN}/ezmlm-make -+6 "$SUBDB:$SQLHOST::$SQLUSER:$PW:$DB:$TABLE" \
+	-C${EZBIN}/lang/en_US "$DIR"|| \
+	fatal "ezmlm-make failed to add subdb config info"
+fi
+
+  # remove inlocal/inhost - shouldn't be used
+  ${RM} -f "${DIR}/inlocal" "${DIR}/inhost" > /dev/null || \
+    fatal "failed to remove inlocal/inhost for testlist"
+
+#############################
+# set up qmail-queue script #
+#############################
+  (
+    ${ECHO} "#!/bin/sh"
+    ${ECHO} "${CAT} >'${QQMSG}'"
+    ${ECHO} "${TR} \\\\0 \\\\n <&1 >'${QQENV}'"
+    ${ECHO} "${SED} -e '/^$/,\$d' <'${QQMSG}' >'${QQHDR}'"
+    ${ECHO} "${SED} -e '1,/^$/d' <'${QQMSG}' >'${QQBODY}'"
+    ${ECHO} "cp '${QQMSG}' '${QQMSG}'.\$\$"
+    ${ECHO} "exit 0"
+  ) > "$QQTEST"
+  ${CHMOD} 755 "$QQTEST"
+###################################################
+# account to receive digests and archive excerpts #
+###################################################
+
+#####################
+# test ezmlm-reject #
+#####################
+  prompt "ezmlm-reject:         "
+  FROM="$USER"
+  TO="$LOC@$HOST"
+  SUBJECT="test"
+  CONTENT="multipart/mixed"
+  CC="<>"
+  BODY=''
+
+  ${EZBIN}/ezmlm-reject "$DIR" </dev/null >/dev/null 2>&1 && \
+        fatal "failed to reject missing \$SENDER"
+
+  SENDER=''
+  ${EZBIN}/ezmlm-reject "$DIR" </dev/null >/dev/null 2>&1 && \
+        fatal "failed to reject empty sender"
+
+  SENDER="${SND}@$HOST"
+
+# with directory
+  make_message | ${EZBIN}/ezmlm-reject "$DIR" || \
+	fatal "failed to accept good message with dir"
+# without directory
+
+  make_message | ${EZBIN}/ezmlm-reject || \
+	fatal "failed to accept good message without dir: $?"
+
+#too small
+  ${ECHO} "5000:1000" > "${DIR}/msgsize"
+  { make_message | ${EZBIN}/ezmlm-reject "$DIR"; } >/dev/null 2>&1 && \
+	fatal "ezmlm-reject failed to reject too small message"
+
+# just right
+  ${ECHO} "500:5" > "${DIR}/msgsize"
+  make_message | ${EZBIN}/ezmlm-reject "$DIR" || \
+	fatal "failed to accept message of ok size"
+
+#too large
+  ${ECHO} "20:10" > "${DIR}/msgsize"
+  { make_message  | ${EZBIN}/ezmlm-reject "$DIR"; } > /dev/null 2>&1 && \
+        fatal "ezmlm-reject failed to reject too large message"
+
+# restore
+  ${RM} -f "${DIR}/msgsize"
+
+# without subject
+  SUBJECT=''
+   { make_message  | ${EZBIN}/ezmlm-reject "$DIR"; } > /dev/null 2>&1 && \
+        { fatal "ezmlm-reject failed to reject null subject"; }
+   { make_message  | ${EZBIN}/ezmlm-reject ; } > /dev/null 2>&1 && \
+        fatal "ezmlm-reject failed to reject null subject"
+
+# with empty subject
+  SUBJECT='(NUll)'
+   { make_message  | ${EZBIN}/ezmlm-reject "$DIR"; } > /dev/null 2>&1 && \
+        fatal "ezmlm-reject failed to reject null subject with dir"
+   { make_message  | ${EZBIN}/ezmlm-reject; } > /dev/null 2>&1 && \
+        fatal "ezmlm-reject failed to reject null subject without dir"
+# testing -S
+  { make_message | ${EZBIN}/ezmlm-reject -S "$DIR"; } > /dev/null || \
+	fatal "-S switch failed with dir"
+  { make_message | ${EZBIN}/ezmlm-reject -S; } > /dev/null || \
+	fatal "-S switch failed without dir"
+
+# with command subject
+  SUBJECT='REmOVE'
+  { make_message | ${EZBIN}/ezmlm-reject "$DIR"; } > /dev/null 2>&1 && \
+	fatal "failed to reject command subject with dir"
+  { make_message | ${EZBIN}/ezmlm-reject "$DIR"; } > /dev/null 2>&1 && \
+	fatal "failed to reject command subject without dir"
+# testing -C
+  { make_message | ${EZBIN}/ezmlm-reject -C "$DIR"; } > /dev/null || \
+	fatal "-C switch failed with dir"
+  { make_message | ${EZBIN}/ezmlm-reject -C;  } > /dev/null || \
+	fatal "-C switch failed without dir"
+
+SUBJECT='test'
+
+# Test with list name in Cc:
+  CC="$TO"
+  TO="nobody@$HOST"
+  { make_message | ${EZBIN}/ezmlm-reject "$DIR"; } > /dev/null || \
+	fatal "failed to accept good Cc: with dir"
+  { make_message | ${EZBIN}/ezmlm-reject; } > /dev/null || \
+	fatal "failed to accept good Cc: without dir"
+
+# Bad To/Cc
+  CC="$TO"
+  { make_message | ${EZBIN}/ezmlm-reject "$DIR"; } > /dev/null 2>&1 && \
+	fatal "failed to reject bad To/Cc with dir"
+  if [ "$?" != "100" ]; then
+	fatal "failed to exit 100 on error"
+  fi
+  { make_message | ${EZBIN}/ezmlm-reject -q "$DIR"; } > /dev/null 2>&1 && \
+	fatal "failed to reject bad To/Cc with dir"
+  if [ "$?" -ne "99" ]; then
+	fatal "-q failed"
+  fi
+
+# for backwards-compatibility and since we don't know outlocal without
+# dir, ezmlm-reject doesn't check To/Cc when there is no dir
+  { make_message | ${EZBIN}/ezmlm-reject; } > /dev/null || \
+		fatal "failed to accept bad To/Cc without dir"
+
+# testing -T
+  { make_message | ${EZBIN}/ezmlm-reject -T "$DIR"; } > /dev/null || \
+	fatal "-T switch failed with dir"
+  { make_message | ${EZBIN}/ezmlm-reject -T; } > /dev/null || \
+	fatal "-T switch failed without dir"
+
+# restore good TO
+  TO="$LOC@$HOST"
+
+# if part is mimereject message should be rejected
+  touch "$DIR"/mimeremove
+  ${ECHO} "text/html" > "$DIR"/mimereject
+  { make_message | ${EZBIN}/ezmlm-reject "$DIR"; }  > /dev/null 2>&1 && \
+	fatal "mimereject failed with dir"
+  { make_message | ${EZBIN}/ezmlm-reject; } > /dev/null || \
+	fatal "mimereject without dir"
+
+# if part is removed ezmlm-reject should not reject
+  ${ECHO} "tExt/htMl" > "$DIR"/mimeremove
+  ${ECHO} "" > "$DIR"/mimereject 
+  { make_message | ${EZBIN}/ezmlm-reject "$DIR"; } > /dev/null || \
+	fatal "mimeremove failed with dir"
+  { make_message | ${EZBIN}/ezmlm-reject; } > /dev/null || \
+	fatal "mimeremove failed without dir"
+
+  ${ECHO} "tExt/htMl" > "$DIR"/mimekeep
+  ${ECHO} "multipart/mixed" > "$DIR"/mimekeep
+  { make_message | ${EZBIN}/ezmlm-reject "$DIR"; } > /dev/null || \
+	fatal "mimekeep failed"
+  ${RM} "$DIR"/mimekeep
+
+# test content-type with something after boundary=xxx
+  AFTERBOUND=';micalg=pgp-md5'
+  ${ECHO} "text/html" > "$DIR"/mimereject
+  { make_message | ${EZBIN}/ezmlm-reject "$DIR" 2>&1; } > /dev/null 2>&1 && \
+	{ ${ECHO} "err with text after boundary: 0.30 bug fixed in 0.322"
+	  prompt "ezmlm-reject.......   "
+	  BUG="${BUG} reject_bound"
+	}
+
+# restore
+  ${RM} "$DIR"/mimereject
+  AFTERBOUND=''
+
+# if entire message is mimeremove type it should be rejected
+  ${ECHO} "multipart/mixed" > "$DIR"/mimeremove
+  { make_message | ${EZBIN}/ezmlm-reject "$DIR"; } > /dev/null 2>&1  && \
+	fatal "mimereject failed with dir"
+  { make_message | ${EZBIN}/ezmlm-reject; } > /dev/null || \
+	fatal "mimereject without dir"
+
+# if entire message has no parts in mimekeep it should be rejected
+  ${ECHO} "no/type" > "$DIR"/mimekeep
+  { make_message | ${EZBIN}/ezmlm-reject "$DIR"; } > /dev/null 2>&1  && \
+	fatal "mimekeep failed with dir"
+  { make_message | ${EZBIN}/ezmlm-reject; } > /dev/null || \
+	fatal "mimekeep failed without dir"
+
+# restore
+  ${RM} "$DIR"/mimeremove "$DIR"/mimekeep
+
+# test headerreject
+  ${ECHO} "Content-TYPE" > "$DIR"/headerreject
+  { make_message | ${EZBIN}/ezmlm-reject -H "$DIR"; } > /dev/null || \
+	fatal "headerreject -H failed with dir"
+  { make_message | ${EZBIN}/ezmlm-reject -h "$DIR"; } > /dev/null 2>&1 && \
+	fatal "headerreject failed with dir"
+  { make_message | ${EZBIN}/ezmlm-reject; } > /dev/null || \
+	fatal "headerreject failed without dir"
+  { make_message | ${EZBIN}/ezmlm-reject -h; }  > /dev/null 2>&1  && \
+	fatal "-h was accepted without dir"
+
+# Suppress content-type header
+  CONTENT=''
+  { make_message | ${EZBIN}/ezmlm-reject "$DIR"; } > /dev/null || \
+	fatal "headerreject rejected even though header isn't there"
+
+  CONTENT='multIpart/mIXed'
+
+  ${ECHO} "OK"
+###############################
+# ezmlm-sub/unsub/list/issubn #
+###############################
+
+  prompt "ezmlm-[un|is]sub[n]:  "
+
+  SENDER="XYZZY@HOst"
+
+# With mysql testing, there may be junk left from earlier testing that
+# gives false positives in testing. Make sure it's detected
+  ${EZBIN}/ezmlm-list "$DIR" >/dev/null || \
+	fatal "ezmlm-list: failed"
+
+  ${EZBIN}/ezmlm-list "$DIR" | ${GREP} '@' >/dev/null 2>&1 && \
+	fatal "already addresses in table - please remove and start again"
+
+  ${EZBIN}/ezmlm-list "$DIR" digest | ${GREP} '@' >/dev/null 2>&1 && \
+	fatal "already addresses in table - please remove and start again"
+
+  ${EZBIN}/ezmlm-list "$DIR" allow | ${GREP} '@' >/dev/null 2>&1 && \
+	fatal "already addresses in table - please remove and start again"
+
+# not subscriber. Test default
+  ${EZBIN}/ezmlm-issubn "$DIR" "$DIR"/allow && \
+	fatal "ezmlm-issubn: failed: exit 0 on non-subscriber (absolute)"
+  ${EZBIN}/ezmlm-issubn "$DIR" . allow && \
+	fatal "ezmlm-issubn: failed: exit 0 on non-subscriber (relative)"
+
+# not subscriber. Test -n
+  ${EZBIN}/ezmlm-issubn -n "$DIR" "$DIR"/allow || \
+	fatal "ezmlm-issubn: -n failed for non-subscriber (absolute)"
+  ${EZBIN}/ezmlm-issubn -n "$DIR" . allow || \
+	fatal "ezmlm-issubn: -n failed for non-subscriber (relative)"
+
+# add subscriber
+  ${EZBIN}/ezmlm-sub "$DIR" "xyZZy@hoSt" || \
+	fatal "ezmlm-sub: failed to add subscriber"
+
+# is subscriber. Test default
+  ${EZBIN}/ezmlm-issubn "$DIR" . allow || \
+	fatal "ezmlm-issubn: failed: exit false for subscriber"
+
+# is subscriber. Test -n
+  ${EZBIN}/ezmlm-issubn -n "$DIR" . allow && \
+	fatal "ezmlm-issubn: -n failed for subscriber"
+
+# is subscriber, but not in alternate lists
+  ${EZBIN}/ezmlm-issubn "$DIR" deny && \
+	fatal "ezmlm-issubn: exit true for non-subscriber (alt absolute+relative)"
+  ${EZBIN}/ezmlm-issubn "$SUBDIR" deny && \
+	fatal "ezmlm-issubn: exit true for non-subscriber (alt relative+relative)"
+
+# add to allow
+  ${EZBIN}/ezmlm-sub "$DIR" allow "ZZtop@hoSt" || \
+	fatal "ezmlm-sub: failed to add address to ${DIR}/allow"
+  ${EZBIN}/ezmlm-list "$DIR" allow | ${GREP} 'ZZtop@host' >/dev/null 2>&1 || \
+	fatal "ezmlm-sub: failed to find address in ${DIR} allow"
+
+# list subscribers
+  ${EZBIN}/ezmlm-list "$DIR" | ${GREP} "xyZZy" >"$ERR" 2>&1 || \
+	fatal "ezmlm-list: failed to list subscribers"
+
+# remove subscriber
+  ${EZBIN}/ezmlm-unsub "$DIR" "xYzZy@hOst" || \
+	fatal "ezmlm-unsub: failed to remove subscriber"
+
+# see that it was removed
+  ${EZBIN}/ezmlm-list "$DIR" | ${GREP} "xyZZy" >"$ERR" 2>&1 && \
+	fatal "ezmlm-unsub: failed to remove address"
+
+  SENDER="zztop@HOst"
+
+# check for address in allow
+  ${EZBIN}/ezmlm-issubn "$DIR" "$DIR"/allow || \
+	fatal "ezmlm-sub/issubn: failed to add/look in 2nd db (absolute+absolute)"
+  ${EZBIN}/ezmlm-issubn "$DIR" allow || \
+	fatal "ezmlm-sub/issubn: failed to add/look in 2nd db (absolute+relative)"
+  ${EZBIN}/ezmlm-issubn "$SUBDIR" allow || \
+	fatal "ezmlm-sub/issubn: failed to add/look in 2nd db (relative+relative)"
+
+# remove (multiple) (non)existing addresses from allow
+  ${EZBIN}/ezmlm-unsub "$DIR" allow "xYzZy@hOst" "zZToP@HOSt" || \
+	fatal "ezmlm-unsub: failed to remove subscriber"
+
+# verify removal
+  ${EZBIN}/ezmlm-issubn "$DIR" . allow && \
+	fatal "ezmlm-unsub/issubn: failed to remove address"
+
+# clean up
+  LOCAL=''
+
+  ${ECHO} "OK"
+##################
+# ezmlm-checksub #
+##################
+
+  prompt "ezmlm-checksub:       "
+
+  SENDER="XYZZY@HOst"
+
+  ${EZBIN}/ezmlm-unsub "$DIR" "$SENDER"
+  ${EZBIN}/ezmlm-unsub "$DIR" allow "$SENDER"
+
+# not subscriber. Test default
+  ${EZBIN}/ezmlm-checksub "$DIR" . allow >/dev/null && \
+	fatal "ezmlm-checksub: failed: exit 0 on non-subscriber"
+  ${EZBIN}/ezmlm-checksub -N "$DIR" . allow >/dev/null && \
+	fatal "ezmlm-checksub: failed: exit 0 on non-subscriber with -N"
+  ${EZBIN}/ezmlm-checksub -n "$DIR" . allow >/dev/null || \
+	fatal "ezmlm-checksub: -n failed for non-subscriber"
+
+# add subscriber
+  ${EZBIN}/ezmlm-sub "$DIR" "xyZZy@hoSt" || \
+	fatal "ezmlm-sub: failed to add subscriber"
+
+  ${EZBIN}/ezmlm-checksub "$DIR" . allow >/dev/null || \
+	fatal "ezmlm-checksub: failed: exit false for subscriber"
+  ${EZBIN}/ezmlm-checksub -N "$DIR" . allow >/dev/null || \
+	fatal "ezmlm-checksub: failed: exit false for subscriber with -N"
+  ${EZBIN}/ezmlm-checksub -n "$DIR" . allow >/dev/null && \
+	fatal "ezmlm-checksub: -n failed for subscriber"
+
+# clean up
+  ${EZBIN}/ezmlm-unsub "$DIR" "$SENDER"
+
+  ${ECHO} "OK"
+#########################
+# ezmlm non-SQL support #
+#########################
+
+if [ -n "$SUBDB" ]; then
+
+  SENDER="someone@elsewhere.com"
+
+  prompt "ezmlm non-SQL:        "
+
+  ${GREP} "$SENDER" "$DIR"/subscribers/* >/dev/null 2>&1 \
+	&& fatal "test address is already in subscriber list"
+
+  ${EZBIN}/ezmlm-list -M "$DIR" | ${GREP} "$SENDER" >/dev/null \
+	&& fatal "test address was listed before adding"
+
+  ${EZBIN}/ezmlm-sub -M "$DIR" "$SENDER" \
+	|| fatal "ezmlm-sub failed"
+
+  ${GREP} "$SENDER" "$DIR"/subscribers/* >/dev/null 2>&1 \
+	|| fatal "test address was not added to files"
+
+  ${EZBIN}/ezmlm-list -M "$DIR" | ${GREP} "$SENDER" >/dev/null \
+	|| fatal "test address was not listed after adding"
+
+  ${EZBIN}/ezmlm-unsub -M "$DIR" "$SENDER" \
+	|| fatal "ezmlm-unsub failed"
+
+  ${GREP} "$SENDER" "$DIR"/subscribers/* >/dev/null 2>&1 \
+	&& fatal "test address was not removed from files"
+
+  ${EZBIN}/ezmlm-list -M "$DIR" | ${GREP} "$SENDER" >/dev/null \
+	&& fatal "test address was listed after removing"
+
+  ${ECHO} "OK"
+
+fi
+#####################
+# ezmlm SQL support #
+#####################
+
+if [ -n "$SUBDB" ]; then
+
+  prompt "ezmlm SQL:            "
+
+  sed -e 's/^[^:]*://' "$DIR"/subdb >"$DIR"/sql
+  ${RM} -f "$EZBIN"/sub-sql.so
+  ${LN} -s sub-"$SUBDB".so "$EZBIN"/sub-sql.so
+  ${MV} "$DIR"/subdb "$DIR"/backup.subdb
+
+  ${EZBIN}/ezmlm-sub "$DIR" "xyZZy@hoSt" \
+	|| fatal "ezmlm-sub failed"
+
+  ${GREP} -i "xyZZy@hoST" "$DIR"/subscribers/* >/dev/null 2>&1 \
+	&& fatal "ezmlm-sub did not use plugin"
+
+  ${EZBIN}/ezmlm-unsub "$DIR" "xyZZy@hoSt" \
+	|| fatal "ezmlm-unsub failed"
+
+  ${EZBIN}/ezmlm-make -+ -C${EZBIN}/lang/en_US "$DIR"
+  ${GREP} '^sql:' "$DIR"/subdb >/dev/null 2>&1 \
+	|| fatal "ezmlm-make did not create subdb file"
+
+  ${RM} -f "$DIR"/sql "$DIR"/subdb "$EZBIN"/sub-sql.so
+  mv "$DIR"/backup.subdb "$DIR"/subdb
+
+  ${ECHO} "OK"
+
+fi
+##############
+# ezmlm-send #
+##############
+
+  prompt "ezmlm-send:           "
+
+  SENDER="${SND}@$HOST"
+  ${EZBIN}/ezmlm-sub "$DIR" "$SENDER"
+# set up prefix
+  ${ECHO} "[PFX]" > "${DIR}/prefix"
+# set up trailer
+  mkdir -p "${DIR}/text"
+  { ${ECHO} "--- TRAILER ---"; ${ECHO}; } > "${DIR}/text/trailer"
+# test
+  { ${ECHO} "X-num: msg1"; make_message; } | \
+	${EZBIN}/ezmlm-send "$DIR" >"$ERR" 2>&1 || \
+	fatal "failed to accept normal message"
+  if [ `cat "${DIR}/num"` != "1:1" ]; then
+	fatal "failed to create num for normal message 1"; 
+  fi
+  if [ ! -x "${DIR}/archive/0/01" ]; then
+	fatal "failed to archive normal message"
+  fi
+  ${GREP} "1:" "${DIR}/archive/0/index" >/dev/null 2>&1 || \
+	fatal "failed to index archive"
+
+  ${GREP} "$SENDER" "$QQENV" >/dev/null 2>&1 ||
+	fatal "failed to deliver message to subscriber"
+  checkenv msg1 "$LOC-return-1-@$HOST-@\\[\\]" "$SENDER"
+
+# make sure headeradd was done
+  ${GREP} -i 'precedence: bulk' "$QQMSG" >/dev/null 2>&1 ||
+	fatal "failed to add headeradd"
+# check on received: header handling
+  ${GREP} '#PENULTIMATE#' "$QQMSG" >/dev/null && \
+	fatal "-r failed to remove received header"
+  ${GREP} '#LAST#' "$QQMSG" >/dev/null || \
+	fatal "-r failed to leave last received header"
+  ${GREP} 'Subject:' "$QQMSG" | ${GREP} 'PFX' >/dev/null 2>&1 || \
+	fatal "failed to add subject prefix"
+	# the trailer should be a MIME part, so not at the very end
+  ${TAIL} -n 6 "$QQMSG" | ${HEAD} -n 2 | ${GREP} 'TRAILER' >/dev/null 2>&1 || \
+	fatal "failed to add trailer"
+
+  ${RM} -f "${DIR}/indexed"
+  ${RM} -f "${DIR}/archived"
+
+# test to see that trailer is added to nom-mime messages
+  CONTENT=''
+  { ${ECHO} "X-num: msg5"; make_message; } | \
+	${EZBIN}/ezmlm-send "$DIR" >"$ERR" 2>&1  || \
+	fatal "failed to accept non-mime message"
+
+  checkenv msg5 "$LOC-return-2-@$HOST-@\\[\\]" "$SENDER"
+  ${GREP} 'TRAILER' "$QQMSG" >/dev/null 2>&1 || \
+	fatal "failed to add trailer to non-mime message"
+
+# test to see that trailer is suppressed for multipart/signed
+  CONTENT='multipart/signed'
+  { ${ECHO} "X-num: msg6"; make_message; } | \
+	${EZBIN}/ezmlm-send "$DIR" >"$ERR" 2>&1  || \
+	fatal "failed to accept multipart/signed message"
+
+  checkenv msg6 "$LOC-return-3-@$HOST-@\\[\\]" "$SENDER"
+  ${GREP} 'TRAILER' "$QQMSG" >/dev/null 2>&1 && \
+	{ ${ECHO} "failed to suppress trailer for multipart/signed message"; \
+	  ${ECHO} "                      0.31 bug fixed in 0.316/0.323";
+	  BUG="${BUG}_signed"; \
+	  prompt "ezmlm-send ......:    "; }
+
+# restore
+  CONTENT='multipart/mixed'
+
+# test content-type with something after boundary=xxx
+  AFTERBOUND=';micalg=pgp-md5'
+  ${ECHO} "text/html" > "$DIR"/mimeremove
+  make_message | ${EZBIN}/ezmlm-send "$DIR" >"$ERR" 2>&1  || \
+	{ ${ECHO} "err with text after boundary: 0.30 bug fixed in 0.322"
+	  prompt "ezmlm-send.........   "
+	  BUG="${BUG} send_bound"
+	}
+  checkenv text-after-boundary "$LOC-return-4-@$HOST-@\\[\\]" "$SENDER"
+
+# restore
+  AFTERBOUND=''
+  ${ECHO} "1:1" > "${DIR}/num"
+  ${RM} "$DIR"/mimeremove
+
+# -r => don't trim received headers
+  { ${ECHO} "X-num: msg2"; make_message; } | \
+	${EZBIN}/ezmlm-send -r "$DIR" >"$ERR" 2>&1 || \
+	fatal "failed to accept normal message 2"
+  checkenv msg2 "$LOC-return-2-@$HOST-@\\[\\]" "$SENDER"
+
+  ${GREP} "2:" "${DIR}/archive/0/index" >/dev/null 2>&1 && \
+	fatal "indexed message with DIR/indexed missing"
+  ${GREP} "msg2" ${DIR}/archive/0/* >/dev/null 2>&1 && \
+	fatal "archived message with DIR/archived missing"
+
+  ${GREP}  '#PENULTIMATE#' "$QQMSG" >/dev/null 2>&1 || \
+	fatal "-r failed to leave received header"
+
+# -C eliminate SENDER from addressees
+  { ${ECHO} "X-num: msg3"; make_message; } | \
+	${EZBIN}/ezmlm-send -C "$DIR" >"$ERR" 2>&1 || \
+	fatal "failed to accept normal message 3"
+  checkenv msg3 "$LOC-return-3-@$HOST-@\\[\\]" "$SENDER"
+  ${EZBIN}/ezmlm-unsub "$DIR" "$SENDER"
+
+  ${GREP} T"$SENDER" "$QQENV" >/dev/null 2>&1 || \
+	{ ${ECHO} "failed to include sender (-C is ignored)"; \
+	  BUG="${BUG}_noself"; \
+	  prompt "ezmlm-send:           "; }
+
+# make sure headerremove was done
+  ${GREP} -i 'return-receipt-to' < "${DIR}/archive/0/01" >/dev/null &&
+	fatal "failed to remove headerremove"
+
+# test mimeremove
+  touch "${DIR}/archived" "${DIR}/indexed"
+  ${ECHO} "teXT/hTml" > "${DIR}/mimeremove"
+  { ${ECHO} "X-num: mimeremove"; make_message; } | \
+	${EZBIN}/ezmlm-send "$DIR" >"$ERR" 2>&1 || \
+	fatal "failed to accept mimeremove message"
+  checkenv mimeremove "$LOC-return-4-@$HOST-@\\[\\]"
+  ${GREP} -i 'text/html' < "${DIR}/archive/0/04" >/dev/null &&
+	fatal "failed to remove mimeremove part"
+
+# test mimekeep
+  touch "${DIR}/archived" "${DIR}/indexed"
+  ${ECHO} "multipart/mixed" > "${DIR}/mimekeep"
+  ${ECHO} "teXT/plain" >> "${DIR}/mimekeep"
+  { ${ECHO} "X-num: mimekeep"; make_message; } | \
+        ${EZBIN}/ezmlm-send "$DIR" >"$ERR" 2>&1 || \
+	fatal "failed to accept mimekeep message"
+  checkenv mimekeep "$LOC-return-5-@$HOST-@\\[\\]"
+  ${GREP} -i 'text/html' < "${DIR}/archive/0/05" >/dev/null &&
+	fatal "failed to remove mimekeep part"
+
+# test headerkeep
+  ${ECHO} subject >"$DIR"/headerkeep
+  ${ECHO} from >>"$DIR"/headerkeep
+  ${ECHO} x-num >>"$DIR"/headerkeep
+  { ${ECHO} "X-num: keeptest"; make_message; } | \
+	${EZBIN}/ezmlm-send -C "$DIR" >"$ERR" 2>&1 || \
+	fatal "failed to accept keeptest message"
+  checkenv keeptest "$LOC-return-6-@$HOST-@\\[\\]"
+  ${GREP} -i '^x-num: keeptest' < "${DIR}/archive/0/06" >/dev/null ||
+	fatal "failed to keep header in headerkeep"
+  ${GREP} -i '^return-receipt-to' < "${DIR}/archive/0/06" >/dev/null &&
+	fatal "failed to remove header not in headerkeep"
+  ${RM} "$DIR"/headerkeep
+
+  ${ECHO} "OK"
+################
+# ezmlm-tstdig #
+################
+
+  prompt "ezmlm-tstdig:         "
+
+  ${EZBIN}/ezmlm-tstdig -k2 -m10 -t1 "$DIR" || \
+	fatal "-t1 failed"
+  ${EZBIN}/ezmlm-tstdig -k2 -m10 -t0 "$DIR" && \
+	fatal "-t0 succeeded"
+
+  ${ECHO} 2 >"$DIR"/digsize
+  ${ECHO} 10 >"$DIR"/digcount
+  ${ECHO} 1 >"$DIR"/digtime
+  ${EZBIN}/ezmlm-tstdig "$DIR" || \
+	fatal "digtime=1 failed"
+  ${ECHO} 0 >"$DIR"/digtime
+  ${EZBIN}/ezmlm-tstdig -k2 -m10 -t0 "$DIR" && \
+	fatal "digtime=0 succeeded"
+  ${RM} "$DIR"/digsize "$DIR"/digcount "$DIR"/digtime
+
+  LOCAL="$LOC-xx"
+  DEFAULT='xx'
+  ${EZBIN}/ezmlm-tstdig -k2 -m10 -t0 "$DIR" || \
+	fatal "problem with -xx in manager position"
+  LOCAL="$LOC-dig."
+  DEFAULT='dig.'
+  ${EZBIN}/ezmlm-tstdig -k2 -m10 -t0 "$DIR" && \
+	fatal "problem with -dig in manager position"
+  LOCAL="$LOC-digest-"
+  DEFAULT='digest-'
+  ${EZBIN}/ezmlm-tstdig -k2 -m10 -t0 "$DIR" || \
+	{ ${ECHO} "err with -digest- in mgr pos: 0.31 bug fixed in 0.321"
+	  prompt "ezmlm-tstdig.......   "
+	  BUG="${BUG} digest"
+	}
+  LOCAL=''
+  ${UNSET} DEFAULT
+  ${EZBIN}/ezmlm-tstdig -k2 -m4 -t1 "$DIR" || \
+	fatal "-m failed"
+  ${EZBIN}/ezmlm-tstdig -k1 -m10 -t0 "$DIR" || \
+	fatal "-k failed"
+
+  ${ECHO} 2 >"$DIR"/digsize
+  ${ECHO} 4 >"$DIR"/digcount
+  ${ECHO} 1 >"$DIR"/digtime
+  ${EZBIN}/ezmlm-tstdig "$DIR" || \
+	fatal "digcount=4 failed"
+  ${ECHO} 10 >"$DIR"/digcount
+  ${EZBIN}/ezmlm-tstdig "$DIR" || \
+	fatal "digsize=2 failed"
+  ${RM} "$DIR"/digsize "$DIR"/digcount "$DIR"/digtime
+
+  LOCAL="$LOC"
+  ${EZBIN}/ezmlm-tstdig -k1 -m10 -t0 "$DIR" > "$ERR" 2>&1 || \
+	{
+	 ${ECHO} "problem with DEFAULT unset: 0.32 bug, OK in 0.321."
+	 prompt "ezmlm-tstdig.......   "
+	  BUG="${BUG} tstdig"
+	}
+  ${ECHO} "OK"
+  export DEFAULT
+##############
+# ezmlm-weed #
+##############
+
+  prompt "ezmlm-weed:           "
+
+  ${ECHO} "Subject: test" | ${EZBIN}/ezmlm-weed || \
+	fatal "failed to accept good message"
+  ${ECHO} "Subject: success notice" | ${EZBIN}/ezmlm-weed >/dev/null 2>&1 && \
+	fatal "failed to reject bad message"
+
+  ${ECHO} "OK"
+####################
+# ezmlmrc contents #
+####################
+
+  prompt "ezmlmrc contents:     "
+
+# make sure a few ezmlm-make switches work
+  ${EZBIN}/ezmlm-make -+qkgu -C${EZBIN}/lang/en_US "$DIR" || \
+	fatal "failed to edit test list to +qkgu"
+  ${GREP} deny "${DIR}/editor" >/dev/null 2>&1 || \
+	fatal "failed to implement -k for list"
+  ${GREP} "ezmlm-request" "${DIR}/manager" >/dev/null 2>&1 || \
+	fatal "failed to implement -q for list"
+  test -e "$DIR"/subgetonly || \
+	fatal "failed to implement -g for list"
+  ${GREP} allow "${DIR}/editor" >/dev/null 2>&1 || \
+	fatal "failed to implement -u for list"
+
+  ${EZBIN}/ezmlm-make -+QKGU -C${EZBIN}/lang/en_US "$DIR" || \
+	fatal "failed to edit test list to +QKGU"
+  test -e "$DIR"/subgetonly && \
+	fatal "failed to implement -G for list"
+
+# edit the list (add moderation and remove admin)
+  ${EZBIN}/ezmlm-make -+rsm -C${EZBIN}/lang/en_US "$DIR" || \
+	fatal "failed to edit test list to +rsm"
+# edit the list (add text file editing and list/log)
+${EZBIN}/ezmlm-make -+ln -C${EZBIN}/lang/en_US "$DIR" || \
+	fatal "failed to edit test list to +ln"
+
+# Set up a text file for use in testing copy()
+  mkdir -p "${DIR}/text"
+  (
+    echo 'Local: <#L#>'
+    echo 'local: <#l#>'
+    echo 'host: <#h#>'
+    echo 'Target: <#A#>'
+    echo 'TargetLocal: <#a#>'
+    echo 'Confirm: <#R#>'
+    echo 'Cookie: <#c#>'
+    echo 'MsgNum: <#n#>'
+    echo 'ConfirmLocal: <#r#>'
+    echo 'target: <#t#>'
+    for flag in a b c d e f g h i j k l m n o p q r s t u v w x y z; do
+      echo "<=${flag}=>"
+      echo "Flag: ${flag}"
+    done
+  ) >"${DIR}/text/top"
+
+  # remove inlocal/inhost - shouldn't be used
+  ${RM} -f "${DIR}/inlocal" "${DIR}/inhost" > /dev/null || \
+    fatal "failed to remove inlocal/inhost for testlist"
+
+  ${ECHO} "OK"
+
+###############
+# ezmlm-clean #
+###############
+
+  prompt "ezmlm-clean:          "
+
+# clean1 should be silently removed (no -x).
+# clean2 should result in a message
+# clean3 should not since it's time hasn't come
+# clean4 should be removed, but not result in a message since we use -R
+
+  ${ECHO} "Return-Path: <${DIG}@$HOST>" > "${DIR}/mod/pending/1"
+  ${ECHO} "X-num: clean1" >> "${DIR}/mod/pending/1"
+  ${ECHO} "Return-Path: <${DIG}@${HOST}>" > "${DIR}/mod/pending/2"
+  ${ECHO} "X-num: clean2" >> "${DIR}/mod/pending/2"
+  ${ECHO} "Return-Path: <${DIG}@$HOST>" > "${DIR}/mod/pending/1999999999"
+  ${ECHO} "X-num: clean3" >> "${DIR}/mod/pending/1999999999"
+
+  chmod +x "${DIR}/mod/pending/2" "${DIR}/mod/pending/1999999999"
+
+  qqclean
+  ${EZBIN}/ezmlm-clean "$DIR" >"$ERR" 2>&1 ||
+	fatal "failed first invocation"
+  checkenv clean1 "$LOC-return-@$HOST" "$DIG@$HOST"
+  if [ -r "${DIR}/mod/pending/1" ]; then
+	fatal "failed to remove non-x moderation queue entry 1"
+  fi
+  if [ -r "${DIR}/mod/pending/2" ]; then
+	fatal "failed to remove moderation queue entry 2"
+  fi
+  if [ ! -r "${DIR}/mod/pending/1999999999" ]; then
+	fatal "removed mod queue entry 3 that wasn't due"
+  fi
+
+${ECHO} <<EOF > "${DIR}/mod/pending/4"
+Return-Path: <${DIG}@$HOST>
+X-num: clean4
+EOF
+  chmod +x "${DIR}/mod/pending/4"
+  rm -f "$QQENV"
+  ${EZBIN}/ezmlm-clean -R "$DIR" >"$ERR" 2>&1 ||
+	fatal "-R failed"
+  if [ -r  "${DIR}/mod/pending/4" ]; then
+	fatal "failed to remove moderation queue entry 4"
+  fi
+  exists "$QQENV" \
+  && fatal "second invocation of ezmlm-clean sent a message"
+
+  ${GREP} "clean1" "$QQMSG".* >/dev/null 2>&1 && \
+	fatal "removal of non-x mod queue entry 1 wasn't silent"
+  ${GREP} "clean2" "$QQMSG".* >/dev/null 2>&1 || \
+	fatal "failed to notify sender of mod queue entry 2 time out"
+  ${GREP} "clean3" "$QQMSG".* >/dev/null 2>&1 && \
+	fatal "notified sender about entry 3 even though it wasn't rejected"
+  ${GREP} "clean4" "$QQMSG".* >/dev/null 2>&1 && \
+	fatal "-R failed: notified sender about entry 3 rejection"
+
+${ECHO} <<EOF > "${DIR}/mod/pending/5"
+Return-Path: <${DIG}@$HOST>
+X-num: clean5
+EOF
+  chmod +x "${DIR}/mod/pending/5"
+  rm -f "$QQENV"
+  ${ECHO} > "$DIR"/noreturnposts
+  ${EZBIN}/ezmlm-clean "$DIR" >"$ERR" 2>&1 ||
+	fatal "-R failed"
+  if [ -r  "${DIR}/mod/pending/5" ]; then
+	fatal "failed to remove moderation queue entry 5 with noreturnposts"
+  fi
+  exists "$QQENV" \
+  && fatal "third invocation of ezmlm-clean sent a message"
+
+  ${ECHO} "OK"
+###############
+# ezmlm-store #
+###############
+
+  prompt "ezmlm-store:          "
+
+  SENDER="${SND}@$HOST"
+  ${EZBIN}/ezmlm-sub "$DIR" mod "$SENDER"
+  ${EZBIN}/ezmlm-sub "$DIR" "subscriber@$HOST"
+
+# message from mod, normal use -> should queue
+  qqclean
+  { ${ECHO} "X-num: mod1"; make_message; } > ${TMP};
+	${EZBIN}/ezmlm-store "$DIR" >"$ERR" 2>&1 < ${TMP} || \
+	fatal "failed to process message 1"
+  checkenv mod1 "$LOC-return-@$HOST" "$SENDER"
+
+  cat ${DIR}/mod/pending/* | ${GREP} "mod1" > /dev/null || \
+	fatal "failed to queue message 1"
+
+  REJ=`${GREP} "From: $LOC-reject" "$QQMSG" | cut -d' ' -f2`
+  if [ -z "$REJ" ]; then
+	fatal "No From: ...-reject header in mod request for mod1"
+  fi
+
+  ${RM} -f "${DIR}/modpost" 
+#
+# no modpost - should go directly to list
+  qqclean
+  { ${ECHO} "X-num: mod2"; make_message; } > ${TMP};
+	${EZBIN}/ezmlm-store "$DIR" >"$ERR" 2>&1 < ${TMP} || \
+	{
+	  ${GREP} -v "child" "$ERR" > /dev/null 2>&1
+	  if [ "$?" != "0" ]; then
+	    fatal "Failed to process message mod2"
+	  else
+	    EZFORK='no'
+	  fi
+	}
+  checkenv mod2 "$LOC-return-.*@$HOST-@\\[\\]" "subscriber@$HOST"
+
+  cat ${DIR}/mod/pending/* | ${GREP} "mod2" > /dev/null && \
+	fatal "queued message 2 despite non-modpost"
+
+  if [ -z "$EZFORK" ]; then
+	cat ${DIR}/archive/0/* | ${GREP} "mod2" > /dev/null || \
+		fatal "failed to archive message 2 (non-modpost)"
+  fi
+
+  touch "${DIR}/modpost"
+
+# from moderator. Should be queued, even with -P
+  qqclean
+  { ${ECHO} "X-num: mod3"; make_message; } > ${TMP};
+	${EZBIN}/ezmlm-store -P "$DIR" >"$ERR" 2>&1 < ${TMP} || \
+	fatal "-P failed to accept mods post 3"
+  checkenv mod3 "$LOC-return-@$HOST" "$SENDER"
+
+  cat ${DIR}/mod/pending/* | ${GREP} "mod3" > /dev/null || \
+	fatal "failed to queue message 3"
+
+  ACC=`${GREP} "Reply-To: $LOC-accept" "$QQMSG" | cut -d' ' -f2`
+  if [ -z "$ACC" ]; then
+	fatal "No From: ...-accept header in mod request for mod3"
+  fi
+
+  qqclean
+  touch "$DIR"/modpostonly
+  { ${ECHO} "X-num: mod4"; make_message; } > ${TMP};
+	${EZBIN}/ezmlm-store  "$DIR" >"$ERR" 2>&1 < ${TMP} || \
+	fatal "modpostonly failed to accept mods post 4"
+  checkenv mod4 "$LOC-return-@$HOST" "$SENDER"
+  ${RM} "$DIR"/modpostonly
+
+  ${EZBIN}/ezmlm-unsub "$DIR" mod "$SENDER"
+
+# not from moderator, should be rejected directly with -P
+  qqclean
+  { ${ECHO} "X-num: mod5"; make_message; } > ${TMP};
+	${EZBIN}/ezmlm-store -P "$DIR" >"$ERR" 2>&1 < ${TMP} && \
+	fatal "-P failed to reject non-mod message 5"
+
+  test -s "$QQMSG" && \
+	fatal "ezmlm-store: -P failed to reject message from non-mod"
+
+# not from moderator, should be rejected directly with -P
+  qqclean
+  touch "$DIR"/modpostonly
+  { ${ECHO} "X-num: mod6"; make_message; } > ${TMP};
+	${EZBIN}/ezmlm-store "$DIR" >"$ERR" 2>&1 < ${TMP} && \
+	fatal "modpostonly failed to reject non-mod message 6"
+  ${RM} "$DIR"/modpostonly
+
+  test -s "$QQMSG" && \
+	fatal "ezmlm-store: modpostonly failed to reject message from non-mod"
+
+  ${EZBIN}/ezmlm-unsub "$DIR" "subscriber@$HOST"
+
+  ${ECHO} "OK"
+################
+# ezmlm-return #
+################
+
+  prompt "ezmlm-return:         "
+
+  SENDER="${BNC}@$HOST"
+  HOST="$HOST"
+  LOCAL="$LOC-return-1-$BNC=$HOST"
+  DEFAULT="1-$BNC=$HOST"
+# we use 'du' because bounce handling is different in 0.31x and >=0.32
+  BSIZE1=`${DU} "${DIR}/bounce"` || \
+	{ ${ECHO} "du doesn't work"; exit 99; } 
+  make_message | ${EZBIN}/ezmlm-return "$DIR" || \
+    [ "$?" -eq "99" ] || \
+	fatal "failed to process normal bounce from non-sub"
+  BSIZE2=`${DU} "${DIR}/bounce"`
+  if [ "$BSIZE1" != "$BSIZE2" ]; then
+	fatal "failed to ignore non-subscriber bounce"
+  fi
+  ${EZBIN}/ezmlm-sub "$DIR" "${BNC}@$HOST"
+  make_message | ${EZBIN}/ezmlm-return "$DIR" || \
+    [ "$?" -eq "99" ] || \
+	fatal "failed to process normal bounce from sub"
+  BSIZE1=`${DU} "${DIR}/bounce"`
+  if [ "$BSIZE1" = "$BSIZE2" ]; then
+	fatal "failed to note subscriber bounce"
+  fi
+  LOCAL="$LOC-digest-return-1-$BNC=$HOST"
+  DEFAULT="1-$BNC=$HOST"
+  BSIZE1=`${DU} "${DIR}/digest/bounce"`
+  make_message | ${EZBIN}/ezmlm-return -d "$DIR" || \
+    [ "$?" -eq "99" ] || \
+	fatal "failed to process normal digest non-sub bounce"
+  BSIZE2=`${DU} "${DIR}/digest/bounce"`
+  if [ "$BSIZE1" != "$BSIZE2" ]; then
+	fatal "failed to ignore non-digest-subscriber bounce"
+  fi
+  ${EZBIN}/ezmlm-unsub "$DIR" "${BNC}@$HOST"
+  ${EZBIN}/ezmlm-sub "$DIR" digest "${BNC}@$HOST"
+  make_message | ${EZBIN}/ezmlm-return -d "$DIR" || \
+    [ "$?" -eq "99" ] || \
+	fatal "failed to proc. nl digest-subscriber bounce"
+  BSIZE1=`${DU} "${DIR}/digest/bounce"`
+  if [ "$BSIZE1" = "$BSIZE2" ]; then
+	fatal "failed to note digest-subscriber bounce"
+  fi
+  ${EZBIN}/ezmlm-sub "$DIR" "${BNC}@$HOST"
+
+  ${ECHO} "OK"
+
+# as we exit, the bounce address is subscribed to both list and digest-list
+# and is the SENDER
+##############
+# ezmlm-warn #
+##############
+
+  prompt "ezmlm-warn (1/2):     "
+
+# should not send a warning
+  qqclean
+  touch "$DIR"/nowarn
+  ${EZBIN}/ezmlm-warn -t0 "$DIR" >"$ERR" 2>&1 || \
+	fatal "failed with nowarn"
+  test -e "$QQMSG" \
+  && fatal "ezmlm-warn sent a warning when nowarn was set"
+  ${RM} "$DIR"/nowarn
+
+# should send a warning
+  ${EZBIN}/ezmlm-warn -D -t0 "$DIR" >"$ERR" 2>&1 || \
+	fatal "failed with normal bounce for warning"
+  checkenv warn1 "$LOC-return-warn-.*-$BNC=$HOST@$HOST" "$BNC@$HOST"
+  ${EZBIN}/ezmlm-issubn "$DIR" || \
+	fatal "script error: SENDER is not a subscriber"
+
+  qqclean
+  ${EZBIN}/ezmlm-warn -d -t0 "$DIR" >"$ERR" 2>&1 || \
+	fatal "failed with digest bounce for warning"
+  checkenv warn2 "$LOC-digest-return-warn-.*-$BNC=$HOST@$HOST" "$BNC@$HOST"
+  ${EZBIN}/ezmlm-issubn "$DIR" digest || \
+	fatal "script error: SENDER is not a digest subscriber"
+
+  ${ECHO} "OK"
+################
+# ezmlm-manage #
+################
+
+  prompt "ezmlm-manage (1/2):   "
+
+  LOCAL="$LOC-unsubscribe"
+  DEFAULT='unsubscribe'
+  SENDER="${SND}@$HOST"
+
+  ${EZBIN}/ezmlm-sub "$DIR" "$SENDER"
+  ${EZBIN}/ezmlm-manage -U "$DIR" </dev/null >"$ERR" 2>&1 || \
+	fatal "failed with -U"
+  checkenv unsubscribe-U "$LOC-return-@$HOST" "$SENDER"
+  ${EZBIN}/ezmlm-issubn "$DIR" && \
+	fatal "unsubscribe with -U failed"
+
+  ${EZBIN}/ezmlm-sub "$DIR" "$SENDER"
+  touch "$DIR"/nounsubconfirm
+  ${EZBIN}/ezmlm-manage "$DIR" </dev/null >"$ERR" 2>&1 || \
+	fatal "failed with nounsubconfirm"
+  checkenv unsubscribe-nounsubconfirm "$LOC-return-@$HOST" "$SENDER"
+  ${EZBIN}/ezmlm-issubn "$DIR" && \
+	fatal "unsubscribe with nounsubconfirm failed"
+  ${RM} "$DIR"/nounsubconfirm
+
+  LOCAL="$LOC-digest-subscribe"
+  DEFAULT='digest-subscribe'
+  ${EZBIN}/ezmlm-unsub "$DIR" digest "$SENDER"
+
+# test that access to the deny db is restricted to remote admins
+  LOCAL="$LOC-deny-subscribe"
+  DEFAULT='deny-subscribe'
+  ${EZBIN}/ezmlm-manage "$DIR" </dev/null >/dev/null 2>&1 && \
+	{
+	 ${ECHO} "Deny open to regular subscribers: 0.31 bug, OK in 0.321."
+	 prompt "ezmlm-manage ...      "
+	 BUG="${BUG} deny"
+	}
+  checkenv deny "$LOC-return-@$HOST" "$SENDER"
+  SENDER="${MOD}@$HOST"
+  ${EZBIN}/ezmlm-sub "$DIR" mod "$SENDER" || exit 100
+  ${EZBIN}/ezmlm-manage "$DIR" </dev/null > "$ERR" 2>&1 || \
+	fatal "Deny access denied to remote admin!"
+  checkenv admin-deny "$LOC-deny-return-@$HOST" "$SENDER"
+
+# make non-moderated
+  ${RM} -f "${DIR}/modsub" || \
+	{ ${ECHO} "Failed to remove DIR/modsub"; exit 99; }
+
+# make non-remote
+  ${RM} -f "${DIR}/remote" || \
+	{ ${ECHO} "Failed to remove DIR/remote"; exit 99; }
+  ${EZBIN}/ezmlm-manage "$DIR" </dev/null > "$ERR" 2>&1 && \
+	{
+	 ${ECHO} "Deny even without remote/modsub: 0.31 bug, OK in 0.321."
+	 prompt "ezmlm-manage ...      "
+	 BUG="${BUG} deny"
+	}
+  checkenv noremote-deny "$LOC-deny-return-@$HOST" "$SENDER"
+
+# restore remote/SENDER/mod/LOCAL/DEFAULT
+  ${EZBIN}/ezmlm-unsub "$DIR" mod "$SENDER" || exit 100
+  SENDER="${SND}@$HOST"		# restore order
+  touch "${DIR}/remote" || \
+	{ ${ECHO} "Failed to remove DIR/remote"; exit 99; }
+  LOCAL="$LOC-digest-subscribe"
+	DEFAULT='digest-subscribe'
+
+  ${EZBIN}/ezmlm-manage -S "$DIR" </dev/null >"$ERR" 2>&1 || \
+	fatal "failed with -S"
+  checkenv digest-subscribe-S "$LOC-digest-return-@$HOST" "$SENDER"
+  ${EZBIN}/ezmlm-issubn "$DIR" digest || \
+	fatal "digest-subscribe with -S failed"
+
+  ${EZBIN}/ezmlm-unsub "$DIR" digest "$SENDER"
+  touch "$DIR"/nosubconfirm
+  ${EZBIN}/ezmlm-manage "$DIR" </dev/null >"$ERR" 2>&1 || \
+	fatal "failed with nosubconfirm"
+  checkenv digest-subscribe-nosubconfirm "$LOC-digest-return-@$HOST" "$SENDER"
+  ${EZBIN}/ezmlm-issubn "$DIR" digest || \
+	fatal "digest-subscribe with nosubconfirm failed"
+  ${RM} "$DIR"/nosubconfirm
+
+  ${EZBIN}/ezmlm-unsub "$DIR" digest "$SENDER"
+  touch "${DIR}/modsub" || \
+	{ ${ECHO} "Failed to restore DIR/modsub"; exit 99; }
+
+  SENDER="${MAN}@$HOST"
+
+  ${ECHO} "X-num: sub1" > "$TMP"
+  ${ECHO} "From: Mr. User requests <${MAN}@$HOST>" >> "$TMP"
+  ${ECHO} >> "$TMP"
+  ${EZBIN}/ezmlm-manage "$DIR" < "$TMP" \
+		>"$ERR" 2>&1 || \
+	fatal "digest-subscribe with request failed"
+  checkenv sub1 "$LOC-digest-return-@$HOST" "$SENDER"
+
+  ${GREP} T"${MAN}@$HOST" "$QQENV" >/dev/null 2>&1 || \
+	fatal "failed getting digest-subscribe confirm request"
+
+  # Add moderator
+  ${EZBIN}/ezmlm-sub "$DIR" mod "${MOD}@$HOST"
+
+  LOCAL=`${GREP} "Reply-To:" "$QQMSG" | cut -d' ' -f2 | cut -d'@' -f1` || \
+	fatal "failed to find confirm address in -subscribe reply"
+  qqclean
+  DEFAULT=`${ECHO} "$LOCAL" | cut -c"$LOCLEN"-`
+  ${ECHO} "X-num: sub3" > "$TMP"
+  ${ECHO} "From: Mr. User confirms <$SENDER>" >> "$TMP"
+  ${ECHO} >> "$TMP"
+  ${EZBIN}/ezmlm-manage "$DIR" < "$TMP" \
+		>"$ERR" 2>&1 || \
+	fatal "failed to send user conf for sub1"
+  checkenv sub3 "$LOC-digest-return-@$HOST" "$MOD@$HOST"
+  msgexists || \
+	fatal "failed to receive user conf for sub1"
+  SENDER="${MOD}@$HOST"
+  ${EZBIN}/ezmlm-issubn "$DIR" && \
+	fatal "unsub without mod for moderated list failed"
+  ${GREP} 'sub3' "$QQMSG" >/dev/null 2>&1 || \
+	fatal "failed getting subscribe moderation confirm request"
+
+  # confirm subscription request
+  LOCAL=`${GREP} "Reply-To:" "$QQMSG" | cut -d' ' -f2 | cut -d'@' -f1` || \
+	fatal "no confirm address in sub3 mod confirm request"
+  DEFAULT=`${ECHO} "$LOCAL" | cut -c"$LOCLEN"-`
+  ${ECHO} "X-num: modR1" > "$TMP"
+  ${ECHO} "FROM: moderator agrees <$SENDER>" >> "$TMP"
+  ${ECHO} >> "$TMP"
+  ${EZBIN}/ezmlm-manage ${SW_FROM} "$DIR" < "$TMP"\
+		>/dev/null 2>&1 || \
+	fatal "failed to send digest sub mod accept for sub3"
+  checkenv modR1 "$LOC-digest-return-@$HOST" "$MAN@$HOST"
+
+  SENDER="${MAN}@$HOST"
+  ${EZBIN}/ezmlm-sub "$DIR" "$SENDER"
+  LOCAL="$LOC-unsubscribe"
+  DEFAULT='unsubscribe'
+  ${ECHO} "X-num: sub2" > "$TMP"
+  ${EZBIN}/ezmlm-manage "$DIR" < "$TMP" >"$ERR" 2>&1 || \
+	fatal "unsubscribe request failed"
+  checkenv sub2 "$LOC-return-@$HOST" "$SENDER"
+
+  LOCAL=`${GREP} "Reply-To:" "$QQMSG" | cut -d' ' -f2 | cut -d'@' -f1` || \
+	fatal "failed to find confirm address in -unsubscribe reply"
+  DEFAULT=`${ECHO} "$LOCAL" | cut -c"$LOCLEN"-`
+  ${ECHO} "X-num: sub4" > "$TMP"
+  ${EZBIN}/ezmlm-manage "$DIR" < "$TMP" >/dev/null 2>&1 || \
+	fatal "failed to send conf for sub2"
+  checkenv sub4 "$LOC-return-@$HOST" "$SENDER"
+
+# -get function for backwards compatibility
+  LOCAL="$LOC-get.1"
+  DEFAULT='get.1'
+  ${ECHO} "X-num: manget1" > "$TMP"
+  ${EZBIN}/ezmlm-manage "$DIR" < "$TMP" >"$ERR" 2>&1 || \
+	fatal "get failed"
+  checkenv get.1 "$LOC-return-@$HOST" "$SENDER"
+
+  # Check -get.1 reply
+  ${GREP} 'msg1' "$QQMSG" >/dev/null || \
+	fatal "get.1 failed to return archived message"
+
+# -C should disable it
+  ${EZBIN}/ezmlm-manage -C "$DIR" < "$TMP" >"$ERR" 2>&1 && \
+	fatal "-C failed to disable -get"
+
+  ${ECHO} "OK"
+#################
+# ezmlm-request #
+#################
+
+  prompt "ezmlm-request:        "
+
+  SENDER="${SND}@$HOST"
+  LOCAL="$LOC-request"
+  DEFAULT='request'
+
+  ${ECHO} "X-num: req1" > "$TMP"
+# use a non-existing command
+  ${ECHO} "Subject: qqqq ${SND}@$HOST" >> "$TMP"
+  ${ECHO} "Sender: ${SND}@$HOST" >> "$TMP"
+  ${EZBIN}/ezmlm-request "$DIR" < "$TMP" > "$ERR" 2>&1
+  if [ "$?" != "99" ]; then
+	fatal "qqqq command in subject failed to exit 99"
+  fi
+  checkenv req1 "$SENDER" "$LOC-qqqq-$SND=${HOST}@$HOST"
+  ${GREP} "Sender: ${SND}@$HOST" "$QQMSG" >/dev/null \
+  && fatal "ezmlm-reject didn't honor headerremove"
+
+  ${ECHO} "X-num: req2" > "$TMP"
+# test full ezmlm cmd in subject and command substitution
+  ${ECHO} "Subject: ${LOC}-remove-${SND}=${HOST}@${HOST}" >> "$TMP"
+  ${EZBIN}/ezmlm-request "$DIR" < "$TMP" > "$ERR" 2>&1
+  if [ "$?" != "99" ]; then
+	fatal "full ezmlm command in subject failed to exit 99"
+  fi
+
+  ${GREP} T"$LOC-unsubscribe-$SND=${HOST}@$HOST" "$QQENV" >/dev/null || \
+	fatal "ezmlm 'remove' subject query rewriting failed"
+
+  ${ECHO} "X-num: req3" > "$TMP"
+  ${ECHO} "Subject: subscribe ${LOC}@${HOST} ${SND}@${HOST}" >> "$TMP"
+  ${EZBIN}/ezmlm-request "$DIR" < "$TMP" > "$ERR" 2>&1
+  if [ "$?" != "99" ]; then
+	fatal "other command in subject failed to exit 99"
+  fi
+
+  ${GREP} T"$LOC-subscribe-$SND=${HOST}@$HOST" "$QQENV" >/dev/null || \
+	fatal "ezmlm 'subscribe' subject query rewriting failed"
+
+  ${ECHO} "X-num: req4" > "$TMP"
+  ${ECHO} "Subject: subscribe" >> "$TMP"
+  ${ECHO} "	${LOC}@${HOST} ${SND}@${HOST}" >> "$TMP"
+  ${ECHO} "Foo-Bar: nothing" >> "$TMP"
+  ${ECHO} x-num >"$DIR"/headerkeep
+  ${ECHO} subject >>"$DIR"/headerkeep
+  ${EZBIN}/ezmlm-request "$DIR" < "$TMP" > "$ERR" 2>&1
+  if [ "$?" != "99" ]; then
+	fatal "multi-line other command in subject failed to exit 99"
+  fi
+  ${GREP} '^foo-bar:' "$QQMSG" >/dev/null \
+  && fatal "ezmlm-reject didn't honor headerkeep"
+  ${RM} "$DIR"/headerkeep
+
+  ${GREP} T"$LOC-subscribe-$SND=${HOST}@$HOST" "$QQENV" >/dev/null || \
+	fatal "ezmlm multi-line 'subscribe' subject query rewriting failed"
+
+  DEFAULT=
+  ${EZBIN}/ezmlm-sub "$DIR" "$SENDER"
+  ${ECHO} "X-Num: req5" > "$TMP"
+  ${ECHO} "Subject: which" >> "$TMP"
+  ${ECHO} >> "$TMP"
+  ${ECHO} "which" >> "$TMP"
+  ${ECHO} "${LOC}@${HOST}:${DIR}:Description" > "$DIR"/request-config
+  ${EZBIN}/ezmlm-request -f "$DIR"/request-config "$DIR" < "$TMP" > "$ERR" 2>&1
+  test "$?" = 99 \
+  || fatal "which command failed to exit 99"
+  ${GREP} "^Subject: $LOC results" "$QQMSG" >/dev/null \
+  || fatal "which command had incorrect subject"
+  ${GREP} "^${LOC}@${HOST}$" "$QQMSG" >/dev/null \
+  || fatal "which command failed to find mailing list subscriber"
+
+  ${EZBIN}/ezmlm-unsub "$DIR" "$SENDER"
+  ${ECHO} "X-Num: req6" > "$TMP"
+  ${ECHO} "Subject: which" >> "$TMP"
+  ${ECHO} >> "$TMP"
+  ${ECHO} "which" >> "$TMP"
+  ${ECHO} "${LOC}@${HOST}:${DIR}:Description" > "$DIR"/request-config
+  ${EZBIN}/ezmlm-request -f "$DIR"/request-config "$DIR" < "$TMP" > "$ERR" 2>&1
+  test "$?" = 99 \
+  || fatal "which command failed to exit 99"
+  ${GREP} "^Subject: $LOC results" "$QQMSG" >/dev/null \
+  || fatal "which command had incorrect subject"
+  ${GREP} "^${LOC}@${HOST}$" "$QQMSG" >/dev/null \
+  && fatal "which command found unsubscribed mailing list subscriber"
+
+  ${ECHO} "OK"
+###############
+# ezmlm-split #
+###############
+
+  prompt "ezmlm-split:          "
+# set up split file
+  ${ECHO} "edu:1:26:l1@h1" > "${DIR}/split"
+  ${ECHO} "edu:27:52:l2@h2" >> "${DIR}/split"
+  ${ECHO} "com:::l3@h3" >> "${DIR}/split"
+# most testing with -D
+  ${ECHO} "lindberg@ezmlm.org" | ${EZBIN}/ezmlm-split -D "$DIR" | \
+	${GREP} "$LOC@$HOST" >/dev/null || \
+	fatal "failed to split correctly on domain"
+  ${ECHO} "lindberg@id.com" | ${EZBIN}/ezmlm-split -D "$DIR" | \
+	${GREP} 'l3' >/dev/null || \
+	fatal "failed to split correctly on domain"
+  ${ECHO} "lindberg@id.wustl.edu" | ${EZBIN}/ezmlm-split -D "$DIR" | \
+	${GREP} 'l1' >/dev/null || \
+	fatal "failed to split correctly on hash + domain"
+  ${ECHO} "cfl@id.wustl.edu" | ${EZBIN}/ezmlm-split -D "$DIR" | \
+	${GREP} 'l2' >/dev/null || \
+	fatal "failed to split correctly on hash + domain"
+# one test with delivery - redirect to local manager
+# should exit 99 after redirecting
+  ${ECHO} ":::${LOC}@$HOST" > "${DIR}/split"
+  SENDER="${MOD}@$HOST"
+  DTLINE="Delivered-To: ezmlm-split@$HOST"; export DTLINE
+  LOCAL="$LOC-subscribe-${SND}=$HOST"
+  DEFAULT="subscribe-${SND}=$HOST"
+  ${ECHO} "X-num: spl1" | ${EZBIN}/ezmlm-split "$DIR" >"$ERR" 2>&1
+
+  EC="$?"
+  if [ "$EC" -eq "0" ]; then
+	fatal "exited 0 after forwarding, rather than 99"
+  elif [ "$EC" != "99" ]; then
+	fatal "failed to process message for forwarding"
+  fi
+# if no match, should exit 0
+  ${ECHO} "___:::${LOC}@$HOST" > "${DIR}/split"
+  ${ECHO} "X-num: spl1" | ${EZBIN}/ezmlm-split "$DIR" >"$ERR" 2>&1 || \
+	fatal "failed to exit 0 after failing to match"
+  checkenv spl1 "$LOC-return-@$HOST" "$LOC-subscribe-$SND=$HOST@$HOST"
+
+  ${ECHO} "OK"
+##############
+# ezmlm-gate #
+##############
+
+prompt "ezmlm-gate:           "
+
+${EZBIN}/ezmlm-sub "$DIR" "${SND}@${HOST}"
+
+SENDER="not${SND}@not${HOST}"
+{ ${ECHO} "X-num: gate1"; make_message; } \
+| ${EZBIN}/ezmlm-gate "$DIR" . > "$ERR" 2>&1 \
+|| fatal "failed to process message 1"
+cat "$DIR"/mod/pending/* | ${GREP} "gate1" > /dev/null \
+|| fatal "failed to queue message 1"
+checkenv gate1 "$LOC-return-@$HOST" "$MOD@$HOST"
+
+SENDER="${MAN}@${HOST}"
+${EZBIN}/ezmlm-sub "$DIR" "$SENDER"
+{ ${ECHO} "X-num: gate2"; make_message; } \
+| ${EZBIN}/ezmlm-gate "$DIR" . > "$ERR" 2>&1 \
+|| fatal "failed to process message 2"
+cat "$DIR"/mod/pending/* | ${GREP} "gate2" > /dev/null \
+&& fatal "mistakenly queued message 2"
+checkenv gate2 "$LOC-return-.*-@$HOST-@\\[\\]" "$SND@$HOST" "$MAN@$HOST" "$BNC@$HOST"
+
+SENDER="${MOD}@${HOST}"
+{ ${ECHO} "X-num: gate3"; make_message; } \
+| ${EZBIN}/ezmlm-gate "$DIR" "$DIR" "$DIR"/mod > "$ERR" 2>&1 \
+|| fatal "failed to process message 3"
+cat "$DIR"/mod/pending/* | ${GREP} "gate3" > /dev/null \
+&& fatal "mistakenly queued message 3"
+checkenv gate3 "$LOC-return-.*-@$HOST-@\\[\\]" "$SND@$HOST" "$MAN@$HOST" "$BNC@$HOST"
+
+make_message | ${EZBIN}/ezmlm-gate "$DIR" /etc/"$DIR" > "$ERR" 2>&1 \
+&& fatal "failed to reject bad command line 1"
+
+${ECHO} "OK"
+#############
+# ezmlm-idx #
+#############
+
+  prompt "ezmlm-idx:            "
+  ${RM} -f "${DIR}/archive/0/index" "${DIR}/indexed"
+  ${EZBIN}/ezmlm-idx "$DIR" >"$ERR" 2>&1 || \
+	fatal "failed to run"
+  if [ ! -r "${DIR}/indexed" ]; then
+	fatal "failed to create DIR/indexed"
+  fi
+  if [ ! -r "${DIR}/archive/0/index" ]; then
+	fatal "failed to create index"
+  fi 
+  ${ECHO} "OK"
+#############
+# ezmlm-get #
+#############
+
+prompt "ezmlm-get (index):    "
+
+# blast digest recipient account with all these excerpts.
+${EZBIN}/ezmlm-sub "$DIR" digest "${DIG}@$HOST"
+
+# first ezmlm-get in the manager position:
+
+# index1/get1/thread1 should bounce and will not be looked for
+# index2 ... should be in DIG@HOST's inbox
+# get3 - r format to DIG@HST
+# get4 - n
+# get5 - v
+# get6 - x
+
+qqclean
+SENDER="${BNC}@$HOST"
+LOCAL="$LOC-xxxx"
+DEFAULT='xxxx'
+${ECHO} "X-num: index1" > "$TMP"
+${EZBIN}/ezmlm-get "$DIR" < "$TMP" >"$ERR" 2>&1 || \
+	fatal " failed to exit 0 for non-recognized commands"
+msgexists && \
+	fatal " failed to abort on non-recognized commands"
+
+# This should not give a digest
+qqclean
+LOCAL="$LOC-"
+DEFAULT=''
+${EZBIN}/ezmlm-get "$DIR" < "$TMP" >"$ERR" 2>&1 || \
+	fatal " failed to exit 0 for list-@host"
+msgexists && \
+	fatal " failed to exit on list-@host"
+
+# Make sure this address is not a subscriber
+${EZBIN}/ezmlm-unsub "$DIR" "${SENDER}" >/dev/null 2>&1
+${EZBIN}/ezmlm-unsub "$DIR" allow "${SENDER}" >/dev/null 2>&1
+${EZBIN}/ezmlm-unsub "$DIR" digest "${SENDER}" >/dev/null 2>&1
+
+qqclean
+LOCAL="$LOC-index"
+DEFAULT='index'
+${EZBIN}/ezmlm-get -s "$DIR" < "$TMP" >"$ERR" 2>&1 && \
+	fatal "-s failed to reject -index from non-sub"
+msgexists && \
+	fatal "-s delivered response to non-subscriber"
+
+qqclean
+${EZBIN}/ezmlm-get "$DIR" < "$TMP" >"$ERR" 2>&1
+if [ "$?" -ne "99" ]; then
+	fatal "failed to exit 99 after -index"
+fi
+msgexists || \
+	fatal "No message delivered"
+checkenv index "$LOC-return-@$HOST" "$SENDER"
+
+qqclean
+${ECHO} "X-num: index2" > "$TMP"
+SENDER="${DIG}@$HOST"
+${EZBIN}/ezmlm-get -s "$DIR" < "$TMP" >"$ERR" 2>&1
+if [ "$?" -ne "99" ]; then
+	fatal "-s failed to exit 99 after -index"
+fi
+msgexists || \
+	fatal "No message delivered"
+${GREP} "index2" "$QQMSG" >/dev/null 2>&1 || \
+	fatal "index2 failed to return"
+checkenv index2 "$LOC-return-@$HOST" "$SENDER"
+
+${ECHO} "OK"
+#############
+# ezmlm-get #
+#############
+
+prompt "ezmlm-get (get):      "
+
+qqclean
+SENDER="${BNC}@$HOST"
+${ECHO} "X-num: get1" > "$TMP"
+LOCAL="$LOC-get.2_4"
+DEFAULT='get.2_4'
+${EZBIN}/ezmlm-get -s "$DIR" < "$TMP" >/dev/null 2>&1 && \
+	fatal "-s failed to reject -get from non-sub"
+msgexists && \
+	fatal "-s failed to reject -get from non-sub"
+
+touch "$DIR"/subgetonly
+${EZBIN}/ezmlm-get "$DIR" < "$TMP" >/dev/null 2>&1 && \
+	fatal "subgetonly failed to reject -get from non-sub"
+msgexists && \
+	fatal "subgetonly failed to reject -get from non-sub"
+${RM} "$DIR"/subgetonly
+
+qqclean
+${EZBIN}/ezmlm-get "$DIR" < "$TMP" >/dev/null 2>&1
+if [ "$?" != "99" ]; then
+	fatal "failed to exit 99 after -get"
+fi
+
+qqclean
+${ECHO} "X-num: get2" > "$TMP"
+SENDER="${DIG}@$HOST"
+${EZBIN}/ezmlm-get -s "$DIR" < "$TMP" >/dev/null 2>&1
+if [ "$?" != "99" ]; then
+	fatal "-s failed to exit 99 after -get"
+fi
+msgexists || \
+	fatal "get2 failed to return"
+checkenv get2 "$LOC-return-@$HOST" "$SENDER"
+
+# test formats for -get
+qqclean
+${ECHO} "X-num: get3" > "$TMP"
+LOCAL="$LOC-getr.2_4"
+DEFAULT='getr.2_4'
+qqclean
+${EZBIN}/ezmlm-get "$DIR" < "$TMP" >/dev/null 2>&1
+if [ "$?" != "99" ]; then
+	fatal "failed to exit 99 after -getr"
+fi
+msgexists || \
+	fatal "get3 format 'r' failed to return"
+checkenv get3 "$LOC-return-@$HOST" "$SENDER"
+
+qqclean
+${ECHO} "X-num: get4" > "$TMP"
+LOCAL="$LOC-getn.2_4"
+DEFAULT='getn.2_4'
+${EZBIN}/ezmlm-get "$DIR" < "$TMP" >/dev/null 2>&1
+if [ "$?" != "99" ]; then
+	fatal "failed to exit 99 after -getn"
+fi
+msgexists || \
+	fatal "get4 format 'n' failed to return"
+checkenv get4 "$LOC-return-@$HOST" "$SENDER"
+
+qqclean
+${ECHO} "X-num: get5" > "$TMP"
+LOCAL="$LOC-getv.2_4"
+DEFAULT='getv.2_4'
+${EZBIN}/ezmlm-get "$DIR" < "$TMP" >/dev/null 2>&1
+if [ "$?" != "99" ]; then
+	fatal "failed to exit 99 after -getv"
+fi
+msgexists || \
+	fatal "get5 format 'v' failed to return"
+checkenv get5 "$LOC-return-@$HOST" "$SENDER"
+
+qqclean
+${ECHO} "X-num: get6" > "$TMP"
+LOCAL="$LOC-getx.2_4"
+DEFAULT='getx.2_4'
+${EZBIN}/ezmlm-get "$DIR" < "$TMP" >/dev/null 2>&1
+if [ "$?" != "99" ]; then
+	fatal "failed to exit 99 after -getx"
+fi
+msgexists || \
+	fatal "get6 format 'x' failed to return"
+checkenv get6 "$LOC-return-@$HOST" "$SENDER"
+
+${ECHO} "OK"
+#############
+# ezmlm-get #
+#############
+
+prompt "ezmlm-get (thread):   "
+
+qqclean
+SENDER="${BNC}@$HOST"
+LOCAL="$LOC-index"
+DEFAULT='index'
+${ECHO} "X-num: thread1" > "$TMP"
+LOCAL="$LOC-thread.1"
+DEFAULT='thread.1'
+${EZBIN}/ezmlm-get -s "$DIR" < "$TMP" >/dev/null 2>&1 && \
+	fatal "-s failed to reject -thread from non-sub"
+msgexists && \
+	fatal "-s failed to reject -thread from non-sub"
+
+qqclean
+${EZBIN}/ezmlm-get "$DIR" < "$TMP" >/dev/null 2>&1
+if [ "$?" != "99" ]; then
+	fatal "failed to exit 99 after -thread"
+fi
+msgexists || \
+	fatal "failed to produce -thread message"
+checkenv thread1 "$LOC-return-@$HOST" "$SENDER"
+
+qqclean
+${ECHO} "X-num: thread2" > "$TMP"
+SENDER="${DIG}@$HOST"
+${EZBIN}/ezmlm-get -s "$DIR" < "$TMP" >/dev/null 2>&1
+if [ "$?" != "99" ]; then
+	fatal "-s failed to exit 99 after -thread"
+fi
+msgexists || \
+	fatal "-s failed to produce -thread message"
+checkenv thread2 "$LOC-return-@$HOST" "$SENDER"
+
+${ECHO} "OK"
+#############
+# ezmlm-get #
+#############
+
+prompt "ezmlm-get (digest):   "
+
+######### digests
+# we use headeradd to label them since trigger headers aren't propagated
+${ECHO} "X-num: not_propagated" > "$TMP"
+
+# dig1 from manager will go to DIG@HOST
+# dig2 from editor
+# dig3 from command line
+# dig4 -fr format check from command line. We check only that they get there.
+# dig5 -fn
+# dig6 -fx
+# dig7 -fv
+# we check that dignum is created and digissue is updated 
+
+# now -dig in the manager position:
+qqclean
+mv -f "${DIR}/headeradd" "${DIR}/headeradd.bak"
+${ECHO} "X-num: dig1" > "${DIR}/headeradd"
+SENDER="${BNC}@$HOST"
+LOCAL="$LOC-dig.code"
+DEFAULT='dig.code'
+${EZBIN}/ezmlm-get "$DIR" < "$TMP" >/dev/null 2>&1 && \
+	fatal "failed to reject -dig when no digest code was on cmd-line"
+if [ -r "${DIR}/dignum" ]; then
+	fatal "script error: dignum exists"
+fi
+msgexists && \
+	fatal "dig1 from non-manager was delivered"
+
+qqclean
+${EZBIN}/ezmlm-get "$DIR" 'code' < "$TMP" >"$ERR" 2>&1
+if [ "$?" != "99" ]; then
+	fatal "failed to exit 99 after digest in manager position"
+fi
+if [ ! -r "${DIR}/dignum" ]; then
+	fatal "failed to generate dignum"
+fi
+if [ ! -r "${DIR}/digissue" ]; then
+	fatal "failed to generate digissue"
+fi
+msgexists || \
+	fatal "dig1 from manager wasn't delivered"
+checkenv dig1 "$LOC-digest-return-.*@$HOST-@\\[\\]" "$DIG@$HOST" "$MAN@$HOST"
+
+qqclean
+${RM} "$DIR"/dignum
+${ECHO} code >"$DIR"/digestcode
+${EZBIN}/ezmlm-get "$DIR" < "$TMP" >"$ERR" 2>&1
+if [ "$?" != "99" ]; then
+	fatal "failed to exit 99 after digest in manager position with file"
+fi
+if [ ! -r "${DIR}/dignum" ]; then
+	fatal "failed to generate dignum"
+fi
+if [ ! -r "${DIR}/digissue" ]; then
+	fatal "failed to generate digissue"
+fi
+msgexists || \
+	fatal "dig1 from manager wasn't delivered"
+checkenv dig1 "$LOC-digest-return-.*@$HOST-@\\[\\]" "$DIG@$HOST" "$MAN@$HOST"
+${ECHO} >"$DIR"/digestcode
+
+qqclean
+${EZBIN}/ezmlm-get "$DIR" 'code' < "$TMP" >/dev/null 2>&1
+if [ "$?" != "99" ]; then
+	fatal "failed to exit 99 when nothing to digest in manager position"
+fi
+msgexists && \
+	fatal "empty dig1 from manager was delivered"
+
+qqclean
+${EZBIN}/ezmlm-get "$DIR" 'coden' < "$TMP" >/dev/null 2>&1 && \
+	fatal "failed to reject -dig with bad digest code 'coden'"
+msgexists && \
+	fatal "delivered -dig with bad digest code 'coden'"
+
+qqclean
+${EZBIN}/ezmlm-get "$DIR" 'cod' < "$TMP" >/dev/null 2>&1 && \
+	fatal "failed to reject -dig with bad digest code 'cod'"
+msgexists && \
+	fatal "delivered -dig with bad digest code 'code'"
+
+qqclean
+${ECHO} coden >"$DIR"/digestcode
+${EZBIN}/ezmlm-get "$DIR" < "$TMP" >/dev/null 2>&1 && \
+	fatal "failed to reject -dig with bad digest code file 'coden'"
+msgexists && \
+	fatal "delivered -dig with bad digest code file 'coden'"
+
+qqclean
+${ECHO} cod >"$DIR"/digestcode
+${EZBIN}/ezmlm-get "$DIR" < "$TMP" >/dev/null 2>&1 && \
+	fatal "failed to reject -dig with bad digest code file 'cod'"
+msgexists && \
+	fatal "delivered -dig with bad digest code file 'cod'"
+
+# now in the editor position:
+qqclean
+${RM} -f "${DIR}/dignum"
+LOCAL="$LOC"
+${UNSET} DEFAULT
+${ECHO} "X-num: dig2" > "${DIR}/headeradd"
+${EZBIN}/ezmlm-get "$DIR" < "$TMP" >"$ERR" 2>&1 || \
+	fatal "failed to exit 0 after digest in editor"
+msgexists || \
+	fatal "dig2 from editor wasn't delivered"
+checkenv dig2 "$LOC-digest-return-.*@$HOST-@\\[\\]" "$DIG@$HOST" "$MAN@$HOST"
+
+# This causes an error on systems where 'unset' doesn't work
+# For these, we skip this test.
+  if [ -z "$BADUNSET" ]; then
+    qqclean
+    if [ ! -r "${DIR}/dignum" ]; then
+	fatal "failed to generate dignum after digest in editor"
+    fi
+
+    ${GREP} "^3:" "${DIR}/digissue" >/dev/null 2>&1 || \
+	fatal "failed to update digissue after digest in editor"
+    ${EZBIN}/ezmlm-get "$DIR" < "$TMP" >"$ERR" 2>&1 || \
+	fatal "failed to exit 0 when nothing to digest in editor"
+    msgexists && \
+	fatal "empty dig2 from editor was delivered"
+  fi
+
+# now from the command line with formats ...
+qqclean
+${RM} -f "${DIR}/dignum"
+LOCAL=''
+${ECHO} "X-num: dig3" > "${DIR}/headeradd"
+${EZBIN}/ezmlm-get "$DIR" < "$TMP" >/dev/null 2>&1 || \
+	fatal "failed to exit 0 after cmd line digest"
+msgexists || \
+	fatal "dig3 from command line wasn't delivered"
+checkenv dig3 "$LOC-digest-return-.*@$HOST-@\\[\\]" "$DIG@$HOST" "$MAN@$HOST"
+
+qqclean
+${GREP} "^4:" "${DIR}/digissue" >/dev/null 2>&1 || \
+	fatal "failed to update digissue after cmd line digest"
+${EZBIN}/ezmlm-get "$DIR" < "$TMP" >/dev/null 2>&1 || \
+	fatal "failed to exit 0 when nothing to digest from cmd line"
+msgexists && \
+	fatal "empty dig3 from command line was delivered"
+
+qqclean
+${RM} -f "${DIR}/dignum"
+${ECHO} "X-num: dig4" > "${DIR}/headeradd"
+${EZBIN}/ezmlm-get -fr "$DIR" < "$TMP" >/dev/null 2>&1 || \
+	fatal "-fr failed for digest"
+msgexists || \
+	fatal "dig4 format 'r' wasn't delivered"
+checkenv dig4 "$LOC-digest-return-.*@$HOST-@\\[\\]" "$DIG@$HOST" "$MAN@$HOST"
+
+qqclean
+${RM} -f "${DIR}/dignum"
+${ECHO} "X-num: dig5" > "${DIR}/headeradd"
+${EZBIN}/ezmlm-get -fn "$DIR" < "$TMP" >/dev/null 2>&1 || \
+	fatal "-fn failed for digest"
+msgexists || \
+	fatal "dig5 format 'n' wasn't delivered"
+checkenv dig5 "$LOC-digest-return-.*@$HOST-@\\[\\]" "$DIG@$HOST" "$MAN@$HOST"
+
+qqclean
+${RM} -f "${DIR}/dignum"
+${ECHO} "X-num: dig6" > "${DIR}/headeradd"
+${EZBIN}/ezmlm-get -fv "$DIR" < "$TMP" >/dev/null 2>&1 || \
+	fatal "-fv failed for digest"
+msgexists || \
+	fatal "dig6 format 'v' wasn't delivered"
+checkenv dig6 "$LOC-digest-return-.*@$HOST-@\\[\\]" "$DIG@$HOST" "$MAN@$HOST"
+
+${RM} -f "${DIR}/dignum"
+${ECHO} "X-num: dig7" > "${DIR}/headeradd"
+${EZBIN}/ezmlm-get -fx "$DIR" < "$TMP" >/dev/null 2>&1 || \
+	fatal "-fx failed for digest"
+msgexists || \
+	fatal "dig7 format 'x' wasn't delivered"
+checkenv dig7 "$LOC-digest-return-.*@$HOST-@\\[\\]" "$DIG@$HOST" "$MAN@$HOST"
+
+${RM} -f "${DIR}/dignum"
+${ECHO} "X-num: dig8" > "${DIR}/headeradd"
+${ECHO} r > "$DIR"/digformat
+${EZBIN}/ezmlm-get "$DIR" < "$TMP" >/dev/null 2>&1 || \
+	fatal "digformat=r failed for digest"
+msgexists || \
+	fatal "dig8 format 'r' wasn't delivered"
+checkenv dig8 "$LOC-digest-return-.*@$HOST-@\\[\\]" "$DIG@$HOST" "$MAN@$HOST"
+test $(${GREP} -c Content-Type: "$QQMSG") = 1 \
+|| fatal "ezmlm-get didn't read digformat"
+
+# restore headeradd
+mv -f "${DIR}/headeradd.bak" "${DIR}/headeradd"
+
+${ECHO} "OK"
+export DEFAULT
+################
+# ezmlm-manage #
+################
+
+prompt "ezmlm-manage (2/2):   "
+
+# now test remote admin functions
+# add a few addresses to allow
+${EZBIN}/ezmlm-sub "$DIR" allow "aaa@bbb" "ccc@ddd" "eee@fff"
+
+# test -edit
+qqclean
+${ECHO} "#TEST_TEXT#" > "${DIR}/text/test"
+LOCAL="$LOC-edit.test-$MAN=$HOST"
+DEFAULT="edit.test-$MAN=$HOST"
+${ECHO} "X-num: edit1" > "$TMP"
+${EZBIN}/ezmlm-manage -e "$DIR" < "$TMP" >/dev/null 2>&1 && \
+	fatal "failed to reject edit request from non-mod"
+LOCAL="$LOC-edit.test-$MOD=$HOST"
+DEFAULT="edit.test-$MOD=$HOST"
+${ECHO} "X-num: edit2" > "$TMP"
+${RM} "$DIR"/modcanedit
+${EZBIN}/ezmlm-manage "$DIR" < "$TMP" >"$ERR" 2>&1 && \
+	fatal "-E failed for edit2"
+${ECHO} "X-num: edit3" > "$TMP"
+touch "$DIR"/modcanedit
+${EZBIN}/ezmlm-manage "$DIR" < "$TMP" >"$ERR" 2>&1 || \
+	fatal "modcanedit failed for remote admin for edit3"
+checkenv edit3 "$LOC-return-@$HOST" "$MOD@$HOST"
+${GREP} "^Subject: EDIT test for ${LOC}@${HOST}$" "$QQMSG" >/dev/null \
+|| fatal "edit3 had incorrect subject"
+${RM} "$DIR"/modcanedit
+
+# complete edit. SENDER can be any address
+SENDER="${MAN}@$HOST"
+${GREP} 'edit3' "$QQMSG" >/dev/null 2>&1 || \
+	fatal "failed getting edit reply for edit3"
+${GREP} "#TEST_TEXT#" "$QQMSG" >/dev/null 2>&1 || \
+	fatal "old text missing in edit3 edit reply"
+LOCAL=`${GREP} "Reply-To:" "$QQMSG" | cut -d' ' -f2 | cut -d'@' -f1` || \
+	fatal "no reply address in edit3 edit reply"
+DEFAULT=`${ECHO} "$LOCAL" | cut -c"$LOCLEN"-`
+${ECHO} "X-num: edit4" > "$TMP"
+${ECHO} >> "$TMP"
+${ECHO} "%%% START OF TEXT FILE" >> "$TMP"
+${ECHO} "#NEW_TEXT#" >> "$TMP"
+${ECHO} "%%% END OF TEXT FILE" >> "$TMP"
+${EZBIN}/ezmlm-manage -e "$DIR" < "$TMP" >/dev/null 2>&1 || \
+	fatal "failed to send edit4 reply for edit3"
+${GREP} "#NEW_TEXT#" "${DIR}/text/test" >/dev/null 2>&1 || \
+	fatal "edit4 failed to update text file"
+${GREP} "^Subject: Success editing test for ${LOC}@${HOST}$" "$QQMSG" >/dev/null \
+|| fatal "edit4 had incorrect subject"
+
+# test list/log
+LOCAL="$LOC-allow-list-$MAN=$HOST"
+DEFAULT="allow-list-$MAN=$HOST"
+${ECHO} "X-num: list1" > "$TMP"
+${EZBIN}/ezmlm-manage -l "$DIR" < "$TMP" >/dev/null 2>&1 && \
+	fatal "failed to reject list request from non-mod"
+
+LOCAL="$LOC-allow-log-$MAN=$HOST"
+DEFAULT="allow-log-$MAN=$HOST"
+${ECHO} "X-num: log1" > "$TMP"
+${EZBIN}/ezmlm-manage -l "$DIR" < "$TMP" >/dev/null 2>&1 && \
+	fatal "failed to reject log request from non-mod"
+
+LOCAL="$LOC-allow-list-$MOD=$HOST"
+DEFAULT="allow-list-$MOD=$HOST"
+${ECHO} "X-num: list2" > "$TMP"
+${RM} "$DIR"/modcanlist
+${EZBIN}/ezmlm-manage "$DIR" < "$TMP" >/dev/null 2>&1 && \
+	fatal "-L failed to reject list request"
+
+qqclean
+${ECHO} "X-num: list3" > "$TMP"
+${EZBIN}/ezmlm-manage -l "$DIR" < "$TMP" >"$ERR" 2>&1 || \
+	fatal "-l failed for remote admin for list3"
+
+${GREP} 'list3' "$QQMSG" >/dev/null 2>&1 || \
+	fatal "failed getting -list reply to list3"
+${GREP} "aaa@bbb" "$QQMSG" > /dev/null 2>&1 || \
+	fatal "failed to get list reply to list3"
+checkenv list3 "$LOC-allow-return-@$HOST" "$MOD@$HOST"
+
+qqclean
+${ECHO} "X-num: list4" > "$TMP"
+touch "$DIR"/modcanlist
+${EZBIN}/ezmlm-manage "$DIR" < "$TMP" >"$ERR" 2>&1 || \
+	fatal "modcanlist failed for remote admin for list3"
+
+${GREP} 'list4' "$QQMSG" >/dev/null 2>&1 || \
+	fatal "failed getting -list reply to list4"
+${GREP} "aaa@bbb" "$QQMSG" > /dev/null 2>&1 || \
+	fatal "failed to get list reply to list4"
+checkenv list4 "$LOC-allow-return-@$HOST" "$MOD@$HOST"
+${RM} "$DIR"/modcanlist
+
+LOCAL="$LOC-allow-log-$MOD=$HOST"
+DEFAULT="allow-log-$MOD=$HOST"
+${ECHO} "X-num: log2" > "$TMP"
+${EZBIN}/ezmlm-manage "$DIR" < "$TMP" >"$ERR" 2>&1 && \
+	fatal "-L failed to reject log request"
+
+qqclean
+${ECHO} "X-num: log3" > "$TMP"
+${EZBIN}/ezmlm-manage -l "$DIR" < "$TMP" >"$ERR" 2>&1 || \
+	fatal "-l failed for remote admin for log3"
+
+# check results of log/list
+${GREP} 'log3' "$QQMSG" >/dev/null 2>&1 || \
+	fatal "failed getting -log reply to log3"
+${GREP} "aaa@bbb" "$QQMSG" | ${GREP} "+m" > /dev/null 2>&1 || \
+	fatal "failed to get log reply to log3"
+checkenv log3 "$LOC-allow-return-@$HOST" "$MOD@$HOST"
+
+${ECHO} "OK"
+##################
+# ezmlm-moderate #
+##################
+
+prompt "ezmlm-moderate:       "
+
+# make sure we get the (mis)accepted message(s)
+${EZBIN}/ezmlm-sub "$DIR" "${SND}@$HOST"
+
+# REJ is set in 145-ezmlm-store, as the reject address for "mod1" message
+LOCAL=`${ECHO} "$REJ" | cut -d@ -f1`
+
+qqclean
+DEFAULT=`${ECHO} "$LOCAL" | cut -c"$REJLEN"-`
+{
+    make_message
+    echo
+    echo '> %%%'
+    echo '> rejection test message'
+    echo '> %%%'
+} | ${EZBIN}/ezmlm-moderate "$DIR" "${EZBIN}/ezmlm-send ${DIR}" \
+	>"$ERR" 2>&1 || \
+		fatal "failed on rejection"
+msgexists ||
+	fatal "failed to send rejection notice for message mod1"
+# ${SND}@$HOST means it was rejected, not send through the list
+${GREP} "To: ${SND}@$HOST" "$QQMSG" > /dev/null 2>&1 || \
+	fatal "failed to reject message mod1"
+${GREP} '^rejection test message$' "$QQMSG" >/dev/null 2>&1 || \
+	fatal "reject message did not include given text"
+checkenv rejection "$LOC-return-@$HOST" "$SND@$HOST"
+
+qqclean
+# ACC is set in 145-ezmlm-store, as the accept address for "mod3" message
+LOCAL=`${ECHO} "$ACC" | cut -d@ -f1`
+DEFAULT=`${ECHO} "$LOCAL" | cut -c"$ACCLEN"-`
+${EZBIN}/ezmlm-moderate "$DIR" ${EZBIN}/ezmlm-send "$DIR" \
+	 </dev/null >"$ERR" 2>&1 || \
+		fatal "failed on acceptance"
+msgexists || \
+	fatal "failed to post message mod3"
+# ${LOC}@$HOST means it was not rejected, but sent through the list
+${GREP} "To: ${LOC}@$HOST" $QQMSG > /dev/null 2>&1 || \
+	fatal "failed to accept message mod3"
+checkenv accept "$LOC-return-.*-@$HOST-@\\[\\]" "$SND@$HOST" "$MAN@$HOST"
+
+ls -l "${DIR}/mod/rejected/" | ${GREP} '[0-9]' >/dev/null 2>&1 || \
+	fatal "failed to write reject stub"
+ls -l "${DIR}/mod/accepted/" | ${GREP} '[0-9]' >/dev/null 2>&1 || \
+	fatal "failed to write accept stub"
+
+REJ1=`${ECHO} "$REJ" | sed s/reject/accept/`
+LOCAL=`${ECHO} "$REJ1" | cut -d@ -f1`
+DEFAULT=`${ECHO} "$LOCAL" | cut -c"$REJLEN"-`
+${EZBIN}/ezmlm-moderate "$DIR" "${EZBIN}/ezmlm-send ${DIR}" \
+	</dev/null >/dev/null 2>&1 && \
+	fatal "failed to bounce accept of rejected message"
+
+LOCAL=`${ECHO} "$REJ" | cut -d@ -f1`
+DEFAULT=`${ECHO} "$LOCAL" | cut -c"$REJLEN"-`
+${EZBIN}/ezmlm-moderate "$DIR" "${EZBIN}/ezmlm-send ${DIR}" \
+	</dev/null >/dev/null 2>&1 || \
+	fatal "failed to silently ignore re-rejection"
+
+ACC1=`${ECHO} "$ACC" | sed s/accept/reject/`
+LOCAL=`${ECHO} "$ACC1" | cut -d@ -f1`
+DEFAULT=`${ECHO} "$LOCAL" | cut -c"$REJLEN"-`
+${EZBIN}/ezmlm-moderate "$DIR" "${EZBIN}/ezmlm-send ${DIR}" \
+	</dev/null >/dev/null 2>&1 && \
+	fatal "failed to bounce reject of accepted message"
+
+LOCAL=`${ECHO} "$ACC" | cut -d@ -f1`
+DEFAULT=`${ECHO} "$LOCAL" | cut -c"$ACCLEN"-`
+${EZBIN}/ezmlm-moderate "$DIR" "${EZBIN}/ezmlm-send ${DIR}" \
+	</dev/null >/dev/null 2>&1 || \
+	fatal "failed to silently ignore re-acceptance"
+
+${ECHO} "OK"
+
+# cleanup
+${EZBIN}/ezmlm-unsub "$DIR" "${SND}@$HOST"
+##############
+# ezmlm-warn #
+##############
+
+prompt "ezmlm-warn (2/2):     "
+
+qqclean
+${EZBIN}/ezmlm-warn -D -t0 "$DIR" >"$ERR" 2>&1 || \
+	fatal "failed with normal bounce for warning"
+
+${EZBIN}/ezmlm-warn -d -t0 "$DIR" >"$ERR" 2>&1 || \
+	fatal "failed with digest bounce for warning"
+
+SENDER="${BNC}@${HOST}"
+${EZBIN}/ezmlm-issubn -n "$DIR" || \
+	fatal "failed to remove bouncing subscriber"
+${EZBIN}/ezmlm-issubn -n "$DIR" digest || \
+	fatal "failed to remove bouncing digest subscriber"
+
+${ECHO} "OK"
+#################
+# ezmlm-archive #
+#################
+
+prompt "ezmlm-archive:        "
+
+${MV} "$DIR"/num "$DIR"/xnumx
+${EZBIN}/ezmlm-archive "$DIR" >"$ERR" 2>&1 \
+&& fatal 'succeeded when "num" was missing'
+
+${TEST} -e "$DIR"/num && fatal 'recreated the "num" file'
+${TEST} -e "$DIR"/archive/authors \
+	-o -e "$DIR"/archive/lock \
+	-o -e "$DIR"/archive/subjects \
+	-o -e "$DIR"/archive/threads \
+	-o -e "$DIR"/archnum \
+&& fatal 'created files after failing'
+
+${MV} "$DIR"/xnumx "$DIR"/num
+${EZBIN}/ezmlm-archive "$DIR" >"$ERR" 2>&1 \
+|| fatal 'failed after "num" was restored'
+
+${TEST} -e "$DIR"/archive/authors \
+	-a -e "$DIR"/archive/lock \
+	-a -e "$DIR"/archive/subjects \
+	-a -e "$DIR"/archive/threads \
+	-a -e "$DIR"/archnum \
+|| fatal 'failed to create index files'
+
+${ECHO} "OK"
+##################
+# ezmlm-dispatch #
+##################
+
+make_message >"$TMP"
+testdispatch() {
+  DEFAULT="$2"
+  ${EZBIN}/ezmlm-dispatch "$DIR" $1 <"$TMP" 2>&1 \
+  | grep "^$3$" >/dev/null \
+  || fatal "did not dispatch DEFAULT='$2' from '$1' to '$3'"
+}
+
+prompt "ezmlm-dispatch:       "
+
+for list in list1 list2; do
+  ${MKDIR} "$DIR"/$list
+  ${MKDIR} "$DIR"/$list/digest
+  for cmd in editor owner bouncer digest/bouncer confirmer moderator manager; do
+    ${ECHO} "|${ECHO} $list $cmd" >"$DIR"/$list/$cmd
+  done
+done
+
+testdispatch '' list1 'list1 editor'
+testdispatch '' list1-owner 'list1 owner'
+testdispatch '' list1-digest-owner 'list1 owner'
+testdispatch '' list1-digest-return-xyzzy 'list1 digest/bouncer'
+testdispatch '' list1-return-xyzzy 'list1 bouncer'
+testdispatch '' list1-confirm-xyzzy 'list1 confirmer'
+testdispatch '' list1-discard-xyzzy 'list1 confirmer'
+testdispatch '' list1-accept-xyzzy 'list1 moderator'
+testdispatch '' list1-reject-xyzzy 'list1 moderator'
+testdispatch '' list1-xyzzy 'list1 manager'
+
+unset DEFAULT
+${EZBIN}/ezmlm-dispatch "$DIR" list2 <"$TMP" 2>&1 | grep "^list2 editor$" >/dev/null \
+|| fatal "did not dispatch from 'list2' to 'list2 editor'"
+export DEFAULT
+
+testdispatch list2 owner 'list2 owner'
+testdispatch list2 digest-owner 'list2 owner'
+testdispatch list2 digest-return-xyzzy 'list2 digest/bouncer'
+testdispatch list2 return-xyzzy 'list2 bouncer'
+testdispatch list2 confirm-xyzzy 'list2 confirmer'
+testdispatch list2 discard-xyzzy 'list2 confirmer'
+testdispatch list2 accept-xyzzy 'list2 moderator'
+testdispatch list2 reject-xyzzy 'list2 moderator'
+testdispatch list2 xyzzy 'list2 manager'
+
+${RM} -r "$DIR"/list1 "$DIR"/list2
+${ECHO} "OK"
+######################
+# dispatch to editor #
+######################
+
+prompt "dispatch editor:      "
+
+DEFAULT=
+make_message > "$TMP"
+
+post() {
+    qqclean
+    rm -f "$DIR"/confirmpost "$DIR"/modpost "$DIR"/subpostonly
+    SENDER="$1@$HOST"
+    shift
+    for flag in $*; do
+	touch "$DIR"/$flag
+    done
+    ${EZBIN}/ezmlm-dispatch "$DIR" . <"$TMP" >"$ERR" 2>&1 
+}
+
+# Drop most of the options to start, will add them back manually later
+${EZBIN}/ezmlm-make -+ -BDGHJKLMNORSTUWY "$DIR"
+
+# Unsubscribe everybody but "subscriber"
+${EZBIN}/ezmlm-list "$DIR" | ${EZBIN}/ezmlm-unsub "$DIR"
+${EZBIN}/ezmlm-sub "$DIR" subscriber@"$HOST"
+
+${EZBIN}/ezmlm-sub "$DIR" deny denied@"$HOST"
+
+# Post from denied sender, is rejected
+post denied \
+&& fatal "Failed to reject message from denied sender"
+
+# Normal post, goes to subscribers
+post sender \
+|| fatal "Error delivering normal post"
+checkenv post1 "$LOC-return-.*-@$HOST-@\\[\\]" "subscriber@$HOST"
+
+# Moderated post, goes to moderator
+post sender modpost \
+|| fatal "Error delivering moderated post"
+checkenv modpost1 "$LOC-return-@$HOST" "moderator@$HOST"
+
+# Confirmed post, goes to sender
+post sender confirmpost modpost \
+|| fatal "Error delivering confirmed post"
+checkenv confirmpost1 "$LOC-discard-.*@$HOST" "sender@$HOST"
+
+post sender confirmpost \
+|| fatal "Error delivering confirmed post"
+checkenv confirmpost2 "$LOC-discard-.*@$HOST" "sender@$HOST"
+
+# User post only from non-subscriber, is rejected
+post sender subpostonly \
+&& fatal "Did not reject post from non-subscriber"
+
+# User post only from subscriber, is accepted
+post subscriber subpostonly \
+|| fatal "Error delivering normal post from subscriber"
+checkenv post2 "$LOC-return-.*-@$HOST-@\\[\\]" "subscriber@$HOST"
+
+# User post only with confirmation, is confirmed
+post subscriber confirmpost subpostonly \
+|| fatal "Error delivering confirmed post from subscriber"
+checkenv confirmpost3 "$LOC-discard-.*@$HOST" "subscriber@$HOST"
+
+post subscriber confirmpost modpost subpostonly \
+|| fatal "Error delivering confirmed post from subscriber"
+checkenv confirmpost4 "$LOC-discard-.*@$HOST" "subscriber@$HOST"
+
+# Subscribers post OK, non-subscribers are moderated
+post subscriber modpost subpostonly \
+|| fatal "Error delivering normal post from subscriber"
+checkenv post3 "$LOC-return-.*-@$HOST-@\\[\\]" "subscriber@$HOST"
+
+post sender modpost subpostonly \
+|| fatal "Error delivering moderated post from non-subscriber"
+checkenv modpost2 "$LOC-return-@$HOST" "moderator@$HOST"
+
+unset post
+
+${ECHO} "OK"
+#####################################
+# decoding wrapped sender addresses #
+#####################################
+
+prompt "decode sender:        "
+
+LOCAL="$LOC-help"
+DEFAULT='help'
+
+SENDER="SRS0=HrNdli=BZ=host=xyzzy@otherhost.com"
+${EZBIN}/ezmlm-manage "$DIR" </dev/null >"$ERR" 2>&1 || \
+	fatal "ezmlm-manage failed"
+checkenv decode-SRS0 "$LOC-return-@$HOST" "xyzzy@host"
+
+SENDER="SRS1=123456=brightmail.com==654321=abcd=host=xyzzy@earthlink.net"
+${EZBIN}/ezmlm-manage "$DIR" </dev/null >"$ERR" 2>&1 || \
+	fatal "ezmlm-manage failed"
+checkenv decode-SRS1 "$LOC-return-@$HOST" "xyzzy@host"
+
+SENDER="prvs=110def123=xyzzy@host"
+${EZBIN}/ezmlm-manage "$DIR" </dev/null >"$ERR" 2>&1 || \
+	fatal "ezmlm-manage failed"
+checkenv decode-prvs1 "$LOC-return-@$HOST" "xyzzy@host"
+
+SENDER="prvs=2110def123=xyzzy@host"
+${EZBIN}/ezmlm-manage "$DIR" </dev/null >"$ERR" 2>&1 || \
+	fatal "ezmlm-manage failed"
+checkenv decode-prvs2 "$LOC-return-@$HOST" "xyzzy@host"
+
+SENDER="prvs=xyzzy=110def123@host"
+${EZBIN}/ezmlm-manage "$DIR" </dev/null >"$ERR" 2>&1 || \
+	fatal "ezmlm-manage failed"
+checkenv decode-prvs3 "$LOC-return-@$HOST" "xyzzy@host"
+
+SENDER="prvs=xyzzy=2110def123@host"
+${EZBIN}/ezmlm-manage "$DIR" </dev/null >"$ERR" 2>&1 || \
+	fatal "ezmlm-manage failed"
+checkenv decode-prvs4 "$LOC-return-@$HOST" "xyzzy@host"
+
+${ECHO} "OK"
+  SENDER="test@example.org"
+  (
+    ${ECHO} "From: Test <${SENDER}>"
+    ${ECHO}
+    ${ECHO} 1
+    ${ECHO} 2
+    ${ECHO} 3
+  ) >"$TMP"
+
+  ${ECHO} Verifying message header and body contents...
+
+  ${EZBIN}/ezmlm-make -+ -S "$DIR" || \
+  fatal "ezmlm-make failed"
+
+  echo 'Local: <#L#>' >"${DIR}/text/trailer"
+  echo 'local: <#l#>' >>"${DIR}/text/trailer"
+  echo 'host: <#h#>' >>"${DIR}/text/trailer"
+  echo 'num: <#n#>' >>"${DIR}/text/trailer"
+  prompt "flags and substs:     "
+
+  DEFAULT="digest-subscribe"
+  LOCAL="${LOC}-${DEFAULT}"
+  ${EZBIN}/ezmlm-manage "$DIR" <"$TMP" >"$ERR" 2>&1 || \
+  fatal "failed to produce subscribe probe"
+
+  grepbody Local: "xyzzy-__tstlist"
+  grepbody local: "xyzzy-__tstlist-digest"
+  grepbody host: "example.com"
+  grepbody Target: "test@example.org"
+  grepbody TargetLocal: "test"
+  grepbody target: "test=example.org"
+  grepbody Confirm: "${LOC}-digest-sc.*.*-test=example.org@example.com"
+  grepbody Cookie: "sc.*.*-test=example.org"
+  grepbody MsgNum: "?????"
+  grepbody ConfirmLocal: "${LOC}-digest-sc.*.*-test=example.org"
+
+  ${ECHO} OK
+if ! [ -n "$SUBDB" ]; then
+  # These tests only work for the std plugin
+  prompt "messages:             "
+
+  echo 'ERR_OPEN:My message ' >"$DIR"/text/messages
+  ${EZBIN}/ezmlm-sub "$DIR" foobar "$SENDER" 2>&1 \
+  | ${GREP} ' My message ' >/dev/null \
+  || fatal "did not read local text/messages"
+
+  echo 'ERR_XYZZY:My message' >"$DIR"/text/messages
+  ${EZBIN}/ezmlm-sub "$DIR" foobar "$SENDER" 2>&1 \
+  | ${GREP} 'ERR_OPEN' >/dev/null \
+  && fatal "did not read default text/messages"
+
+  ${ECHO} OK
+fi
+  prompt "subscribe probe:      "
+
+  DEFAULT="subscribe"
+  LOCAL="${LOC}-${DEFAULT}"
+  ${EZBIN}/ezmlm-manage "$DIR" <"$TMP" >"$ERR" 2>&1 || \
+  fatal "failed to produce subscribe probe"
+
+  SUBCOOKIE=`gethdr Reply-To | cut -d@ -f1`
+  grephdr_manage
+  grephdr Reply-To: "${LOC}-sc\\..*\\..*-test=example.org@${HOST}"
+  grephdr Subject: "confirm subscribe to ${LOC}@${HOST}"
+  grephdr_empty
+  grepbody To confirm that you would like
+  grepbody test@example.org
+  grepbody added to the ${LOC} mailing list, please send
+
+
+  ${ECHO} OK
+  prompt "unsubscribe probe:    "
+
+  DEFAULT="unsubscribe"
+  LOCAL="${LOC}-${DEFAULT}"
+  ${EZBIN}/ezmlm-manage "$DIR" <"$TMP" >"$ERR" 2>&1 || \
+  fatal "failed to produce unsubscribe probe"
+
+  UNSUBCOOKIE=`gethdr Reply-To | cut -d@ -f1`
+  grephdr_manage
+  grephdr Reply-To: "${LOC}-uc\\..*\\..*-test=example.org@${HOST}"
+  grephdr Subject: "confirm unsubscribe from ${LOC}@${HOST}"
+  grephdr_empty
+  grepbody To confirm that you would like
+  grepbody test@example.org
+  grepbody removed from the ${LOC} mailing list, please send an empty reply
+
+  ${ECHO} OK
+  prompt "subscribe:            "
+
+  LOCAL=${SUBCOOKIE}
+  DEFAULT=`${ECHO} "$LOCAL" | cut -c"$LOCLEN"-`
+  ${EZBIN}/ezmlm-manage "$DIR" <"$TMP" >"$ERR" 2>&1 || \
+  fatal "failed to produce subscribe confirmation"
+
+  grephdr_manage
+  grephdr List-Unsubscribe: "<mailto:${LOC}-unsubscribe-test=example.org@${HOST}>"
+  grephdr Subject: "WELCOME to ${LOC}@${HOST}"
+  grephdr_empty
+  grepbody Acknowledgment: I have added the address
+  grepbody test@example.org
+  grepbody to the ${LOC} mailing list.
+
+  ${ECHO} OK
+  prompt "unsubscribe:          "
+
+  LOCAL=${UNSUBCOOKIE}
+  DEFAULT=`${ECHO} "$LOCAL" | cut -c"$LOCLEN"-`
+  ${EZBIN}/ezmlm-manage "$DIR" <"$TMP" >"$ERR" 2>&1 || \
+  fatal "failed to produce unsubscribe confirmation"
+
+  grephdr_manage
+  grephdr Subject: "GOODBYE from ${LOC}@${HOST}"
+  grephdr_empty
+  grepbody Acknowledgment: I have removed the address
+  grepbody test@example.org
+  grepbody from the ${LOC} mailing list. This address
+
+  ${ECHO} OK
+  prompt "moderated subscribe:  "
+
+  ${EZBIN}/ezmlm-unsub "$DIR" "$SENDER"
+  touch "$DIR"/modsub
+
+  LOCAL=${SUBCOOKIE}
+  DEFAULT=`${ECHO} "$LOCAL" | cut -c"$LOCLEN"-`
+  ${EZBIN}/ezmlm-manage "$DIR" <"$TMP" >"$ERR" 2>&1 || \
+  fatal "failed to produce subscribe confirmation"
+
+  MODSUBCOOKIE=`gethdr Reply-To | cut -d@ -f1`
+  grephdr_manage
+  grephdr Reply-To: "${LOC}-tc\\..*\\..*-test=example.org@${HOST}"
+  grephdr Subject: "CONFIRM subscribe to ${LOC}@${HOST}"
+  grephdr_empty
+  grepbody I respectfully request your permission to add
+  grepbody test@example.org
+  grepbody to the subscribers of the ${LOC} mailing list. This request
+
+  ${ECHO} OK
+  prompt "moderated unsub:      "
+
+  ${EZBIN}/ezmlm-sub "$DIR" "$SENDER"
+  touch "$DIR"/modsub
+
+  LOCAL=${UNSUBCOOKIE}
+  DEFAULT=`${ECHO} "$LOCAL" | cut -c"$LOCLEN"-`
+  ${EZBIN}/ezmlm-manage -m "$DIR" <"$TMP" >"$ERR" 2>&1 || \
+  fatal "failed to produce unsubscribe confirmation"
+
+  MODUNSUBCOOKIE=`gethdr Reply-To | cut -d@ -f1`
+  grephdr_manage
+  grephdr Reply-To: "${LOC}-vc\\..*\\..*-test=example.org@${HOST}"
+  grephdr Subject: "CONFIRM unsubscribe from ${LOC}@${HOST}"
+  grephdr_empty
+  grepbody A request has been made to remove
+  grepbody test@example.org
+  grepbody from the ${LOC} mailing list. If you agree, please send
+
+  ${ECHO} OK
+  prompt "subscribe by mod:     "
+
+  ${EZBIN}/ezmlm-unsub "$DIR" test@example.org
+  touch "$DIR"/modsub
+  touch "$DIR"/remote
+  SENDER="moderator@$HOST"
+
+  DEFAULT="subscribe-test=example.org"
+  LOCAL="${LOC}-subscribe-test=example.org"
+  ${EZBIN}/ezmlm-manage "$DIR" <"$TMP" >"$ERR" 2>&1 || \
+  fatal "failed to produce subscribe confirmation"
+
+  MODSUBCOOKIE=`gethdr Reply-To | cut -d@ -f1`
+  grephdr_manage
+  grephdr Reply-To: "${LOC}-rc\\..*\\..*-test=example.org@${HOST}"
+  grephdr Subject: "CONFIRM subscribe to ${LOC}@${HOST}"
+  grephdr_empty
+  grepbody I respectfully request your permission to add
+  grepbody test@example.org
+  grepbody to the subscribers of the ${LOC} mailing list. This request
+
+  ${ECHO} OK
+  prompt "unsubscribe by mod:   "
+
+  ${EZBIN}/ezmlm-sub "$DIR" test@example.org
+  touch "$DIR"/modsub
+  touch "$DIR"/remote
+  SENDER="moderator@$HOST"
+
+  DEFAULT="unsubscribe-test=example.org"
+  LOCAL="${LOC}-unsubscribe-test=example.org"
+  ${EZBIN}/ezmlm-manage "$DIR" <"$TMP" >"$ERR" 2>&1 || \
+  fatal "failed to produce unsubscribe confirmation"
+
+  MODUNSUBCOOKIE=`gethdr Reply-To | cut -d@ -f1`
+  grephdr_manage
+  grephdr Reply-To: "${LOC}-wc\\..*\\..*-test=example.org@${HOST}"
+  grephdr Subject: "CONFIRM unsubscribe from ${LOC}@${HOST}"
+  grephdr_empty
+  grepbody A request has been made to remove
+  grepbody test@example.org
+  grepbody from the ${LOC} mailing list. If you agree, please send
+
+  ${ECHO} OK
+  prompt "copylines:            "
+
+  DEFAULT="subscribe"
+  LOCAL="${LOC}-${DEFAULT}"
+
+  echo 0 >"$DIR"/copylines
+  ${EZBIN}/ezmlm-manage -S "$DIR" <"$TMP" >"$ERR" 2>&1 || \
+  fatal "failed to produce subscribe confirmation"
+  grepbodynot 1
+  grepbodynot 2
+
+  echo 1 >"$DIR"/copylines
+  ${EZBIN}/ezmlm-manage -S "$DIR" <"$TMP" >"$ERR" 2>&1 || \
+  fatal "failed to produce subscribe confirmation"
+  grepbody 1
+  grepbodynot 2
+
+  echo 2 >"$DIR"/copylines
+  ${EZBIN}/ezmlm-manage -S "$DIR" <"$TMP" >"$ERR" 2>&1 || \
+  fatal "failed to produce subscribe confirmation"
+  grepbody 1
+  grepbody 2
+
+  ${ECHO} OK
+  prompt "ezmlm-send:           "
+
+  cat >"$TMP" <<EOF
+From: test@example.org
+Subject: test post
+X-Test-Header: one
+Content-Length: zip
+
+message goes here
+EOF
+
+  LOCAL="$LOC"
+  ${EZBIN}/ezmlm-send "$DIR" <"$TMP" >"$ERR" 2>&1 || \
+  fatal "failed to produce post"
+
+  grephdr_list 1
+  grephdr Precedence: bulk
+  grephdr X-No-Archive: yes
+  grephdr Delivered-To: "mailing list ${LOC}@${HOST}"
+  grephdr From: test@example.org
+  grephdr Subject: '\[PFX\] test post'
+  grephdr X-Test-Header: one
+  grephdr Sender: "<${LOC}@${HOST}>"
+  grephdr_empty
+
+  grepbody Local: "$LOCAL"
+  grepbody local: "$LOCAL"
+  grepbody host: "$HOST"
+  grepbody num: `cut -d: -f1 "${DIR}/num"`
+
+  rm -f "$DIR"/prefix
+  ${EZBIN}/ezmlm-send "$DIR" <"$TMP" >"$ERR" 2>&1 || \
+  fatal "failed to produce post"
+  grephdr Subject: 'test post'
+
+  ${ECHO} OK
+#####################
+# remove test files #
+#####################
+
+${ECHO} Cleaning up...
+
+# cleanup the mysql sub tables so we can repeat if necessary
+# the Log test will pass due to old data once we access the mysql log,
+# rather than the file, but what the ...
+
+  ${EZBIN}/ezmlm-rmtab "$DIR" \
+  || fatal "ezmlm-rmtab failed"
+
+  if [ -n "$SUBDB" ]; then
+    ${EZBIN}/ezmlm-rmtab -S std "$DIR"
+  fi
+
+  ${EZBIN}/ezmlm-sub "$DIR" "$SENDER" 2>/dev/null \
+  && fatal "ezmlm-sub worked after ezmlm-rmtab"
+
+  ${EZBIN}/ezmlm-list "$DIR" 2>/dev/null | ${GREP} @ >/dev/null \
+  && fatal "subscribers left in subdb after ezmlm-rmtab"
+
+  ${TEST} -e "$DIR"/subscribers \
+       -o -e "$DIR"/allow/subscribers \
+       -o -e "$DIR"/deny/subscribers \
+       -o -e "$DIR"/digest/subscribers \
+       -o -e "$DIR"/mod/subscribers \
+  && fatal "ezmlm-rmtab didn't clean up properly."
+
+  ${RM} -rf "$DIR" "$ERR" >/dev/null 2>&1
+${ECHO}
+if [ ! -z "$BUG" ]; then
+  ${ECHO} "$BUG" | ${GREP} "config" >/dev/null 2>&1 && \
+    {
+	${ECHO}
+	${ECHO} "The config bug prevents editing lists created with"
+	${ECHO} "ezmlm-idx<0.31 or ezmlm-0.53. 'touch DIR/config' is a work-"
+	${ECHO} "around, and upgrading to >=0.314 corrects it."
+    }
+  ${ECHO} "$BUG" | ${GREP} "deny" >/dev/null 2>&1 && \
+    {
+	${ECHO}
+	${ECHO} "DENY access means that subscribers can remove";
+	${ECHO} "themselves from DIR/deny. This is a bug, but DENY"
+	${ECHO} "is easy to circumvent and not intended to keep users from"
+	${ECHO} "posting, anyway."
+	${ECHO} "The bug is fixed in >=0.321."
+    }
+  ${ECHO} "$BUG" | ${GREP} "return" >/dev/null 2>&1 && \
+    {
+	${ECHO}
+	${ECHO} "The failure to add the ezmlm-return lines means"
+	${ECHO} "that old lists will work correctly, but bounce handling"
+	${ECHO} "won't work in lists created with this version."
+	${ECHO} "The bug is fixed in >=0.321."
+    }
+  ${ECHO} "$BUG" | ${GREP} "tstdig" >/dev/null 2>&1 && \
+    {
+	${ECHO}
+	${ECHO} "The ezmlm-tstdig bug means that DIR/inlocal still needs to be"
+	${ECHO} "adjusted for with digests within virtual domains."
+	${ECHO} "The bug is fixed in >=0.321."
+    }
+  ${ECHO} "$BUG" | ${GREP} "digest" >/dev/null 2>&1 && \
+    {
+	${ECHO}
+	${ECHO} "The ezmlm-tstdig -digest- bug means that ezmlm-tstdig when"
+	${ECHO} "in DIR/manager does not pass on digest subscribe request."
+	${ECHO} "Upgrade to ezmlm-idx>=0.321 if you use ezmlm-tstdig in"
+	${ECHO} "DIR/manager (this is NOT used except in custom or very"
+	${ECHO} "old (ezlm-idx<0.30) digest setups)."
+    }
+  ${ECHO} "$BUG" | ${GREP} "_bound" >/dev/null 2>&1 && \
+    {
+	${ECHO}
+	${ECHO} "The ezmlm-send/reject mimeremove bug caused erroneous"
+	${ECHO} "rejection of messages with text after the mime boundary in the"
+	${ECHO} "Content-type header when DIR/mimeremove was used. This type"
+	${ECHO} "of message is very rare (mainly Mutt with PGP MIME)."
+    }
+  ${ECHO} "$BUG" | ${GREP} "_noself" >/dev/null 2>&1 && \
+    {
+	${ECHO}
+	${ECHO} "The ezmlm-send -C switch 'not to sender' should be ignored" 
+	${ECHO} "for backwards compatibility, but wasn't."
+    }
+  ${ECHO} "$BUG" | ${GREP} "_signed" >/dev/null 2>&1 && \
+    {
+	${ECHO}
+	${ECHO} "The trailer is added as a separate MIME part to multipart"
+	${ECHO} "messages, but should be suppressed not only for multipart"
+	${ECHO} "alternative, but also for many other multipart types,"
+	${ECHO} "including multipart/signed."
+    }
+  ${ECHO} "$BUG" | ${GREP} "headers" >/dev/null 2>&1 && \
+    {
+	${ECHO}
+	${ECHO} "The headers generated by one or more ezmlm-idx programs"
+	${ECHO} "did not match their expected values.  Please see above"
+	${ECHO} "for more details."
+    }
+    ${ECHO}
+fi
+
+exit 0

@@ -1,0 +1,141 @@
+qmail-inject(8)                                                qmail-inject(8)
+
+
+
+NNAAMMEE
+       qmail-inject - preprocess and send a mail message
+
+SSYYNNOOPPSSIISS
+       qqmmaaiill--iinnjjeecctt [ --nnNNaaAAhhHH ] [ --ff_s_e_n_d_e_r ] [ _r_e_c_i_p _._._.  ]
+
+DDEESSCCRRIIPPTTIIOONN
+       qqmmaaiill--iinnjjeecctt  reads a mail message from its standard input, adds appro‐
+       priate information to the message header, and  invokes  qqmmaaiill--qquueeuuee  to
+       send the message to one or more recipients.
+
+       See qqmmaaiill--hheeaaddeerr((55)) for information on how qqmmaaiill--iinnjjeecctt rewrites header
+       fields.
+
+       qqmmaaiill--iinnjjeecctt normally exits 0.  It exits 100 if it was invoked  improp‐
+       erly or if there is a severe syntax error in the message.  It exits 111
+       for temporary errors.
+
+EENNVVIIRROONNMMEENNTT VVAARRIIAABBLLEESS
+       For the convenience of users who  do  not  run  qqmmaaiill--iinnjjeecctt  directly,
+       qqmmaaiill--iinnjjeecctt takes many options through environment variables.
+
+       The  user  name in the FFrroomm header field is set by QQMMAAIILLUUSSEERR, MMAAIILLUUSSEERR,
+       UUSSEERR, or LLOOGGNNAAMMEE, whichever comes first.
+
+       The host name is normally set by the _d_e_f_a_u_l_t_h_o_s_t  control  but  can  be
+       overridden with QQMMAAIILLHHOOSSTT or MMAAIILLHHOOSSTT.
+
+       The personal name is QQMMAAIILLNNAAMMEE, MMAAIILLNNAAMMEE, or NNAAMMEE.
+
+       The  default  envelope  sender  address is the same as the default FFrroomm
+       address, but it can be overridden with QQMMAAIILLSSUUSSEERR and  QQMMAAIILLSSHHOOSSTT.   It
+       may  also  be modified by the rr and mm letters described below.  Bounces
+       will be sent to this address.
+
+       If QQMMAAIILLMMFFTTFFIILLEE is set, qqmmaaiill--iinnjjeecctt  reads  a  list  of  mailing  list
+       addresses,  one  per  line,  from  that file.  If To+Cc includes one of
+       those addresses (without regard to case), qqmmaaiill--iinnjjeecctt adds a Mail-Fol‐
+       lowup-To field with all the To+Cc addresses.  qqmmaaiill--iinnjjeecctt does not add
+       Mail-Followup-To to a message that already has one.
+
+       The QQMMAAIILLIINNJJEECCTT environment variable can contain any of  the  following
+       letters:
+
+       cc      Use  address-comment  style for the FFrroomm field.  Normally qqmmaaiill--
+              iinnjjeecctt uses name-address style.
+
+       ss      Do not look at any incoming  RReettuurrnn--PPaatthh  field.   Normally,  if
+              RReettuurrnn--PPaatthh  is  supplied,  it sets the envelope sender address,
+              overriding all environment variables.  RReettuurrnn--PPaatthh is deleted in
+              any case.
+
+       ff      Delete  any incoming FFrroomm field.  Normally, if FFrroomm is supplied,
+              it overrides the usual FFrroomm field created by qqmmaaiill--iinnjjeecctt.
+
+       ii      Delete any incoming MMeessssaaggee--IIDD field.  Normally,  if  MMeessssaaggee--IIDD
+              is  supplied, it overrides the usual MMeessssaaggee--IIDD field created by
+              qqmmaaiill--iinnjjeecctt.
+
+       rr      Use a per-recipient VERP.  qqmmaaiill--iinnjjeecctt will append each recipi‐
+              ent  address  to  the  envelope sender of the copy going to that
+              recipient.
+
+       mm      Use a per-message VERP.  qqmmaaiill--iinnjjeecctt will  append  the  current
+              date and process ID to the envelope sender.
+
+OOPPTTIIOONNSS
+       --aa     Send  the  message to all addresses given as _r_e_c_i_p arguments; do
+              not use header recipient addresses.
+
+       --hh     Send the message to all header recipient  addresses.   For  non-
+              forwarded  messages,  this  means the addresses listed under TToo,
+              CCcc, BBcccc, AAppppaarreennttllyy--TToo.  For forwarded messages, this means  the
+              addresses listed under RReesseenntt--TToo, RReesseenntt--CCcc, RReesseenntt--BBcccc.  Do not
+              use any _r_e_c_i_p arguments.
+
+       --AA     (Default.)  Send the message to all  addresses  given  as  _r_e_c_i_p
+              arguments.  If no _r_e_c_i_p arguments are supplied, send the message
+              to all header recipient addresses.
+
+       --HH     Send the message to all header recipient addresses, and  to  all
+              addresses given as _r_e_c_i_p arguments.
+
+       --ff_s_e_n_d_e_r
+              Pass _s_e_n_d_e_r to qqmmaaiill--qquueeuuee as the envelope sender address.  This
+              overrides RReettuurrnn--PPaatthh and all environment variables.
+
+       --NN     (Default.)  Feed the resulting message to qqmmaaiill--qquueeuuee.
+
+       --nn     Print the message rather than feeding it to qqmmaaiill--qquueeuuee.
+
+CCOONNTTRROOLL FFIILLEESS
+       _d_e_f_a_u_l_t_d_o_m_a_i_n
+            Default domain name.  Default: _m_e, if that is supplied;  otherwise
+            the  literal  name  ddeeffaauullttddoommaaiinn,  which is probably not what you
+            want.  qqmmaaiill--iinnjjeecctt adds this name to any host name without  dots,
+            including  _d_e_f_a_u_l_t_h_o_s_t if _d_e_f_a_u_l_t_h_o_s_t does not have dots.  (Excep‐
+            tion: see _p_l_u_s_d_o_m_a_i_n.)
+
+            The QQMMAAIILLDDEEFFAAUULLTTDDOOMMAAIINN environment variable  overrides  _d_e_f_a_u_l_t_d_o_‐
+            _m_a_i_n.
+
+       _d_e_f_a_u_l_t_h_o_s_t
+            Default  host  name.   Default: _m_e, if that is supplied; otherwise
+            the literal name ddeeffaauulltthhoosstt, which is probably not what you want.
+            qqmmaaiill--iinnjjeecctt  adds  this  name to any address without a host name.
+            _d_e_f_a_u_l_t_h_o_s_t need not be the current host’s name.  For example, you
+            may prefer that outgoing mail show just your domain name.
+
+            The QQMMAAIILLDDEEFFAAUULLTTHHOOSSTT environment variable overrides _d_e_f_a_u_l_t_h_o_s_t.
+
+       _i_d_h_o_s_t
+            Host name for Message-IDs.  Default: _m_e, if that is supplied; oth‐
+            erwise the literal name iiddhhoosstt, which is certainly  not  what  you
+            want.   _i_d_h_o_s_t  need not be the current host’s name.  For example,
+            you may prefer to use fake host names  in  Message-IDs.   However,
+            _i_d_h_o_s_t must be a fully-qualified name within your domain, and each
+            host in your domain should use a different _i_d_h_o_s_t.
+
+            The QQMMAAIILLIIDDHHOOSSTT environment variable overrides _i_d_h_o_s_t.
+
+       _p_l_u_s_d_o_m_a_i_n
+            Plus domain name.  Default: _m_e, if that is supplied; otherwise the
+            literal  name  pplluussddoommaaiinn,  which  is  probably not what you want.
+            qqmmaaiill--iinnjjeecctt adds this name to any host name that ends with a plus
+            sign,  including _d_e_f_a_u_l_t_h_o_s_t if _d_e_f_a_u_l_t_h_o_s_t ends with a plus sign.
+            If a host name does not have dots  but  ends  with  a  plus  sign,
+            qqmmaaiill--iinnjjeecctt uses _p_l_u_s_d_o_m_a_i_n, not _d_e_f_a_u_l_t_d_o_m_a_i_n.
+
+            The QQMMAAIILLPPLLUUSSDDOOMMAAIINN environment variable overrides _p_l_u_s_d_o_m_a_i_n.
+
+SSEEEE AALLSSOO
+       addresses(5), qmail-control(5), qmail-header(5), qmail-queue(8)
+
+
+
+                                                               qmail-inject(8)

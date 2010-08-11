@@ -1,0 +1,30 @@
+qmail-limits(7)                                                qmail-limits(7)
+
+
+
+NNAAMMEE
+       qmail-limits - artificial limits in the qmail system
+
+DDEESSCCRRIIPPTTIIOONN
+       The  qqmmaaiill  system is able to handle messages of any size, addresses of
+       any size, mailing lists of any size, and so on, except  as  limited  by
+       the available memory and disk space.
+
+       However, it imposes certain artificial limits:
+
+       1.   qqmmaaiill--llssppaawwnn  silently  limits  the  number  of simultaneous local
+            deliveries to 120.  qqmmaaiill--rrssppaawwnn silently  limits  the  number  of
+            simultaneous remote deliveries to 120.
+
+       2.   qqmmaaiill--qquueeuuee  rejects  any  message with an envelope address longer
+            than 1000 characters.
+
+       3.   qqmmaaiill--llssppaawwnn truncates any overly long error report from a  deliv‐
+            ery program.  It appends a note saying that it did so.
+
+SSEEEE AALLSSOO
+       qmail-lspawn(8), qmail-queue(8), qmail-rspawn(8)
+
+
+
+                                                               qmail-limits(7)

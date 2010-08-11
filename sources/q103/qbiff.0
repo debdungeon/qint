@@ -1,0 +1,26 @@
+qbiff(1)                                                              qbiff(1)
+
+
+
+NNAAMMEE
+       qbiff - announce new mail the moment it arrives
+
+SSYYNNOOPPSSIISS
+       in ..qqmmaaiill: ||qqbbiiffff
+
+DDEESSCCRRIIPPTTIIOONN
+       qqbbiiffff  writes  a  message to your screen whenever a new mail message is
+       delivered, if you ran bbiiffff yy after logging in.
+
+       WWAARRNNIINNGG:: If you create a ..qqmmaaiill file to enable qqbbiiffff, make sure to also
+       add a line specifying delivery to your normal mailbox.  For example:
+
+            /home/joe/Mailbox
+            |qbiff
+
+SSEEEE AALLSSOO
+       biff(1), dot-qmail(5)
+
+
+
+                                                                      qbiff(1)

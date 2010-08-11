@@ -1,0 +1,21 @@
+xrecipient(1)                                                    xrecipient(1)
+
+
+
+NNAAMMEE
+       xrecipient - locate all deliveries to one recipient
+
+SSYYNNTTAAXX
+       xxrreecciippiieenntt _c_h_a_n_n_e_l_._r_e_c_i_p_i_e_n_t
+
+DDEESSCCRRIIPPTTIIOONN
+       xxrreecciippiieenntt  reads  message lines and delivery lines printed by mmaattcchhuupp.
+       It prints the delivery  lines  that  involve  messages  sent  to  _c_h_a_n_‐
+       _n_e_l_._r_e_c_i_p_i_e_n_t.
+
+SSEEEE AALLSSOO
+       matchup(1)
+
+
+
+                                                                 xrecipient(1)

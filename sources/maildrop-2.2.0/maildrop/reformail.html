@@ -1,0 +1,171 @@
+<?xml version="1.0"?>
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><title>reformail</title><link rel="stylesheet" href="style.css" type="text/css"/><meta name="generator" content="DocBook XSL Stylesheets V1.73.2"/><link rel="start" href="#reformail" title="reformail"/><link xmlns="" rel="stylesheet" type="text/css" href="manpage.css"/><meta xmlns="" name="MSSmartTagsPreventParsing" content="TRUE"/><link xmlns="" rel="icon" href="icon.gif" type="image/gif"/><!--
+
+Copyright 1998 - 2007 Double Precision, Inc.  See COPYING for distribution
+information.
+
+--></head><body><div class="refentry" lang="en" xml:lang="en"><a id="reformail" shape="rect"> </a><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>reformail — E-mail reformatting tool</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><div class="cmdsynopsis"><p><code class="command">reformail</code>   -s   command  [option...]</p></div><div class="cmdsynopsis"><p><code class="command">reformail</code>   -D   len   <em class="replaceable"><code>filename</code></em> </p></div><div class="cmdsynopsis"><p><code class="command">reformail</code>   -x <em class="replaceable"><code>header:</code></em>... </p></div><div class="cmdsynopsis"><p><code class="command">reformail</code>   -X <em class="replaceable"><code>header:</code></em>... </p></div><div class="cmdsynopsis"><p><code class="command">reformail</code>  [<em class="replaceable"><code>options</code></em>...]</p></div><div class="sidebar"><p class="title"><b/></p><p>See below for additional options</p></div></div><div class="refsect1" lang="en" xml:lang="en"><a id="id521826" shape="rect"> </a><h2>DESCRIPTION</h2><p>
+The <span class="command"><strong>reformail</strong></span> program reads a message on standard input,
+reformats it
+in some way, and writes the message to standard output:</p><div class="refsect2" lang="en" xml:lang="en"><a id="id520815" shape="rect"> </a><h3>Splitting mailboxes into individual messages</h3><p>
+The <code class="option">-s</code> option splits the mbox-formatted mailbox file on
+standard input into
+individual messages.
+An external program is executed for each
+message. The contents of each individual message will be provided to the
+external program on standard input.</p><p>
+If the <code class="envar">FILENO</code> environment variable is set to a number,
+<span class="command"><strong>reformail</strong></span> will consecutively increment
+<code class="envar">FILENO</code>
+each time the program is executed for each individual
+message.</p><p>
+If <code class="envar">FILENO</code> is not set, it's initial value will be "000".
+If <code class="envar">FILENO</code> is set to a non-numeric value,
+<code class="envar">FILENO</code> will remain unchanged.</p></div><div class="refsect2" lang="en" xml:lang="en"><a id="id520861" shape="rect"> </a><h3>Detecting duplicate messages</h3><p>
+The <code class="option">-D</code> option implements a simple way to delete duplicate
+messages in incoming mail. <em class="replaceable"><code>filename</code></em> is a file that
+will be approximately '<em class="replaceable"><code>len</code></em>' bytes long.
+This file will be used by
+<span class="command"><strong>reformail</strong></span> to save message IDs seen in
+recent mail.
+<span class="command"><strong>reformail</strong></span> reads the message on standard input.
+If the message has a <code class="literal">Message-ID:</code> header that's already in
+the cache file,
+<span class="command"><strong>reformail</strong></span> terminates with the exit code set to 0. Otherwise,
+<span class="command"><strong>reformail</strong></span> terminates with the exit code set to 1.</p></div><div class="refsect2" lang="en" xml:lang="en"><a id="id521437" shape="rect"> </a><h3>Extracting headers</h3><p>
+The <code class="option">-x</code> and <code class="option">-X</code> options extract the indicated
+headers from the message, and print them to standard output. Multiple
+<code class="option">-x</code> and <code class="option">-X</code> options can be specified at
+the same time, and may be intermixed.</p><p>
+The <code class="option">-x</code> option extracts and prints the contents of the header.
+The <code class="option">-X</code> option prints the name of the header as well.</p><p>In all other situations, <span class="command"><strong>reformail</strong></span>
+copies the message on
+its standard input to its standard output, reformatting the message as
+follows:</p></div></div><div class="refsect1" lang="en" xml:lang="en"><a id="id521482" shape="rect"> </a><h2>OPTIONS</h2><div class="variablelist"><dl><dt><span class="term">-a'header: value'</span></dt><dd><p>
+Append a custom header to the message if this
+header does not already exist. If the header is either
+<code class="literal">Message-ID:</code> or
+<code class="literal">Resent-Message-ID:</code> and the value is empty,
+<span class="command"><strong>reformail</strong></span> generates
+a (hopefully) unique message ID for you.</p></dd><dt><span class="term">-A'header: value'</span></dt><dd><p>
+Append a custom header to the message even if this
+header already exists. If the header is
+either <code class="literal">Message-ID:</code> or
+<code class="literal">Resent-Message-ID:</code>
+and the value is empty, <span class="command"><strong>reformail</strong></span> generates
+a (hopefully) unique message ID for you.</p></dd><dt><span class="term">-c</span></dt><dd><p>
+Concatenate multi-line headers. Headers split on multiple lines are
+combined into a single line.</p></dd><dt><span class="term">-d<em class="replaceable"><code>n</code></em></span></dt><dd><p>
+If n is <code class="literal">1</code>, each line will be terminated with CRLF.
+If n is <code class="literal">0</code>
+(default), each line will be terminated with LF.
+<span class="command"><strong>reformail</strong></span> reads a
+message with either line terminator, and will force the message to have
+the specified line termination.</p></dd><dt><span class="term">-f0</span></dt><dd><p>
+Remove the "<code class="literal">From_</code>" line from the message, if it's
+there.</p></dd><dt><span class="term">-f1</span></dt><dd><p>
+Add the "<code class="literal">From_</code>" line to the message, if it's not there.
+<span class="command"><strong>reformail</strong></span> will attempt to generate the
+"<code class="literal">From_</code>" line from any
+<code class="literal">Errors-To:</code>, <code class="literal">Return-Path:</code>, or
+<code class="literal">From:</code> headers in the message.
+"<code class="literal">root</code>" will be used
+if
+<span class="command"><strong>reformail</strong></span> is unable to determine the return address.</p></dd><dt><span class="term">-i'<em class="replaceable"><code>header: value</code></em>'</span></dt><dd><p>
+Appends a custom header to the message. If this
+header already exists it is renamed by prepending "<code class="literal">Old-</code>"
+to the name of
+the header.</p></dd><dt><span class="term">-I'<em class="replaceable"><code>header: value</code></em>'</span></dt><dd><p>
+Append a custom header to the message. If this
+header already exists in the message, the old header is completely
+removed. If the value is empty, any existing header is completely removed,
+and nothing gets appended.</p></dd><dt><span class="term">-k</span></dt><dd><p>
+After generating an auto-reply header using the <code class="option">-r</code> option,
+keep the
+contents of the message itself in the auto-reply.</p></dd><dt><span class="term">-p'prefix'</span></dt><dd><p>
+When both <code class="option">-r</code> and <code class="option">-k</code> options are used, the
+<code class="option">-p</code> option can be
+used to change the quoting prefix for each line from its default value of
+"<code class="literal">&gt; </code>".</p></dd><dt><span class="term">-P'salutation'</span></dt><dd><p>
+When both <code class="option">-r</code> and <code class="option">-k</code> options are used, the
+<code class="option">-p</code> option is
+used to specify the salutation that begins the contents of the message.
+See <a class="ulink" href="#autoreplies" target="_top" shape="rect">AUTOREPLIES</a> below.</p></dd><dt><span class="term">-r</span></dt><dd><p>
+Generates headers for an auto-reply to this message. This option
+can be used to create replies to both E-mail and Usenet messages
+(reformail created both the
+<code class="literal">In-Reply-To:</code> and <code class="literal">References:</code> headers).
+When
+generating replies to Usenet messages, you'll probably have to always use
+the <code class="option">-t</code> option also.</p></dd><dt><span class="term">-t</span></dt><dd><p>
+Use user-generated headers in order to determine the return address
+for the <code class="option">-r</code> option. Otherwise, <span class="command"><strong>reformail</strong></span>
+uses machine generated headers.</p></dd><dt><span class="term">-R oldheader: newheader:</span></dt><dd><p>
+Rename the indicated header.</p></dd><dt><span class="term">-u'header:'</span></dt><dd><p>
+If this header occurs multiple times in the message,
+remove all occurrences except the first one.</p></dd><dt><span class="term">-U'header:'</span></dt><dd><p>
+If this header occurs multiple times in the message,
+remove all occurrences except the last one.</p></dd></dl></div></div><div class="refsect1" lang="en" xml:lang="en"><a id="id565578" shape="rect"> </a><h2>AUTOREPLIES</h2><a id="Autoreplies" shape="rect"> </a><p>
+The <code class="option">-r</code> option generates a set of headers for an automatic
+reply to the message, instead of producing just a reformatted copy of the
+message.
+As an enhancement, the <code class="option">-r</code> option is smart enough to be able
+to properly generate an auto-reply to either an E-mail message, or a Usenet
+message ( <span class="command"><strong>reformail</strong></span>
+creates both a <code class="literal">In-Reply-To:</code> and
+<code class="literal">References:</code> header).</p><p>
+The <code class="literal">To:</code>
+header is set to the apparent sender of the message. To determine
+the sender of the message, <span class="command"><strong>reformail</strong></span> prefers to look at
+machine-generated headers, such a
+<code class="literal">Errors-To:</code>and <code class="literal">Return-Path:</code>,
+instead of user-generated headers, such as
+<code class="literal">From:</code> or <code class="literal">Reply-To:</code>.</p><p>
+The <code class="option">-t</code> option makes <span class="command"><strong>reformail</strong></span> use
+user-generated headers instead of
+machine-generated headers.</p><p>
+The <code class="option">-ra</code> option copies <code class="literal">To:</code> headers from the
+original message into the auto-reply.
+The <code class="option">-rA</code> option copies <code class="literal">To:</code> and
+<code class="literal">Cc:</code> headers.</p><p>
+Normally, the contents of the original message are removed. The
+<code class="option">-k</code> option
+copies the contents of the original message, which each line prefixed by
+"<code class="literal">&gt; </code>".
+Use the <code class="option">-p</code> option to specify a different prefix.</p><p>
+The contents of the message are preceded by a salutation specified by the
+<code class="option">-P</code> option. If not specified, the salutation defaults to
+"<code class="literal">%F writes:%n</code>".
+Within the salutation, each occurrence of
+<span class="token">%</span> followed by another character is replaced
+by some information from the original message, as follows:</p><div class="variablelist"><dl><dt><span class="term">%C</span></dt><dd><p>
+Replaced by the contents of the <code class="literal">X-Newsgroup:</code> header in
+the original message.</p></dd><dt><span class="term">%d</span></dt><dd><p>
+Replaced by the contents of the <code class="literal">Date:</code> header in the
+original message.</p></dd><dt><span class="term">%f</span></dt><dd><p>
+Replaced by the E-mail address of the sender of the
+original message.</p></dd><dt><span class="term">%F</span></dt><dd><p>
+Replaced by the name of the sender of the original
+message. If no name was given, the E-mail address is used.</p></dd><dt><span class="term">%i</span></dt><dd><p>
+Replaced by the contents of the <code class="literal">Message-ID:</code> header in
+the original message.</p></dd><dt><span class="term">%n</span></dt><dd><p>
+%n will cause <span class="command"><strong>reformail</strong></span> to insert a line break
+here.</p></dd><dt><span class="term">%N</span></dt><dd><p>
+Replaced by the contents of the <code class="literal">Newsgroups:</code> header in
+the original message.</p></dd><dt><span class="term">%s</span></dt><dd><p>
+Replaced by the contents of any <code class="literal">Subject:</code> header in the
+original message.</p></dd></dl></div></div><div class="refsect1" lang="en" xml:lang="en"><a id="id565859" shape="rect"> </a><h2>BUGS</h2><p>
+For the <code class="option">-a</code>, <code class="option">-A</code>, and <code class="option">-I</code>
+options, a space after the header name and the colon is
+considered to be a non-empty field.</p><p>
+Do not provide the same header to more than one family of header-modifying
+options, such as <code class="option">-u</code>/<code class="option">-U</code> and
+<code class="option">-a</code>/<code class="option">-A</code>. Doing so yields unpredictable
+results.
+It's better to run <code class="option">reformail</code> several times (use a pipe,
+perhaps).</p></div><div class="refsect1" lang="en" xml:lang="en"><a id="id565900" shape="rect"> </a><h2>SEE ALSO</h2><p>
+<a class="ulink" href="courier.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">courier</span>(8)</span></a>,
+<span class="citerefentry"><span class="refentrytitle">sendmail</span>(8)</span>,
+<a class="ulink" href="mailbot.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">mailbot</span>(1)</span></a>,
+<a class="ulink" href="maildrop.html" target="_top" shape="rect"><span class="citerefentry"><span class="refentrytitle">maildrop</span>(1)</span></a>.
+</p></div></div></body></html>

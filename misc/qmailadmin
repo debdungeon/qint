@@ -1,0 +1,6 @@
+Alias /mailadmin /var/www/qmailadmin
+
+<Directory /var/www/qmailadmin>
+  Order allow,deny
+  Allow from all
+</Directory>

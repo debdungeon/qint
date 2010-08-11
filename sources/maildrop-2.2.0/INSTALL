@@ -1,0 +1,751 @@
+                                  Requirements
+
+     * C++ compiler - A C++ compiler is required.
+     * make - The GNU make is recommended. Solaris's make is to be avoided.
+       xBSD already has a gmake port, install it and use it (use gmake
+       everywhere this document refers to make).
+     * GDBM/DB - optional.
+     * The PCRE library ([1]http:/www.pcre.org) is required.
+     * Courier Authentication Library - optional, for LDAP, MySQL, or
+       PostgreSQL support.
+
+       If the configure script detects that the Courier Authentication
+       Library is installed, support for courier-authlib gets automatically
+       compiled. Use the --disable-authlib option to manually disable
+       courier-authlib support.
+
+       When courier-authlib support is enabled, the -d option to maildrop
+       will look up the account using the Courier Authentication Library,
+       making it possible to store mail account configuration in an LDAP,
+       MySQL, or a PostgreSQL database. See the courier-authlib documentation
+       for more information.
+
+       See [2]http://www.courier-mta.org/authlib/ for more information.
+
+         NOTE:
+
+         When using the standalone maildrop build with courier-authlib, one
+         of the following configurations must be used:
+
+            * Your mail server must invoke maildrop as the root user (the -d
+              flag reads the mail account's uid and gid, then drops root) .
+            * Manually change the permissions on the maildrop binary to be
+              setuid root.
+            * Manually change the permissions on the courier-authlib's socket
+              directory (/usr/local/var/spool/authdaemon by default) to be
+              globally readable or executable.
+
+         The default permissions on courier-authlib's socket directory blocks
+         world-access to the filesystem socket connected to courier-authlib's
+         authentication daemon process. In order for maildrop to connect to
+         the authentication library, maildrop must either have root
+         privileges (which will be temporary, as soon as maildrop determines
+         the account's userid and groupid, it will drop root, before reading
+         the maildroprc file), or courier-authlib's socket directory must
+         have world read and execute permission.
+
+         Note that if the permissions on the socket directory are changed,
+         anyone on the system can connect and obtain any account's password!
+
+         It is the system administrator's responsibility to choose the
+         appropriate security policy when using the Courier Authentication
+         Library.
+
+                              Installing maildrop
+
+   The typical sequence of commands to install maildrop is as follows. You
+   will likely need to use the GNU version of make. Other makes may not work.
+   See below for definition of various options to the configure script:
+
+  
+    ./configure [options]
+    make
+    make install-strip
+    make install-man
+
+   If the make command stops with syntax error in any Makefile, you probably
+   have an older make utility. See if you have a gmake command available. If
+   so, rerun configure as follows:
+
+ ./configure [options] MAKE=gmake
+
+   Then execute the remaining commands, replacing make with gmake every time.
+
+   If make install-strip fails, try make install.
+
+   The configure script creates Makefile, and config.h. After running
+   configure, you may want to edit xconfig.h, and config.h in order to make
+   minor adjustments to the configuration.
+
+   Some versions of make may have problems handling the Makefile. If your
+   make gives you errors, try using the gmake command instead - the GNU make.
+
+   NOTE: configure attempts to automatically configure the following options
+   for maildrop according to your specific system. After running configure,
+   you should review these options and make any necessary adjustments.
+
+WHAT GETS INSTALLED
+
+   If you're upgrading, read UPGRADING below.
+
+   The following assumes that the default options are used. The usual GNU
+   toolchain options can be used to relocate files from their default
+   locations (run ./configure --help for more information).
+
+     * /usr/local/bin - A number of binaries will be installed here, starting
+       with the main binary, maildrop, as well as additional utilities:
+       dotlock, maildirmake, makemime, reformail, and reformime. If certain
+       options are selected, some additional binaries may be installed here
+       as well, such as deliverquota.
+
+     * /usr/local/man - manual pages.
+
+     * /usr/local/include - C header files, for development, if the
+       --with-devel option is specified to the configure script.
+
+     * /usr/local/lib - C libraries, for development, if the --with-devel
+       option is specified to the configure script.
+
+     * /usr/local/share/maildrop/html - HTML versions of manual pages
+       installed in /usr/local/man.
+
+   These are the default directories. The defaults can be changed using the
+   standard autoconf options, run ./configure --help for more information.
+
+UPGRADING
+
+    From version 1.1 or earlier.
+
+   Read [3]UPGRADE for some important notes. The default installation
+   directory/layout has changed.
+
+    From version 0.70 or earlier.
+
+   The --with-gdbm option has been renamed to --with-db. Its functionality
+   remains the same. The name change is due to some internal housekeeping.
+
+    From version 0.65, or earlier.
+
+   If possible, use a prebuilt package on platforms with a package manager
+   (rpm on Red Hat and derived distributions, deb on Debian, etc). If you've
+   been compiling and instaling maildrop manually, be aware of the following
+   changes when upgrading from 0.65 or earlier.
+
+     * The makegdbm utility has been renamed as makedat, to better reflect
+       the fact that it can be compiled with DB as well as GDBM database
+       support.
+
+     * Config scripts from earlier versions usually created a Makefile that
+       automatically gzipped all manual pages during installation. This code
+       has been taken out. make install now installs uncompressed manual
+       pages only. If you do a make install, you'll need to go in and
+       manually remove gzipped manual pages from the previous version of
+       maildrop.
+
+     * You will need to have Perl 5 available to complete the compilation and
+       installation process.
+
+     * Two new features can be optionally enabled via the configure script:
+       maildir quotas, and the virtual user database. See below for more
+       information.
+
+Operating system specific notes
+
+   This section will list any platform-depended issues.
+
+    Solaris
+
+   This problem has been reported for Solaris 2.6. Other Solaris versions or
+   related platforms can be affected. Symptom - trying to run maildrop
+   results in an error message saying that libstdc++ cannot be opened.
+
+   Solaris's run time linker has a problem running C++ applications which
+   have the setuid or setgid bit set. On Solaris, libstdc++ (the runtime C++
+   library) is installed in /usr/local/lib. Solaris's runtime linker will
+   only open shared libraries in /usr/lib for programs with the setuid or
+   setgid bit set.
+
+   Maildrop is installed with the setuid and setgid bits set, so that
+   maildrop can change to the recipient's userid and group id. There are
+   three easy workarounds.
+
+    1. If you can configure your mail transport agent to set the correct user
+       and group IDs before running maildrop, maildrop will not need the
+       setuid and setgid privileges. After running make install-strip, go
+       ahead and manually turn these bits off for the maildrop, dotlock, and
+       reformail.
+
+    2. Create a soft link from /usr/lib/localto /usr/local/lib, and add
+       /usr/lib/local to the LD_LIBRARY_PATH environment variable.
+
+    3. Create a soft link to libstdc++ from /usr/libto /usr/local/lib
+
+    Any sendmail platform
+
+   There are two quirks that anyone installing maildrop on a sendmail-based
+   system should be aware of.
+
+     * Unlike other mail transport agents, most sendmails completely discard
+       error messages from the local delivery agent. Therefore, you should
+       use the --enable-syslog=1 flag to configure on systems running
+       sendmail, unless you are very familiar with maildrop. Without this
+       flag, if you have any problems and maildrop is not installed
+       correctly, you will end up with a bunch of deferred mail, and
+       absolutely nothing to indicate why. Although maildrop will report an
+       error message, sendmail will discard the message without recording it
+       anywhere. With the --enable-syslog=1 option enabled, you at least get
+       to see the error messages in your syslog. However, please note that
+       syslog will now show any fatal maildrop errors resulting from botched
+       user recipe files.
+
+     * Interactive or background delivery mode. Usually the default sendmail
+       delivery mode is i - interactive, or b - background. It appears that
+       some versions of sendmail have a minor conflict with maildrop's
+       default security level. The conflict arises in a situation where a
+       local user sends a message to another local user. It appears that at
+       least some versions of sendmail invoke maildrop with the userid set to
+       the sender, and the -d option specifying the recipient. The default
+       maildrop configuration allows only certain "trusted" users to use the
+       -d option. What will happen is that maildrop will report an error, and
+       return an exit code to sendmail indicating a temporary error. The
+       message will be deferred, and on the next queue run, sendmail will
+       attempt to re-deliver it. But now, sendmail will do a queue run as
+       root, and root is allowed to use the -d option, so the message is
+       delivered.
+
+   Note that this applies ONLY if you have maildrop defined as the local
+   delivery agent in sendmail.cf. This will happen if maildrop is invoked
+   from a .forward file. There are three possible solutions: do nothing,
+   since no real harm is done, local mail simply gets delivered with some
+   delay; you can change the default queueing method (in sendmail.cf) to
+   queue messages; or, you can specify --enable-restrict-trusted=0 option to
+   configure, and lift the restriction on the -d option. However, keep in
+   mind that the --enable-restrict-trusted=0 option allows a malicious user
+   use the -d option to mailbomb another local user's mailbox. This is why
+   the option is enabled by default. Of course, the same can also be
+   accomplished by funneling the mailbomb through sendmail, instead of
+   running maildrop directly. However, I can only tighten things up on my
+   end; I presume that throttling mechanisms are in place in sendmail to
+   block that avenue of attack.
+
+    Any AFS platform
+
+   If you're using AFS, it is possible that daemon processes will not even
+   have the read privileges on their effective userid's home directory.
+   maildrop likes to keep its temporary files in $HOME/.tmp, instead of
+   creating them in a shared public directory. You will need to specify the
+   --disable-tempdir flag when running configure, which configures maildrop
+   to use /tmp or /var/tmp for temporary file storage. (NOTE - this is
+   already a default option effective with maildrop 1.1)
+
+Options to configure
+
+   Although most configuration is done as described in the following section,
+   I am migrating them to the configure script. Currently, configure support
+   the following options:
+    
+
+     * --enable-DEBUG - specifying this parameter to configure enables some
+       debugging code. Used only by those who know how to use it. :-)
+
+     * --without-db - do not compile support for GDBM or DB databases.
+       Because supporting GDBM/DB databases significantly increases the size
+       of maildrop, GDBM/DB support can be omitted. If you do not have
+       GDBM/DB libraries, configure automatically disables GDBM/DB support.
+       Specifying --without-db disables the gdbmopen, gdbmclose, gdbmfetch,
+       and gdbmstore functions, and does not compile or install the
+       maildrop.makedat utility.
+
+     * --with-db=db - use the Berkeley DB library instead of GDBM. This
+       option will transparently use libdb.a instead of libgdbm.a. The
+       gdbmopen, gdbmclose, gdbmfetch, and gdbmstore functions work exactly
+       the same, but they will use libdb instead of libgdbm.
+
+     * --with-etcdir=directory - use the specified directory instead of /etc,
+       which is where maildrop expects to find some configuration files and
+       directories.
+
+     * --enable-syslog=1 - if specified, maildrop will log all fatal errors
+       to syslog(3). This is recommended for sendmail, which does not log
+       error messages for delivery agents.
+
+     * --enable-maildrop-uid=root and --enable-maildrop-gid=mail - sets the
+       userid and the groupid for the maildrop, maildirmake, and dotlock
+       programs. If not specified, they default to "root" and "mail"
+       respectively. See MAILBOX_MODE and RESET_GID below for more
+       information.
+
+     * --with-devel - install development libraries and include files. This
+       option causes make install to copy over and install libraries, include
+       files, and manual pages, that are used by maildrop to parse and
+       process E-mail messages.
+
+   Most systems invoke the mail delivery agent and specify the account to
+   which the message is addressed. The mail delivery agent is a program
+   that's owned by root, and has the set-user-id bit set. The mail delivery
+   agent then immediately resets its userid to whomever the message is
+   addressed to.
+
+   Some mail systems run the delivery agent without specifying the recipient
+   on the command line. The user id is set by the mail system before running
+   the mail delivery agent. In this case, root privileges are not required,
+   and you may manually remove the set-user-id bit after installing maildrop.
+
+   Some mail systems may use group privileges in order to write to the system
+   mailbox directory. maildrop is installed with the set-group-id bit set as
+   well, and the mail group is assumed to be 'mail'.  If a mail group other
+   than 'mail' is used, specify it via the --enable-maildrop-gid option. You
+   will also need to set the RESET_GID variable to 0 (see below). If
+   RESET_GID is left alone to its default value of 1, maildrop will drop any
+   acquired group ID right away, so its not necessary to remove the setgid
+   bit. maildrop attempts to detect if this is the case, but you always need
+   to confirm this.
+    
+
+     * --enable-sendmail=program - sets the initial value for the SENDMAIL
+       environment variable for maildrop recipes. This is the pathname to the
+       default mail delivery agent. If this option is not specified,
+       configure will try to find it itself.
+
+     * --enable-lockext-def=extension - sets the initial value for the
+       LOCKEXT environment variable in maildrop. This is the filename
+       extension of dotlock files. The default is ".lock".
+
+     * --enable-locksleep-def=seconds - sets the initial value for the
+       LOCKSLEEP environment variable. This is how long maildrop waits before
+       trying to create a dotlock file again, if the dotlock file already
+       exists. The default is 5 seconds.
+
+     * --enable-locktimeout-def=seconds - sets the initial value for the
+       LOCKTIMEOUT environment variable. This is how long maildrop waits
+       before removing a stale dotlock file. The default is 60 seconds.
+
+     * --enable-lockrefresh-def=seconds- sets the initial value for the
+       LOCKREFRESH environment variable. This is how often maildrop refreshes
+       its own dotlock files, to keep them from going stale. The default is
+       15 seconds.
+
+   [4]See the manual page for maildropfilter for more information on these
+   variables.
+
+     * --enable-tempdir=directory - sets the name of a subdirectory in each
+       user's home directory where maildrop writes temporary files. maildrop
+       will create this directory, if missing. The default is .tmp.
+
+     * --disable-tempdir - do not use a subdirectory, instead create
+       temporary files in a shared /tmp or /var/tmp directory. May be
+       required on systems where daemon processes execute without privileges
+       to access shared filesystems. This is now the default option starting
+       with maildrop 1.1.
+
+     * --enable-smallmsg=bytes - sets the size of a message, in bytes, before
+       maildrop saves the message in a temporary file. Smaller messages are
+       read in memory, and filtered and delivered directly from memory. In
+       order to avoid consuming excessive amounts of expensive RAM, maildrop
+       saves larger messages in a temporary file. If the standard input to
+       maildrop is a file, a temporary file is not necessary. The default is
+       8192 bytes.
+
+     * --enable-global-timeout=seconds - sets numbers of seconds that
+       maildrop is willing to spend in order to deliver a single message.
+       This value becomes a hard coded limit. When the time expires, maildrop
+       terminates with an EX_TEMPFAIL error code. This is intended to stop
+       runaway mail filters. The default is 300 seconds (five minutes).
+
+     * --enable-crlf-term=flag - if set to 1, maildrop saves messages in the
+       mailbox with each line terminated by a carriage return/line feed
+       sequence. When set to 0, lines will be terminated by the linefeed
+       character only. The default value is 0.
+
+     * --enable-restrict-trusted=flag - if set to 1, maildrop permits only
+       certain "trusted" user or group IDs to use the -d option. Setting this
+       variable to 0 allows anyone to use the -d option (provided that
+       maildrop has set-userid-to-root privileges). This allows certain
+       denial-of-service attacks, so this setting is not recommended. The
+       default value is 1.
+
+     * --enable-keep-fromline=flag - if set to 1, when maildrop saves a
+       message to a mailbox file, it will use the same From_line address
+       which was present in the original message. If the original message
+       lacked a From_ line, maildrop will use the name of the user running
+       maildrop. If set to 0, maildrop will keep the original From_ line
+       address only if invoked by root, and reset it otherwise. The default
+       value of this option is the value of the --enable-restrict-trusted
+       option. Note that this option is new to maildrop version 0.54b. The
+       logic in the previous version of maildrop was always the same as if
+       this option was 0. Therefore, depending upon the value of the
+       --enable-restrict-trusted flag, you may find that maildrop behavior
+       changes with version 0.54b. This option also controls the semantics of
+       the -f option to maildrop (see below).
+
+     * --enable-trusted-users='...' - sets the list of users allowed to use
+       the -d option if --enable-restrict-trusted is set to 1. If
+       --enable-restrict-trusted is set to 0, this option is not used. Put a
+       list of user IDs allowed to use the -d option between the apostrophes,
+       separated by single spaces. If your mail transport agent uses maildrop
+       as the local delivery agent this list must include the userid that the
+       mail transport agent runs as. If this option is not specified,
+       maildrop attempts to put together a list including common mail system
+       user ids.
+
+     * --enable-trusted-groups='...' - this is similar to the
+       --enable-trusted-users option, but specifies a list of group IDs
+       instead of user IDs. If --enable-restrict-trusted option is used, the
+       -d option will be permitted only if the real userid, of whoever's
+       invoking maildrop, is included in the trusted users list, OR if the
+       real groupid is included in the trusted groups list, OR if the
+       effective groupid is included in the trusted groups list.
+
+       CAUTION: the default configuration script installs maildrop with the
+       set group ID bit set, so that the effective groupid will always be the
+       same in the default maildrop configuration. If this group ID is
+       included in the trusted groups list, this effectively will allow
+       everyone to use the -d option.
+
+       The trusted groups feature has been implemented in order to add
+       additional flexibility in setting up a secure maildrop environment. If
+       the --enable-trusted-groups option is not used, the trusted groups
+       list is empty, so that the semantics of the trusted users option
+       remains the same as with previous versions of maildrop.
+
+     * --enable-use-flock=flag - if this option is set to 1, maildrop will
+       use either the flock(), the lockf(), or the fcntl() system call to
+       lock a mailbox file when delivering a message. On most systems, all
+       three use compatible locking mechanisms. In some very isolated cases,
+       flock(), lockf(), and fcntl(), are different, incompatible, locking
+       mechanisms. maildrop must use the same locking mechanism as any mail
+       reading programs. The configuration script will run some tests to
+       determine what locking function calls are available, and will choose
+       one by itself. The --with-locking-method can be used to manually
+       choose the locking function call to use.
+
+     * --with-locking-method=name - manually select a locking function call.
+       name is either "fcntl", "flock", or "lockf". Otherwise the
+       configuration script will pick one by itself.
+
+     * --enable-use-dotlock=flag - if this option is set to 1, maildrop will
+       create .lock files in order to gain access to the system mailbox file.
+       If this option is set to 0, maildrop will not use .lock files
+       automatically. However, the dotlock command can still be used to
+       manually create .lock files. The default value for this option is 1,
+       unless maildrop detects that the system mailbox directory does not
+       have the sticky bit set (set below), in which case the default option
+       is 0. maildrop attempts to figure out what the locking mechanism is
+       used by the mail reading programs. A mail reading program can only
+       create dotlock files in the system mailbox directory if the sticky bit
+       is set. Note, it is possible for both --enable-use-flockand
+       --enable-use-dotlock to be set to 1, in which case both locking
+       mechanisms are used simultaneously.
+
+     * --enable-maildirquota - enables optional support for maildir quotas.
+       See below for more information. This is considered an experimental new
+       feature.
+
+     * --with-trashquota - include deleted messages, and the Trash folder, in
+       the estimated quota usage for maildirs. This should be used if related
+       packages (SqWebMail, Courier-IMAP) were also compiled with the
+       --with-trashquota option.
+
+     * --with-dirsync - after delivering a new message to a maildir
+       explicitly sync the maildir's directory directory. There's a school of
+       thought which believes that the Linux ext2 filesystem requires the
+       parent directory to be synced, in addition to the new message file
+       that's just been written to disk. There's another school of thought
+       that thinks that this issue is completely blown out of proportion, and
+       is really nothing more than a tempest in a teapot. However -- to
+       accomodate the former school of thought -- this option adds a little
+       bit of extra code to sync the parent directory.
+
+  Selecting an alternate C++ compiler
+
+   maildrop is written in C++. Some systems may have more than one C++
+   compiler available. If the default C++ compiler that's selected by the
+   configure script doesn't work, you may try an alternate C++ compiler.
+   First, you must extract the tarball again, into a different directory.
+   Then, before running ./configure, set the CXX environment variable to the
+   C++ compiler to be used. For example, to select the CC compiler:
+
+  
+ $ CXX=CC
+ $ export CXX
+ $ ./configure [options]
+
+   Then proceed as usual. The CXXFLAGS environment variable can also be used
+   to override compiler flags that configure selects.
+
+  Configuring the location of the system mailbox
+
+   When maildrop has a message to deliver to a user, maildrop must know where
+   user's mailbox is. Different systems use different places to store E-mail,
+   and different mechanisms to access it. And even on the same operating
+   system you may have variations due to different mail software.
+
+   Here are just some of the possible scenarios that may exist that maildrop
+   knows how to handle:
+    
+
+     * All users' mailboxes usually are stored in a single directory, and the
+       name of the mailbox is the user name. On systems with many mailboxes,
+       the mailbox directory can be partitioned into a hierarchical tree,
+       based upon the initial letters of the user name. For example, the
+       mailbox for the user jtomas is /var/mail/j/jt/jthomas; mail for sjones
+       is stored in /var/mail/s/sj/sjones.
+
+     * Instead of storing mail in a separate directory, the system may store
+       incoming mail in each user's home directory.
+
+     * Instead of storing mail in a traditional mailbox file, the system may
+       implement a directory based format called maildir, that was introduced
+       in the Qmail mail server. With maildrop as your local delivery agent
+       you may implement the maildir format without having to use Qmail
+       itself. Maildir is a much more efficient mail storage format which
+       requires far less overhead. No locking of any kind is needed; multiple
+       instances of maildrop can dump mail into the same maildir at the same
+       time.
+
+     * When mail is saved in a traditional mailbox file, only one program may
+       access the file at the same time. In order to synchronize access to
+       the mailbox file, the traditional mechanism uses a separate dot-lock
+       file. Newer systems may also use the flock() function on the mailbox
+       file itself. maildrop, by default, uses both mechanisms, except in one
+       case (see the --enable-use-dotlock option to configure, above), but
+       one or the other can always be selected to be used exclusively.
+
+     * Traditionally, the directory where system mailboxes reside has the
+       sticky bit set; all individual files are owned by their respective
+       users, with read/write permissions set for the user only, and
+       dot-locking is used to lock the mailbox. An alternative arrangement is
+       to remove the sticky bit from the directory, the directory has the
+       mail group ownership, and each mailbox is owned by the user, and the
+       mail group, with read/write privileges given to the owner. The mail
+       delivery agent runs under the user id, and the mail group id. This
+       allows the mail delivery agent to create new mailboxes, and have the
+       write permission on the user's mailbox. The flock() function is used
+       to lock an individual mailbox.
+
+   As you can see, there is a lot of variation in possible mail setups. It is
+   important that maildrop is configured to match your existing mail setup. 
+   The configure script tries to automatically figure out the correct
+   settings, but you MUST always verify the output file, config.h, to make
+   sure that the settings are correct. Description of each variable defined
+   in config.hfollows. In addition, there are certain variables defined in a
+   different file, xconfig.h. These are settings that config.h cannot
+   automatically determine.
+
+    DEFAULT_DEF
+
+   This variable specifies the initial setting for the DEFAULT variable in
+   maildrop, which should be the location of the system default mailbox. If
+   DEFAULT_DEF begins with a slash, it should refer to a directory, and
+   maildrop will automatically append the user's name.
+
+   If it doesn't begin with a slash, maildrop will prepend the user's home
+   directory to DEFAULT_DEF. To use maildrop with [5]qmail, which normally
+   delivers to $HOME/Mailbox, set DEFAULT_DEF to ./Mailbox.
+
+   The '=' character in DEFAULT_DEF gets replaced by progressive characters
+   from the user name of the user whose mail is being delivered. For example,
+   if mail to the user name "john" is delivered to /var/mail/j/jo/john and
+   mail to user "root" is delivered to /var/mail/r/ro/root, DEFAULT_DEF
+   should be set to /var/mail/=/== (maildrop automatically appends the full
+   user name as the last component).
+
+   If the DEFAULT_DEF/DEFAULT variable refers to a directory, maildrop
+   assumes that it is delivering the message to a maildir, otherwise maildrop
+   will deliver mail to a mailbox file, creating a new file if necessary.
+   maildrop does not deliver mail to flat directory, like procmail. If you
+   need to save messages in a directory, use the included program,
+   maildirmake, to create a maildir directory.
+
+    MAILBOX_MODE and RESET_GID
+
+   Here are the required setting in two of the most common mailbox
+   environments:
+    
+
+     * Mailbox spool directory has the sticky bit set, mailboxes are readable
+       and writable by the user only - set MAILBOX_MODE to 0600, and
+       RESET_GID to 1.
+
+     * Mailbox spool directory does not have the sticky bit set, is writable
+       by the mail group ID, mailboxes are readable and writable by the user
+       ID - set MAILBOX_MODE to 0600, and RESET_GID to 0.
+
+   MAILBOX_MODE are the permissions maildrop uses to create new mailbox
+   files. If a mailbox file already exists, maildrop is not going to change
+   its permissions.
+
+   RESET_GID indicates whether maildrop should immediately drop any
+   set-group-id privileges. maildrop is installed with the set-group-id bit
+   set with maildrop's group id set to the mail group. If system mailbox
+   files have read/write access by both the user and the mail group, set
+   RESET_GID to 0 to keep the mail group ID, and specify the mail groupusing
+   the --enable-maildrop-gid flag to configure (see above).
+
+    TRUSTED_USERS
+
+   If --enable-restrict-trusted option given to the configure script is set
+   to 1 (this is the default), maildrop allows only the users listed in this
+   environment variable to use the -d option. See the online documentation
+   for the description of the -d option.
+
+   Mail can be delivered in two different ways:
+    
+
+     * The mail transport agent runs with root privileges. To deliver mail to
+       a local user, the mail transport agent runs maildrop after changing
+       the user id to the local user. In this case the -d option is not
+       needed.
+
+     * The mail transport agent runs as a non-privileged user. To deliver
+       mail to a local user, the mail transport agent runs the mail delivery
+       agent and specifies the user name with the -d option. The mail
+       delivery agent is expected to be a program with root privileges, and
+       it immediately must change its userid to the one specified by the -d
+       option. If this is the case, you must include the mail transport
+       agent's userid in the TRUSTED_USERS variable.
+
+   If --enable-restrict-trusted option given to the configure script is set
+   to 0, anyone can use the -d option. That is not recommended, it leaves
+   open a possibility for certain denial-of-service attacks.
+
+  Other configuration variables
+
+   The configure script also sets the following variables in autoconf.h.
+   After running the configure script, you may need to make some adjustments
+   to these variables also.
+
+    DEFAULT_PATH
+
+   This variable in "autoconf.h" sets the initial contents of the PATH
+   variable, which is the initial system search path for commands invoked by
+   maildrop as child processes.
+
+    SENDMAIL_DEF
+
+   This variable in "autoconf.h" sets the initial contents of the SENDMAIL
+   variable, which is the local mail transport agent. maildrop runs this
+   program when instructed to deliver mail to a mailbox whose name begins
+   with the forwarding "!" character.
+
+    Other variables in autoconf.h
+
+   All the other variables are self explanatory, and rarely need to be
+   changed.
+
+Using maildrop with sendmail
+
+   Maildrop can be easily used as sendmail's local delivery agent, instead of
+   procmail. Here is the suggested entry for sendmail.cf, courtesy of Eric J.
+   Schwertfeger <ejs@bfd.com>:
+
+  
+ Mlocal,         P=/usr/local/bin/maildrop, F=lsAw5:/|@SPfhn, S=10/30, R=20/40,
+                 T=DNS/RFC822/X-Unix,
+                 A=maildrop -d $u
+
+   You may also consider including the D, F, and M flags as well.
+
+The -f option to maildrop
+
+   The -f option is new to version 0.55. The -f option sets the initial value
+   of the FROM variable. If no -f option is given, maildrop looks at any
+   From_ line in the message being delivered, otherwise it defaults to the
+   name of the user who invoked maildrop.
+
+   If the --enable-keep-fromline option is set to 0, anyone may use the -f
+   option. If --enable-keep-fromline is set to 1, only "trusted" users (as
+   defined by --enable-trusted-users) may use the -f option (ignored for
+   everyone else).
+
+   The initial value of the FROM variable is also used in the From_ line for
+   the message when maildrop saves it in a mailbox file. Although a recipe
+   may change the contents of the FROM variable, only the initial value gets
+   saved in the From_ line.
+
+  Maildirs
+
+   maildrop supports an alternative mail storage format called "maildir".
+   Unlike regular mailboxes, maildirs do not require locking, and are much
+   faster to use. Support for maildirs is not universal, but the number of
+   software packages that understands maildirs is constantly growing.
+
+   A maildir is a specially formatted directory, where messages are stored as
+   individual files, according to certain conventions. Use the maildirmake
+   command to create a maildir, with its structure and permissions properly
+   set:
+
+   maildirmake ./Maildir
+
+   This creates a subdirectory in the current directory called "Maildir",
+   which is then prepared to store E-mail messages.
+
+  Maildir folder extension
+
+   This version of maildrop supports two extensions to the traditional
+   maidlir format: folders and quotas. The standard maildir format does not
+   support any kind of a folder hierarchy, and depends on the underlying
+   filesystem to enforce maximum usage quotas.
+
+   It is important to note that at this the only other software that supports
+   these extensions is the [6]sqwebmail CGI client, version 0.20 or higher.
+   Descriptions of these extension are freely available, hopefully other
+   software packages will add support for these extensions too.
+
+   Names of folders are limited by the maximum filename size of your
+   filesystem, and the names may not start with a period. Use the -f option
+   to maildirmake to create a new folder:
+
+   maildirmake -f Important ./Maildir
+
+   "./Maildir" must already be an existing maildir. The -f flag creates a
+   folder inside an existing maildir. A folder is just a subdirectory within
+   a maildir that is itself a maildir. The name of the subdirectory is the
+   folder name prefixed by a period. Also, the folder subdirectory contains a
+   zero-length file called "maildirfolder".
+
+   Maildrop can deliver to folders just like to regular maildirs:
+
+   to "./Maildir/.Important"
+
+   Anywhere maildrop can deliver to a maildir, it can also deliver to a
+   maildir folder.
+
+   See the manual page for maildirmake for more information.
+
+  Maildir quota extension
+
+   The quota extension allows maximum maildir quotas to be enforced where
+   filesystem-based quotas are not available, or cannot be used. This quota
+   mechanism has a number of limitations which are discussed in the manual
+   page for maildirquota, which contains more information.
+
+   Quota support must be specifically turned on by using the
+   --enable-maildirquota parameter to configure. Afterwards, quota
+   enforcement can be implemented by setting the MAILDIRQUOTA variable in
+   maildrop, as described in the maildirquota manual page.
+
+   If you intend to use quotas, you should install maildrop with quota
+   support, but do not activate quotas for some period of time. Maildirs that
+   have a large number of messages, that were delivered by older versions of
+   maildrop, will require additional resources in order to calculate their
+   current quota. As older messages get purged from Maildirs, newer messages
+   will result in the ability to calculate quotas faster and with very little
+   load on the server.
+
+   Of course, quotas will be enforced only when maildrop is used to deliver
+   mail. Other applications, that do not understand the quota enhancement,
+   will not enforce any quotas. Mail delivered to a maildir by other
+   applications will not figure in quota calculation for some period of time.
+
+   This is considered an experimental feature.
+
+References
+
+   Visible links
+   1. http://www.pcre.org/
+   2. http://www.courier-mta.org/authlib/
+   3. file:///home/mrsam/src/maildrop/UPGRADE.html
+   4. file:///home/mrsam/src/maildrop/maildropfilter.html#predefined
+   5. http://www.qmail.org/
+   6. http://www.inter7.com/sqwebmail/

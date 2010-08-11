@@ -1,0 +1,126 @@
+qmail-send(8)                                                    qmail-send(8)
+
+
+
+NNAAMMEE
+       qmail-send - deliver mail messages from the queue
+
+SSYYNNOOPPSSIISS
+       qqmmaaiill--sseenndd
+
+DDEESSCCRRIIPPTTIIOONN
+       qqmmaaiill--sseenndd  handles  messages  placed into the outgoing queue by qqmmaaiill--
+       qquueeuuee.  It uses qqmmaaiill--llssppaawwnn to deliver messages  to  local  recipients
+       and  qqmmaaiill--rrssppaawwnn  to deliver messages to remote recipients.  If a mes‐
+       sage is temporarily undeliverable to one or more addresses,  qqmmaaiill--sseenndd
+       leaves it in the queue and tries the addresses again later.
+
+       qqmmaaiill--sseenndd  prints a readable record of its activities to descriptor 0.
+       It writes commands to qqmmaaiill--llssppaawwnn, qqmmaaiill--rrssppaawwnn,  and  qqmmaaiill--cclleeaann  on
+       descriptors 1, 3, and 5, and reads responses from descriptors 2, 4, and
+       6.  qqmmaaiill--sseenndd is responsible for avoiding deadlock.
+
+       If qqmmaaiill--sseenndd receives a TERM signal, it will exit cleanly, after wait‐
+       ing (possibly more than a minute) for current delivery attempts to fin‐
+       ish.
+
+       If qqmmaaiill--sseenndd receives an ALRM signal, it will reschedule every message
+       in the queue for immediate delivery.
+
+CCOONNTTRROOLL FFIILLEESS
+       WWAARRNNIINNGG::  qqmmaaiill--sseenndd  reads  its control files only when it starts.  If
+       you change the control files, you must  stop  and  restart  qqmmaaiill--sseenndd.
+       Exception:  If  qqmmaaiill--sseenndd receives a HUP signal, it will reread _l_o_c_a_l_s
+       and _v_i_r_t_u_a_l_d_o_m_a_i_n_s.
+
+       _b_o_u_n_c_e_f_r_o_m
+            Bounce username.  Default: MMAAIILLEERR--DDAAEEMMOONN.
+
+       _b_o_u_n_c_e_h_o_s_t
+            Bounce host.  Default: _m_e, if that is supplied; otherwise the lit‐
+            eral  name  bboouunncceehhoosstt, which is probably not what you want.  If a
+            message is permanently undeliverable, qqmmaaiill--sseenndd sends  a  ssiinnggllee--
+            bboouunnccee  notice  back to the message’s envelope sender.  The notice
+            is FFrroomm:: _b_o_u_n_c_e_f_r_o_m@@_b_o_u_n_c_e_h_o_s_t, although its  envelope  sender  is
+            empty.
+
+       _c_o_n_c_u_r_r_e_n_c_y_l_o_c_a_l
+            Maximum  number of simultaneous local delivery attempts.  Default:
+            10.  If 0, local deliveries will be put on hold.  _c_o_n_c_u_r_r_e_n_c_y_l_o_c_a_l
+            is limited at compile time to 120.
+
+       _c_o_n_c_u_r_r_e_n_c_y_r_e_m_o_t_e
+            Maximum number of simultaneous remote delivery attempts.  Default:
+            20.  If 0, remote deliveries will be put on hold.   _c_o_n_c_u_r_r_e_n_c_y_r_e_‐
+            _m_o_t_e is limited at compile time to 120.
+
+       _d_o_u_b_l_e_b_o_u_n_c_e_h_o_s_t
+            Double-bounce  host.   Default: _m_e, if that is supplied; otherwise
+            the literal name ddoouubblleebboouunncceehhoosstt, which is probably not what  you
+            want.
+
+       _d_o_u_b_l_e_b_o_u_n_c_e_t_o
+            User  to  receive double-bounces.  Default: ppoossttmmaasstteerr.  If a sin‐
+            gle-bounce notice is permanently undeliverable, qqmmaaiill--sseenndd sends a
+            ddoouubbllee--bboouunnccee notice to _d_o_u_b_l_e_b_o_u_n_c_e_t_o@@_d_o_u_b_l_e_b_o_u_n_c_e_h_o_s_t.  (If that
+            bounces, qqmmaaiill--sseenndd gives up.)
+
+       _e_n_v_n_o_a_t_h_o_s_t
+            Presumed domain name for addresses without @ signs.  Default:  _m_e,
+            if that is supplied; otherwise the literal name eennvvnnooaatthhoosstt, which
+            is probably not what you want.  If  qqmmaaiill--sseenndd  sees  an  envelope
+            recipient address without an @ sign, it appends @@_e_n_v_n_o_a_t_h_o_s_t.
+
+       _l_o_c_a_l_s
+            List  of domain names that the current host receives mail for, one
+            per line.  Default: _m_e, if that is supplied; otherwise  qqmmaaiill--sseenndd
+            refuses  to  run.   An  address _u_s_e_r_@_d_o_m_a_i_n is considered local if
+            _d_o_m_a_i_n is listed in _l_o_c_a_l_s.
+
+       _p_e_r_c_e_n_t_h_a_c_k
+            List of domain names where the percent hack is applied.  If _d_o_m_a_i_n
+            is listed in _p_e_r_c_e_n_t_h_a_c_k, any address of the form _u_s_e_r_%_f_q_d_n_@_d_o_m_a_i_n
+            is rewritten as _u_s_e_r_@_f_q_d_n.  _u_s_e_r may contain  %,  so  the  percent
+            hack  may  be  applied repeatedly.  qqmmaaiill--sseenndd handles _p_e_r_c_e_n_t_h_a_c_k
+            before _l_o_c_a_l_s.
+
+       _q_u_e_u_e_l_i_f_e_t_i_m_e
+            Number of seconds a message  can  stay  in  the  queue.   Default:
+            604800  (one  week).  After this time expires, qqmmaaiill--sseenndd will try
+            the message once more, but it will treat  any  temporary  delivery
+            failures as permanent failures.
+
+       _v_i_r_t_u_a_l_d_o_m_a_i_n_s
+            List  of  virtual  users or domains, one per line.  A virtual user
+            has the form _u_s_e_r@@_d_o_m_a_i_n::_p_r_e_p_e_n_d, without any extra spaces.   When
+            qqmmaaiill--sseenndd  sees the recipient address _u_s_e_r@@_d_o_m_a_i_n, it converts it
+            to _p_r_e_p_e_n_d--_u_s_e_r@@_d_o_m_a_i_n and treats it as local.
+
+            A virtual domain has the form _d_o_m_a_i_n::_p_r_e_p_e_n_d.  It applies  to  any
+            recipient address at _d_o_m_a_i_n.  For example, if
+
+                 nowhere.mil:joe-foo
+
+            is  in _v_i_r_t_u_a_l_d_o_m_a_i_n_s, and a message arrives for iinnffoo@@nnoowwhheerree..mmiill,
+            qqmmaaiill--sseenndd  will  rewrite  the  recipient  address   as   jjooee--ffoooo--
+            iinnffoo@@nnoowwhheerree..mmiill and deliver the message locally.
+
+            _v_i_r_t_u_a_l_d_o_m_a_i_n_s may contain wildcards:
+
+                 .fax:uucp-fax
+                 :alias-catchall
+                 .nowhere.mil:joe-foo-host
+
+            _v_i_r_t_u_a_l_d_o_m_a_i_n_s may also contain exceptions: an empty _p_r_e_p_e_n_d means
+            that _d_o_m_a_i_n is not a virtual domain.
+
+            qqmmaaiill--sseenndd handles _v_i_r_t_u_a_l_d_o_m_a_i_n_s after _l_o_c_a_l_s:  if  a  domain  is
+            listed in _l_o_c_a_l_s, _v_i_r_t_u_a_l_d_o_m_a_i_n_s does not apply.
+
+SSEEEE AALLSSOO
+       nice(1),  addresses(5),  envelopes(5),  qmail-control(5), qmail-log(5),
+       qmail-queue(8), qmail-clean(8), qmail-lspawn(8), qmail-rspawn(8)
+
+
+
+                                                                 qmail-send(8)

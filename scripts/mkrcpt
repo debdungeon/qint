@@ -1,0 +1,47 @@
+#!/bin/bash
+#
+# Create valid rcpt cdb
+
+
+VPOPMAIL_DIR=/home/vpopmail/bin
+TMP_FILE=/tmp/rcpt.$$
+
+cdb=0
+if [ "x$1" = "x-c" ]; then
+   cdb=1
+   if [ "x$2" != "x" ]; then
+      file=$2
+   else
+      file=/var/qmail/control/validrcptto.cdb
+   fi
+fi
+
+
+if [ ! -f $VPOPMAIL_DIR/vdominfo ]; then
+   echo "No vpopmail found!"
+   exit 1
+fi
+
+for i in `$VPOPMAIL_DIR/vdominfo -n`; do
+   if [ "x" != "x$i" ]; then
+      for j in `$VPOPMAIL_DIR/vuserinfo -n -D $i`; do 
+   	  echo $j@$i | tee -a $TMP_FILE
+      done
+
+      for k in `/home/vpopmail/bin/valias -s $i | awk '{ print $1 }' | uniq`; do
+	 echo $k | tee -a $TMP_FILE
+      done
+
+      for l in `/home/vpopmail/bin/vlist list $i`; do 
+ 	 echo $l@$i | tee -a $TMP_FILE
+      done
+   fi
+done
+
+if [ $cdb -eq 1 ]; then
+   cdb -c -p 0644 -m $file $TMP_FILE
+fi
+
+if [ -f $TMP_FILE ]; then
+   rm $TMP_FILE
+fi
