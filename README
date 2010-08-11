@@ -1,0 +1,35 @@
+What is qint?
+Qint is not toaster. Qint is a complete mail server solution which install the following
+
+SMTP server with TLS/SSL (Qmail)
+POP3 server (POP)
+IMAP server (Dovecot)
+SPF (Sender Protection Framework)
+RBL checks (spamhaus)
+Simscan (virus, spam, attachment filtering helper)
+Spam filtering (Spamassain)
+Virus scanning (Clamav)
+Greylisting (Jgreylist)
+Autoresponder (auotrespond)
+Virtual domains (Vpopmail + mysql)
+Quota support (Vpopmail)
+Mailing lists (Ezmlm)
+Mail filtering (Maildrop)
+Disclaimer per domain (qmail-qfilter)
+Statistics/Graphs (Qmailmrtg + isoqlog)
+Server side filters (Sieve)
+Administration (Qmailadmin)
+Webmail (Squirrelmail)
+SMTP plugins (Qmail-spp support)
+
+How to install?
+untar the package and run install --help to see all options. To quickly get started
+
+tar zxvf qint-<version>.tar.gz
+cd qint-<version>
+./install -i
+
+
+
+
+
